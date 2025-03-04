@@ -7,27 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. 리포지토리 체크아웃
       - uses: actions/checkout@v4
 
-      # 2. mustache 설치 (선택 사항, 날짜 업데이트를 위한 부분)
       - name: Install mustache (to update the date)
         run: sudo apt-get install ruby && sudo gem install mustache
 
-      # 3. build.sh 스크립트 실행
       - name: creates output
         run: sh ./build.sh
 
-      # 4. 다른 리포지토리에 푸시
       - name: Pushes to another repository
         id: push_directory
         uses: cpina/github-action-push-to-another-repository@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }}  # 시크릿 변수 이름
         with:
-          source-directory: './output'  # source-directory를 output으로 설정
+          source-directory: './output'
           destination-github-username: o11117
           destination-repository-name: capstonedesign
           user-email: ${{ secrets.EMAIL }}  # 시크릿 변수 이름
