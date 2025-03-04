@@ -1,0 +1,30 @@
+name: git push into another repo to deploy to vercel
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mustache (to update the date)
+        run: sudo apt-get install ruby && sudo gem install mustache
+
+      - name: creates output
+        run: sh ./build.sh
+
+      - name: Pushes to another repository
+        id: push_directory
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }}  # 시크릿 변수 이름
+        with:
+          source-directory: './output'
+          destination-github-username: o11117
+          destination-repository-name: capstonedesign
+          user-email: ${{ secrets.EMAIL }}  # 시크릿 변수 이름
+          commit-message: 'Deploy: ${{ github.sha }}'
+          target-branch: main
