@@ -1,11 +1,12 @@
+// src/components/Footer.tsx
 import React from 'react';
+import styles from '../assets/Footer.module.css';  // CSS 모듈 import
 
 const Footer = () => {
-  // React의 Fragment로 wrapper 추가
   return (
-    <React.Fragment>
-      <footer>푸터 내용</footer>
-    </React.Fragment>
+    <footer className={styles.footerContainer}>
+      <p className={styles.footerText}>© 2025 KNU CAPSTONE DESIGN. All Rights Reserved.</p>
+    </footer>
   );
 };
 

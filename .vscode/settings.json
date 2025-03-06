@@ -1,0 +1,12 @@
+{
+  "editor.formatOnSave": true,              // 저장 시 자동 포맷팅
+  "eslint.validate": [
+    "javascript",                            // JavaScript 파일
+    "javascriptreact",                       // React JavaScript 파일
+    "typescript",                            // TypeScript 파일
+    "typescriptreact"                        // React TypeScript 파일
+  ],
+  "eslint.autoFixOnSave": true,             // 저장 시 자동으로 ESLint 규칙 수정
+  "prettier.requireConfig": true,           // Prettier가 설정 파일을 찾을 때까지 동작하지 않도록 설정 (자동 포맷팅을 위해)
+  "prettier.eslintIntegration": true        // Prettier와 ESLint 통합 (Prettier를 ESLint의 설정에 맞게 적용)
+}

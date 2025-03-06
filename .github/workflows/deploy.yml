@@ -20,11 +20,11 @@ jobs:
         id: push_directory
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }}  # 시크릿 변수 이름
+          API_TOKEN_GITHUB: ${{ secrets.AUTO_ACTIONS }} # 시크릿 변수 이름
         with:
           source-directory: './output'
           destination-github-username: o11117
           destination-repository-name: capstonedesign
-          user-email: ${{ secrets.EMAIL }}  # 시크릿 변수 이름
+          user-email: ${{ secrets.EMAIL }} # 시크릿 변수 이름
           commit-message: 'Deploy: ${{ github.sha }}'
           target-branch: main
