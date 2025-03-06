@@ -1,5 +1,4 @@
 // src/components/Nav.tsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../assets/Nav.module.css';
 import logo from '/favicon.jpeg';
