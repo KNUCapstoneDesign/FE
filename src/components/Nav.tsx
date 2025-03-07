@@ -15,9 +15,6 @@ const Nav = () => {
 
       <ul className={styles.navList}>
         <li className={styles.navItem}>
-          <Link to="/" className={styles.navLink}>메인페이지</Link>
-        </li>
-        <li className={styles.navItem}>
           <Link to="/about" className={styles.navLink}>About</Link>
         </li>
         <li className={styles.navItem}>
@@ -31,7 +28,7 @@ const Nav = () => {
         <li className={styles.navItem}>
           <Link to="/login" className={styles.navLink}>Login</Link>
         </li>
-        <li className={styles.nav}>
+        <li className={styles.navItem}>
           <Link to="/signup" className={styles.navLink}>Sign Up</Link>
         </li>
         </ul>

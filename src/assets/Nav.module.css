@@ -6,8 +6,8 @@
 /* pc 화면일때 */
 @media screen and (min-width: 700px) {
   .navcontainer {
-    width: 100%;
-    height: 70px;
+  width: 100%;
+  height: 70px;
   }
 }
 
@@ -17,9 +17,21 @@
     width: 100%;
     height: 70px;
   }
+  .navList {
+  font-size: 0.5em;
+  display: none !important;
+  }
+  .navRight {
+    font-size: 0.5em;
+  }
 }
 
 .navcontainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
   background-color: #333;
   padding: 10px;
   width: 100vw;
@@ -39,7 +51,7 @@
 
 .navTitle {
   color: white;
-  font-size: 24px;
+  font-size: 1em;
 }
 
 .logo{
@@ -55,20 +67,20 @@
 }
 
 .navItem {
-  margin-right: 20px;
+  margin-right: 1em;
 }
 
 .navRight {
   display: flex;
   margin-left: auto;
   list-style-type: none;
-  margin-right: 20px;
+  align-items: center;
 }
 
 .navLink {
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 1em;
 }
 
 .navLink:hover {

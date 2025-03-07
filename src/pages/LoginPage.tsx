@@ -1,6 +1,7 @@
 // src/pages/LoginPage.tsx
 import React, { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
+import styles from '../assets/LoginPage.module.css'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
@@ -15,9 +16,11 @@ const LoginPage = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className={styles.loginContainer}>
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
       <button type="submit">Login</button>
+      </div>
     </form>
   )
 }
