@@ -17,9 +17,19 @@ const LoginPage = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div className={styles.loginContainer}>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-      <button type="submit">Login</button>
+        <div>
+          <h1>Login</h1>
+        </div>
+        <div>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+          <button onClick={function() {
+          }}>Login
+          </button>
+        </div>
+        <div>
+          <a href="/signup">회원가입
+          </a>
+        </div>
       </div>
     </form>
   )
