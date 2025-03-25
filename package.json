@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< Updated upstream
     "axios": "^1.8.1",
     "capstonedesign": "file:",
+=======
+    "axios": "^1.8.4",
+>>>>>>> Stashed changes
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.2.0",
