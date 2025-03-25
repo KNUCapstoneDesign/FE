@@ -6,8 +6,8 @@
 /* pc 화면일때 */
 @media screen and (min-width: 700px) {
   .navcontainer {
-  width: 100%;
-  height: 70px;
+    width: 100%;
+    height: 70px;
   }
 }
 
@@ -18,8 +18,8 @@
     height: 70px;
   }
   .navList {
-  font-size: 0.5em;
-  display: none !important;
+    font-size: 0.5em;
+    display: none !important;
   }
   .navRight {
     font-size: 0.5em;
@@ -32,7 +32,7 @@
   left: 0;
   z-index: 1000;
 
-  background-color: #333;
+  background-color: white;
   padding: 10px;
   width: 100vw;
   display: flex;
@@ -50,24 +50,17 @@
 }
 
 .navTitle {
-  color: white;
+  color: black;
   font-size: 1em;
 }
 
-.logo{
+.logo {
   width: 50px;
   margin-right: 10px;
 }
 
-.navList {
-  margin-left: 30px;
-  display: flex;
-  list-style-type: none;
-  align-items: center;
-}
-
 .navItem {
-  margin-right: 1em;
+  margin-right: 2em;
 }
 
 .navRight {
@@ -78,11 +71,22 @@
 }
 
 .navLink {
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.1em;
+}
+
+.navLinkLogin {
   color: white;
+  background-color: black;
+  padding: 8px 15px;
+  border-radius: 5px;
   text-decoration: none;
   font-size: 1em;
+  transition: background-color 0.2s;
 }
 
 .navLink:hover {
-  color: #f1f1f1;
+  text-decoration: underline solid #888888;
 }
