@@ -1,8 +1,9 @@
 import styles from '../assets/MainPage.module.css'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import mainpic from '../../public/mainpic.jpeg'
-
+import Hero from '../components/Hero'
+import mainpic from '/mainpic.jpg'
+import HotCourses from '../components/HotCourses'
 interface Data {
   name: string
 }
@@ -29,13 +30,9 @@ const MainPage = () => {
   if (error) return <div>Error: {error}</div>
   return (
     <div>
-      <div
-        className={styles.mainPage}
-        style={{
-          backgroundImage: `url(${mainpic})`, // import한 mainpic 사용
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}>
+      <div className={styles.mainPage}>
+        <Hero mainpic={mainpic} />
+        <HotCourses />
         <h1 className={styles.heading}>메인메인메인메인메인메인메인메인</h1>
         <p className={styles.description}>내용내용내용내용내용내용내용내용내용내용내용내용내용</p>
         <br />

@@ -5,6 +5,10 @@
   padding: 20px;
   margin: 0;
   width: 100%;
+  position: fixed; /* 화면에 고정 */
+  bottom: 0; /* 화면 하단에 위치 */
+  left: 0;
+  z-index: 1000; /* 다른 요소 위에 표시 */
 }
 
 .footerText {
