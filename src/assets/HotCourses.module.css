@@ -1,0 +1,75 @@
+.hotCourses {
+  padding: 50px 30px;
+  background-color: white;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.courseList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3개의 열로 고정 */
+  gap: 20px; /* 간격 유지 */
+  justify-items: center; /* 카드 중앙 정렬 */
+}
+
+.courseCard {
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%; /* 셀 내에서 꽉 차도록 */
+  max-width: 600px; /* 최대 너비 제한 */
+  text-align: center;
+}
+
+.courseImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.courseCard h3 {
+  text-align: left;
+  padding-top: 20px;
+  padding-left: 20px;
+  font-size: 25px;
+}
+
+.courseCard p {
+  text-align: left;
+  padding-top: 10px;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+.detailBtn {
+  float: right;
+  background-color: #f8f8f8;
+  color: black;
+  margin-right: 30px;
+  padding: 8px 16px;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.detailBtn:hover {
+  background-color: black;
+  color: #f8f8f8;
+}
+
+@media screen and (max-width: 699px) {
+  .courseList {
+    grid-template-columns: 1fr; /* 모바일에서는 1열로 변경 */
+    align-items: center;
+  }
+
+  .courseCard {
+    width: 90%;
+  }
+}
