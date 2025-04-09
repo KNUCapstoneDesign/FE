@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import styles from '../assets/LoginPage.module.css';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -59,7 +59,7 @@ const LoginPage = () => {
         {error && <p className={styles.error}>{error}</p>}
 
         <div>
-          <a href="/signup">회원가입</a>
+          <Link to='/signup'>회원가입</Link>
         </div>
       </div>
     </form>
