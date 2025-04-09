@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import styles from '../assets/SignupPage.module.css';
-import axios, { AxiosError } from 'axios'
-
+import axios from 'axios';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -33,20 +31,14 @@ const SignupPage = () => {
     }
     // 서버로 회원가입 요청
     try {
-      const response = await axios.post('http://localhost:5001/api/auth/signup', {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-      });
-
-      setSuccessMessage(response.data.message || '회원가입이 완료되었습니다.');
+      const response = await axios.post('http://localhost:5001/api/signup', formData);
+      setSuccessMessage(response.data.message);
       setError('');
-    } catch (err: unknown) {
-      const axiosError = err as AxiosError<{message: string}>;
-      setError(axiosError.response?.data?.message || '회원가입에 실패했습니다.');
+    } catch (err) {
+      setError('회원가입에 실패했습니다.');
       setSuccessMessage('');
     }
+
   };
 
   return (
@@ -54,13 +46,13 @@ const SignupPage = () => {
       <h2>회원가입</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name">이름</label>
+          <label htmlFor="username">사용자 이름</label>
           <input
             className={styles.inputField}
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="username"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
             required
           />
@@ -73,18 +65,6 @@ const SignupPage = () => {
             id="email"
             name="email"
             value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="phone">전화번호</label>
-          <input
-            className={styles.inputField}
-            type="text"
-            id="phone"
-            name="phone"
-            value={formData.phone}
             onChange={handleChange}
             required
           />
@@ -114,10 +94,11 @@ const SignupPage = () => {
           />
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+        {successMessage && <p style={{color: 'green'}}>{successMessage}</p>}
         <button type="submit">가입하기</button>
       </form>
     </div>
   );
 };
+
 export default SignupPage;

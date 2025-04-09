@@ -1,72 +1,19 @@
-/* src/assets/SignupPage.module.css */
-
 .signupContainer {
-    max-width: 450px;
-    margin: 100px auto;
-    padding: 35px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.signupContainer h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 26px;
-    color: #333;
-}
-
-form div {
-    margin-bottom: 18px;
-}
-
-label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #555;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
 }
 
 .inputField {
+    margin: 10px 0;
+    padding: 8px;
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.3s;
 }
 
-.inputField:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
+.submitButton {
+    background-color: #4CAF50;
     color: white;
-    font-size: 16px;
+    padding: 10px;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-p {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: center;
-}
-
-p[style*="color: red"] {
-    color: red;
-}
-
-p[style*="color: green"] {
-    color: green;
+    border-radius: 4px;
 }
