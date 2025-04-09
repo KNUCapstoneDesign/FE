@@ -1,0 +1,77 @@
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fefefe;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Pretendard', sans-serif;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.passwordSection {
+    margin-top: 30px;
+}
+
+.passwordSection h3 {
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.passwordSection input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.passwordSection button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.passwordSection button:hover {
+    background-color: #357bd8;
+}
+
+.logoutBtn {
+    margin-top: 30px;
+    width: 100%;
+    padding: 10px;
+    background-color: #e94e4e;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logoutBtn:hover {
+    background-color: #cc3c3c;
+}
+
+p.message {
+    margin-top: 10px;
+    font-weight: bold;
+}

@@ -6,6 +6,7 @@ import Footer from '../components/Footer'
 import LoginPage from '../pages/LoginPage'
 import '../assets/Routes.css'
 import SignupPage from '../pages/SignupPage.tsx'
+import MyPage from '../pages/MyPage.tsx'
 
 const Router = () => {
   React.useEffect(() => {
@@ -20,6 +21,7 @@ const Router = () => {
           <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
         <Footer />
       </div>

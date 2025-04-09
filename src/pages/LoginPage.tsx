@@ -1,38 +1,69 @@
 // src/pages/LoginPage.tsx
-import React, { useState } from 'react'
-import { useAuthStore } from '../store/useAuthStore'
-import styles from '../assets/LoginPage.module.css'
+import React, { useState } from 'react';
+import { useAuthStore } from '../store/useAuthStore';
+import styles from '../assets/LoginPage.module.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const login = useAuthStore((state) => state.login)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // JWT 토큰을 받아서 로그인 상태 설정
-    login('dummy-jwt-token') // 이 부분은 실제 API 호출로 대체해야 합니다.
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5001/api/auth/login', {
+        email,
+        password,
+      });
+
+      const { name, token, phone } = response.data; // 서버에서 받은 사용자 정보
+
+      // 상태 저장
+      login({ name, token, email, phone });
+
+      // 로그인 성공 후 마이페이지로 이동
+      navigate('/mypage');
+    } catch (err) {
+      console.error('로그인 실패:', err);
+      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className={styles.loginContainer}>
+        <h1>Login</h1>
+
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
+
+        <button type="submit">Login</button>
+
+        {error && <p className={styles.error}>{error}</p>}
+
         <div>
-          <h1>Login</h1>
-        </div>
-        <div>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-          <button onClick={function() {
-          }}>Login
-          </button>
-        </div>
-        <div>
-          <a href="/signup">회원가입
-          </a>
+          <a href="/signup">회원가입</a>
         </div>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;
