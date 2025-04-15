@@ -16,7 +16,8 @@ const TestPage: React.FC = () => {
 
 
   useEffect(() => {
-    const API_KEY = import.meta.env.VITE_API_KEY1 // .env에서 API 키 로드
+    const API_KEY = 'QDd7o7V2yOy4lsip8k6fhzY840oSWvCq6B0BI4laxYy3K%2BkspyAQG1PyClXzCnqYyRqRblnuHKlDENQcyGzhgw%3D%3D'
+// .env에서 API 키 로드
 
     const fetchTourData = async () => {
       try {
