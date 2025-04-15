@@ -21,7 +21,7 @@ const LoginPage = () => {
       });
 
       const { name, token, phone } = response.data; // 서버에서 받은 사용자 정보
-
+      console.log("로그인 성공", response.data.token);
       // 상태 저장
       login({ name, token, email, phone });
 

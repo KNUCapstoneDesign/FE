@@ -1,7 +1,7 @@
 import styles from '../assets/MainPage.module.css'
 import Hero from '../components/Hero'
 import mainpic from '/mainpic.jpg'
-import HotCourses from '../components/HotCourses'
+import HotCourses from '../components/TestPage.tsx'
 
 const MainPage = () => {
 
