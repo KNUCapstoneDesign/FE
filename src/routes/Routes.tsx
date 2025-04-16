@@ -1,4 +1,5 @@
 import React from 'react'
+import {GoogleOAuthProvider} from '@react-oauth/google'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainPage from '../pages/MainPage'
 import Nav from '../components/Nav'
@@ -15,6 +16,7 @@ const Router = () => {
   }, [])
 
   return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID!}>
     <BrowserRouter>
       <div className="pages-container">
         <Nav />
@@ -28,6 +30,7 @@ const Router = () => {
         <Footer />
       </div>
     </BrowserRouter>
+    </GoogleOAuthProvider>
   )
 }
 

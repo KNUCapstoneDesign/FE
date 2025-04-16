@@ -1,11 +1,20 @@
 // src/components/Nav.tsx
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styles from '../assets/Nav.module.css'
 import logo from '/favicon.jpeg'
-
+import { useAuthStore } from '../store/useAuthStore.ts'
 const Nav = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0 })
+  }
+
+  const navigate = useNavigate()
+  const { email, logout } = useAuthStore()
+  const isLoggedIn = !!email
+
+  const handleLogout = () => {
+    logout()
+    navigate('/') // 로그아웃 후 홈으로 이동
   }
 
   return (
@@ -33,21 +42,34 @@ const Nav = () => {
             나의 여행
           </Link>
         </li>
-        <li className={styles.navItem}>
-          <Link to="/mypage" className={styles.navLink} onClick={scrollToTop}>
-            마이페이지
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link to="/login" className={styles.navLinkLogin} onClick={scrollToTop}>
-            로그인
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link to="/signup" className={styles.navLinkLogin} onClick={scrollToTop}>
-            회원가입
-          </Link>
-        </li>
+
+        {isLoggedIn ? (
+          <>
+            <li className={styles.navItem}>
+              <Link to="/mypage" className={styles.navLink} onClick={scrollToTop}>
+                마이페이지
+              </Link>
+            </li>
+            <li className={styles.navItem}>
+              <button className={styles.navLinkLogin} onClick={handleLogout}>
+                로그아웃
+              </button>
+            </li>
+          </>
+        ) : (
+          <>
+            <li className={styles.navItem}>
+              <Link to="/login" className={styles.navLinkLogin} onClick={scrollToTop}>
+                로그인
+              </Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link to="/signup" className={styles.navLinkLogin} onClick={scrollToTop}>
+                회원가입
+              </Link>
+            </li>
+          </>
+        )}
       </ul>
     </nav>
   )
