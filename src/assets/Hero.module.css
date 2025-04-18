@@ -23,25 +23,32 @@
 .searchInput {
   padding: 10px;
   width: 500px;
+  height: 44px;
+  line-height: 24px;
   border: none;
   border-radius: 5px;
   font-size: 16px;
   outline: none;
+  box-sizing: border-box;
 }
 
-.searchBtn {
-  background-color: #000;
+button.searchBtn {
+  background-color: #000 !important;
+  width: 100px !important;
   color: #fff;
   padding: 10px 20px;
+  height: 44px;
+  line-height: 24px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.2s;
+  box-sizing: border-box;
 }
 
-.searcBtn:hover {
-  background-color: #333;
+button.searchBtn:hover {
+  background-color: #2563eb !important;
 }
 
 @media screen and (max-width: 699px) {
@@ -56,11 +63,16 @@
 
   .searchInput {
     width: 250px;
+    height: 36px;
+    padding: 8px;
     font-size: 14px;
+    line-height: 20px;
   }
 
-  .searchBtn {
+  button.searchBtn {
     padding: 8px 15px;
+    height: 36px;
     font-size: 14px;
+    line-height: 20px;
   }
 }
