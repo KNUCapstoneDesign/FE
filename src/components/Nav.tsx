@@ -9,8 +9,9 @@ const Nav = () => {
   }
 
   const navigate = useNavigate()
-  const { email, logout } = useAuthStore()
-  const isLoggedIn = !!email
+  const { isAuthenticated, logout, hydrated } = useAuthStore()
+
+  if (!hydrated) return null
 
   const handleLogout = () => {
     logout()
@@ -43,7 +44,7 @@ const Nav = () => {
           </Link>
         </li>
 
-        {isLoggedIn ? (
+        {isAuthenticated ? (
           <>
             <li className={styles.navItem}>
               <Link to="/mypage" className={styles.navLink} onClick={scrollToTop}>

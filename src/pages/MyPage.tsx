@@ -5,11 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../assets/MyPage.module.css';
 
 const MyPage = () => {
-  const { name, email, phone, token, logout } = useAuthStore();
+  const { name, email, phone, token, logout, hydrated } = useAuthStore();
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+
+  if (!hydrated) return <div>로딩 중...</div>
+  if (!token) {
+    navigate('/login');
+    return null;
+  }
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmNewPassword) {
