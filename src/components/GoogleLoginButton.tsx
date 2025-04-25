@@ -29,10 +29,11 @@ const GoogleLoginButton = () => {
       localStorage.setItem('token', token);
 
       if (isExistingMember) {
-        navigate('/home');
+        navigate('/');
       } else {
         navigate('/signup');
       }
+
     } catch (err) {
       console.error('구글 로그인 처리 실패:', err);
     }

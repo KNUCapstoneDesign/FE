@@ -1,7 +1,7 @@
 // src/components/Nav.tsx
 import { Link, useNavigate } from 'react-router-dom'
 import styles from '../assets/Nav.module.css'
-import logo from '/favicon.jpeg'
+import logo from '/logo.png'
 import { useAuthStore } from '../store/useAuthStore.ts'
 const Nav = () => {
   const scrollToTop = () => {
@@ -10,7 +10,7 @@ const Nav = () => {
 
   const navigate = useNavigate()
   const { isAuthenticated, logout, hydrated } = useAuthStore()
-
+  
   if (!hydrated) return null
 
   const handleLogout = () => {
@@ -23,7 +23,6 @@ const Nav = () => {
       <div className="logocontainer">
         <Link to="/" className={styles.logoLink} onClick={scrollToTop}>
           <img src={logo} alt="메인페이지로 이동" className={styles.logo} />
-          <div className={styles.navTitle}>PLANIT</div>
         </Link>
       </div>
 
@@ -52,20 +51,20 @@ const Nav = () => {
               </Link>
             </li>
             <li className={styles.navItem}>
-              <button className={styles.navLinkLogin} onClick={handleLogout}>
+              <div style={{height:'32.6px', paddingTop:'14px'}} className={styles.navLink} onClick={handleLogout}>
                 로그아웃
-              </button>
+              </div>
             </li>
           </>
         ) : (
           <>
             <li className={styles.navItem}>
-              <Link to="/login" className={styles.navLinkLogin} onClick={scrollToTop}>
+              <Link to="/login" className={styles.navLink} onClick={scrollToTop}>
                 로그인
               </Link>
             </li>
             <li className={styles.navItem}>
-              <Link to="/signup" className={styles.navLinkLogin} onClick={scrollToTop}>
+              <Link to="/signup" className={styles.navLink} onClick={scrollToTop}>
                 회원가입
               </Link>
             </li>

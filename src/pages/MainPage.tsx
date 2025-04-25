@@ -27,7 +27,7 @@ const MainPage = () => {
         localStorage.setItem('token', token);
 
         if (isExistingMember) {
-          navigate('/home');
+          navigate('/');
         } else {
           navigate('/signup');
         }
