@@ -174,6 +174,11 @@ const DetailPage: React.FC = () => {
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
 
+  const raw = data.homepage || ''
+  const m = raw.match(/href="([^"]+)"[^>]*>([^<]+)<\/a>/)
+  const homepageUrl = m ? m[1] : raw
+  const homepageText = m ? m[2] : raw
+
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.title}>{data.title}</h1>
@@ -225,12 +230,12 @@ const DetailPage: React.FC = () => {
             <span className={styles.label}>연락처</span>
             <span className={styles.value}>{data.tel || '정보 없음'}</span>
           </p>
-          {data.homepage && (
+          {homepageUrl && (
             <p>
               <span className={styles.label}>홈페이지</span>
               <span className={styles.value}>
-                <a href={data.homepage} target="_blank" rel="noopener noreferrer">
-                  바로가기
+                <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
+                  {homepageText}
                 </a>
               </span>
             </p>
