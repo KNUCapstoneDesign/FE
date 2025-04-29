@@ -188,7 +188,6 @@ const SearchTest: React.FC = () => {
           ))}
         </div>
       </header>
-
       <div className={styles.resultsContainer}>
         {loading ? (
           <div className={styles.loadingIndicator}>
@@ -203,7 +202,11 @@ const SearchTest: React.FC = () => {
             <p className={styles.resultsCount}>{filtered.length}개의 검색결과</p>
             <div className={styles.resultsGrid}>
               {filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((item) => (
-                <div key={item.contentid} className={styles.resultCard}>
+                <div
+                  key={item.contentid}
+                  className={styles.resultCard}
+                  onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)} // 클릭 시 DetailPage로 이동
+                  style={{ cursor: 'pointer' }}>
                   <div className={styles.resultImageWrapper}>
                     <img src={item.firstimage || '/placeholder.jpg'} alt={item.title} className={styles.resultImage} />
                     <span className={styles.categoryLabel}>

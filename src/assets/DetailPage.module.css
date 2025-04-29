@@ -1,0 +1,258 @@
+/* src/assets/DetailPage.module.css */
+
+/* 공통 */
+.wrapper {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f9fafb;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #222;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.titleaddress {
+  margin-left: 0.5rem;
+}
+/* 카테고리 레이블 */
+.typeLabel {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  background-color: rgba(59, 130, 246, 0.9);
+  color: #fff;
+  padding: 4px 12px;
+  font-size: 0.9rem;
+  border-radius: 9999px;
+}
+
+/* 슬라이더 영역 */
+.heroImageWrapper {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.heroImage {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* 기본 정보 & 위치 */
+.infoSection {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.infoBox,
+.mapBox {
+  flex: 1;
+  min-width: 300px;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.infoBox h2,
+.mapBox h2 {
+  text-align: left;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e2e2e2;
+  padding-bottom: 0.5rem;
+}
+
+/* 레이블/값 2컬럼 */
+.infoBox p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.label {
+  text-align: left;
+  width: 100px;
+  font-weight: bold;
+  color: #333;
+}
+
+.value {
+  flex: 1;
+  color: #555;
+  text-align: left;
+}
+
+/* 위치 정보 placeholder */
+.mapPlaceholder {
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* 상세 설명 */
+.detailDescription {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.detailDescription h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+  text-align: left;
+}
+.detailDescription p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+  text-align: left;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .heroImage {
+    height: auto;
+    max-height: 300px;
+  }
+  .infoSection {
+    flex-direction: column;
+  }
+  .infoBox,
+  .mapBox {
+    width: 100%;
+  }
+}
+
+/* 모달 오버레이 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 모달 카드 */
+.modalCard {
+  position: relative;
+  background-color: transparent;
+  padding: 0;
+  max-width: 90%;
+  width: auto;
+  box-shadow: none;
+  animation: fadeIn 0.2s ease;
+  overflow: visible;
+}
+
+/* 확대 이미지 */
+.modalImage {
+  width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 닫기 */
+.modalClose {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* 이전/다음 */
+.modalNavPrev,
+.modalNavNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: #fff;
+  border: none;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.modalNavPrev {
+  left: -120px;
+}
+.modalNavNext {
+  right: -120px;
+}
+
+/* 썸네일 */
+.thumbnailContainer {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 0.5rem;
+}
+
+.thumbnail {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.activeThumbnail {
+  opacity: 1;
+  border: 2px solid #0077cc;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

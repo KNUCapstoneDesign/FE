@@ -10,6 +10,7 @@ import SignupPage from '../pages/SignupPage.tsx'
 import MyPage from '../pages/MyPage.tsx'
 import Test from '../pages/test.tsx'
 import SearchTest from '../pages/SearchTest.tsx'
+import DetailPage from '../pages/DetailPage.tsx'
 
 const Router = () => {
   React.useEffect(() => {
@@ -28,6 +29,7 @@ const Router = () => {
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/test" element={<Test />} />
             <Route path="/searchtest" element={<SearchTest />} />
+            <Route path="/detail/:id/:typeid" element={<DetailPage />} />
           </Routes>
           <Footer />
         </div>
