@@ -1,3 +1,4 @@
+// src/components/Hero.tsx
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Hero.module.css'
@@ -12,11 +13,13 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchTerm.trim()) {
-      navigate(`/searchtest?q=${encodeURIComponent(searchTerm)}`)
-    } else {
-      navigate('/searchtest')
-    }
+
+    // 검색어에 따라 경로 분기
+    const path = searchTerm.trim() ? `/searchtest?q=${encodeURIComponent(searchTerm)}` : '/searchtest'
+
+    navigate(path)
+    // → 페이지 이동 후, 스크롤을 맨 위로!
+    window.scrollTo({ top: 0 })
   }
 
   return (

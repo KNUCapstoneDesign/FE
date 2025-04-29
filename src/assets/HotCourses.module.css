@@ -1,8 +1,12 @@
 .hotCourses {
-  padding: 50px 30px;
+  padding: 40px 30px;
   background-color: white;
 }
-
+.courseh1 {
+  text-align: left;
+  margin-left: 10px;
+  margin-top: 10px;
+}
 .title {
   font-size: 24px;
   margin-bottom: 30px;
