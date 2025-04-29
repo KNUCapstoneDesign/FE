@@ -142,21 +142,67 @@ const DetailPage: React.FC = () => {
         const arr = Array.isArray(rawImages) ? rawImages : [rawImages]
         const imageUrls = (arr as ImageItem[]).map((i) => i.originimgurl).filter(Boolean)
 
-        const introItem = introJson.response?.body?.items?.item
+        const rawIntro = introJson.response?.body?.items?.item
+        const introItem = Array.isArray(rawIntro) ? rawIntro[0] : rawIntro
+        console.log('introItem:', introItem)
+        console.log('introItem keys:', Object.keys(introItem || {}))
+        console.log('introJson:', JSON.stringify(introJson, null, 2))
 
         if (!item) {
           setError('상세 정보를 불러올 수 없습니다.')
           return
         }
 
+        // Extract tel, usetime, usefee based on contentTypeId
+        const contentTypeId = Number(typeid!)
+        let tel = ''
+        let usetime = ''
+        let usefee = ''
+        switch (contentTypeId) {
+          case 12: // 관광지
+            tel = introItem?.infocenter
+            usetime = introItem?.usetime
+            usefee = introItem?.usefee
+            break
+          case 14: // 문화시설
+            tel = introItem?.infocenterculture
+            usetime = introItem?.usetimeculture
+            usefee = introItem?.usefee
+            break
+          case 15: // 행사/공연/축제
+            tel = introItem?.sponsor1tel
+            usetime = introItem?.playtime
+            usefee = introItem?.usetimefestival
+            break
+          case 25: // 여행코스
+            tel = introItem?.infocentertourcourse
+            usetime = introItem?.taketime
+            break
+          case 28: // 레포츠
+            tel = introItem?.infocenterleports
+            usetime = introItem?.usetimeleports
+            break
+          case 32: // 숙박
+            tel = introItem?.infocenterlodging
+            usetime = `체크인: ${introItem?.checkintime || ''}, 체크아웃: ${introItem?.checkouttime || ''}`
+            break
+          case 39: // 음식점
+            tel = introItem?.infocenterfood
+            usetime = introItem?.opentimefood
+            break
+          default:
+            tel = ''
+            usetime = ''
+            usefee = ''
+        }
         setData({
           title: item.title,
-          contentTypeId: Number(typeid!),
+          contentTypeId,
           overview: item.overview,
           addr1: item.addr1,
-          tel: introItem?.tel,
-          usetime: introItem?.usetime,
-          usefee: introItem?.usefee,
+          tel,
+          usetime,
+          usefee,
           homepage: item.homepage,
           images: imageUrls.length ? imageUrls : item.firstimage ? [item.firstimage] : [],
         })
