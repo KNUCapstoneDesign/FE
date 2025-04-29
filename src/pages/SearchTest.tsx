@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styles from '../assets/SearchTest.module.css'
+import noimage from '/noimage.jpg'
 
 // API 응답 아이템 타입
 interface TourItem {
@@ -39,7 +40,7 @@ const SearchTest: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('') // 입력값
   const [submittedTerm, setSubmittedTerm] = useState<string>('') // 실제 검색에 쓸 값
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const pageSize = 8
+  const pageSize = 10
   const [loading, setLoading] = useState<boolean>(false)
   const [results, setResults] = useState<TourItem[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -208,7 +209,7 @@ const SearchTest: React.FC = () => {
                   onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)} // 클릭 시 DetailPage로 이동
                   style={{ cursor: 'pointer' }}>
                   <div className={styles.resultImageWrapper}>
-                    <img src={item.firstimage || '/placeholder.jpg'} alt={item.title} className={styles.resultImage} />
+                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
                     <span className={styles.categoryLabel}>
                       {item.contenttypeid === 12
                         ? '관광지'

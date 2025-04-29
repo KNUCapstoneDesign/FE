@@ -12,7 +12,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 15px;
 }
 
 /* 검색 폼 */
@@ -94,35 +94,39 @@
 
 /* 검색 결과 컨텐츠 영역 */
 .resultsContainer {
-  max-width: 1280px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 24px 16px;
 }
-
-/* 결과 그리드 */
+.resultsCount {
+  margin-top: -5px;
+  margin-bottom: 15px;
+}
+/* 결과 그리드: 항상 5열 */
 .resultsGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
 }
 
+/* 필요 없다면 기존 미디어쿼리들은 지워도 됩니다 */
 @media (min-width: 640px) {
+  /* ↓ 이 줄부터 제거 */
   .resultsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
 @media (min-width: 1024px) {
   .resultsGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
 @media (min-width: 1280px) {
   .resultsGrid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
+/* ↑ 제거 끝 */
 
 /* 개별 카드 */
 .resultCard {
