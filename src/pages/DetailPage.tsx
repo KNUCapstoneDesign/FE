@@ -1,5 +1,4 @@
-// src/pages/DetailPage.tsx
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import styles from '../assets/DetailPage.module.css'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -18,6 +17,8 @@ interface DetailItem {
   usefee?: string
   homepage?: string
   images: string[]
+  mapx?: number
+  mapy?: number
 }
 
 interface ImageItem {
@@ -53,7 +54,9 @@ const DetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const API_KEY = import.meta.env.VITE_API_KEY1!
-
+  const NAVER_MAP_CLIENT_ID = import.meta.env.VITE_NAVER_MAP_CLIENT_ID!
+  const mapRef = useRef<HTMLDivElement>(null)
+  const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -86,6 +89,40 @@ const DetailPage: React.FC = () => {
     },
     [closeModal, handlePrev, handleNext, isModalOpen],
   )
+
+  // Naver Map 스크립트 삽입
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`
+    script.async = true
+    script.onload = () => {
+      setIsMapScriptLoaded(true)
+    }
+    script.onerror = () => {
+      console.error('Failed to load Naver Maps script')
+      setError('지도 스크립트를 불러오지 못했습니다.')
+    }
+    document.head.appendChild(script)
+
+    return () => {
+      document.head.removeChild(script)
+    }
+  }, [NAVER_MAP_CLIENT_ID])
+
+  // 지도 생성
+  useEffect(() => {
+    if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const naver = (window as any).naver
+    if (!naver) return
+
+    const location = new naver.maps.LatLng(data.mapy, data.mapx)
+    const map = new naver.maps.Map(mapRef.current, {
+      center: location,
+      zoom: 14,
+    })
+    new naver.maps.Marker({ position: location, map })
+  }, [isMapScriptLoaded, data])
 
   useEffect(() => {
     if (isModalOpen) window.addEventListener('keydown', handleKeyDown)
@@ -144,49 +181,45 @@ const DetailPage: React.FC = () => {
 
         const rawIntro = introJson.response?.body?.items?.item
         const introItem = Array.isArray(rawIntro) ? rawIntro[0] : rawIntro
-        console.log('introItem:', introItem)
-        console.log('introItem keys:', Object.keys(introItem || {}))
-        console.log('introJson:', JSON.stringify(introJson, null, 2))
 
         if (!item) {
           setError('상세 정보를 불러올 수 없습니다.')
           return
         }
 
-        // Extract tel, usetime, usefee based on contentTypeId
         const contentTypeId = Number(typeid!)
         let tel = ''
         let usetime = ''
         let usefee = ''
         switch (contentTypeId) {
-          case 12: // 관광지
+          case 12:
             tel = introItem?.infocenter
             usetime = introItem?.usetime
             usefee = introItem?.usefee
             break
-          case 14: // 문화시설
+          case 14:
             tel = introItem?.infocenterculture
             usetime = introItem?.usetimeculture
             usefee = introItem?.usefee
             break
-          case 15: // 행사/공연/축제
+          case 15:
             tel = introItem?.sponsor1tel
             usetime = introItem?.playtime
             usefee = introItem?.usetimefestival
             break
-          case 25: // 여행코스
+          case 25:
             tel = introItem?.infocentertourcourse
             usetime = introItem?.taketime
             break
-          case 28: // 레포츠
+          case 28:
             tel = introItem?.infocenterleports
             usetime = introItem?.usetimeleports
             break
-          case 32: // 숙박
+          case 32:
             tel = introItem?.infocenterlodging
             usetime = `체크인: ${introItem?.checkintime || ''}, 체크아웃: ${introItem?.checkouttime || ''}`
             break
-          case 39: // 음식점
+          case 39:
             tel = introItem?.infocenterfood
             usetime = introItem?.opentimefood
             break
@@ -195,6 +228,7 @@ const DetailPage: React.FC = () => {
             usetime = ''
             usefee = ''
         }
+
         setData({
           title: item.title,
           contentTypeId,
@@ -205,9 +239,11 @@ const DetailPage: React.FC = () => {
           usefee,
           homepage: item.homepage,
           images: imageUrls.length ? imageUrls : item.firstimage ? [item.firstimage] : [],
+          mapx: item.mapx,
+          mapy: item.mapy,
         })
       } catch (e) {
-        console.error(e)
+        console.error('데이터 로드 오류:', e)
         setError('데이터를 불러오는 중 오류가 발생했습니다.')
       } finally {
         setLoading(false)
@@ -221,7 +257,13 @@ const DetailPage: React.FC = () => {
   if (!data) return null
 
   const raw = data.homepage || ''
-  const m = raw.match(/href="([^"]+)"[^>]*>([^<]+)<\/a>/)
+  if (typeof raw !== 'string') {
+    console.error('Invalid homepage data:', raw)
+    setError('홈페이지 데이터가 유효하지 않습니다.')
+    return null
+  }
+  const regex = new RegExp('href="([^"]+)"[^>]*>([^<]+)</a>')
+  const m = raw.match(regex)
   const homepageUrl = m ? m[1] : raw
   const homepageText = m ? m[2] : raw
 
@@ -289,7 +331,7 @@ const DetailPage: React.FC = () => {
         </div>
         <div className={styles.mapBox}>
           <h2>위치 정보</h2>
-          <div className={styles.mapPlaceholder}>지도 또는 이미지 삽입</div>
+          <div ref={mapRef} className={styles.mapPlaceholder}></div>
         </div>
       </div>
 
