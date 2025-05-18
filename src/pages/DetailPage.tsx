@@ -60,7 +60,6 @@ const DetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [menuList, setMenuList] = useState<{ menu: string; price: string }[]>([])
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false)
@@ -90,20 +89,6 @@ const DetailPage: React.FC = () => {
     },
     [closeModal, handlePrev, handleNext, isModalOpen],
   )
-
-  useEffect(() => {
-    const fetchMenu = async () => {
-      if (!data || !data.title || data.contentTypeId !== 39) return // 음식점만 시도
-      try {
-        const res = await fetch(`/api/diningcode?name=${encodeURIComponent(data.title)}`)
-        const json = await res.json()
-        if (res.ok) setMenuList(json.menus)
-      } catch (e) {
-        console.error('다이닝코드 메뉴 불러오기 실패', e)
-      }
-    }
-    fetchMenu()
-  }, [data])
 
   // Naver Map 스크립트 삽입
   useEffect(() => {
@@ -349,19 +334,6 @@ const DetailPage: React.FC = () => {
           <div ref={mapRef} className={styles.mapPlaceholder}></div>
         </div>
       </div>
-
-      {menuList.length > 0 && (
-        <div className={styles.detailDescription}>
-          <h2>메뉴 정보 (다이닝코드 기준)</h2>
-          <ul>
-            {menuList.map((item, i) => (
-              <li key={i}>
-                {item.menu} - {item.price}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <div className={styles.detailDescription}>
         <h2>상세 설명</h2>
