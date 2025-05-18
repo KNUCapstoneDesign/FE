@@ -4,7 +4,7 @@
   ],
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "vercel-node@18.0.0"
     }
   }
 }
