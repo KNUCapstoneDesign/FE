@@ -34,9 +34,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 
     const menus: { name: string; price: string }[] = []
-    $('.info-menu-list .tit').each((i, el) => {
-      const name = $(el).text().trim()
-      const price = $(el).next('.price').text().trim()
+    $('.list.Restaurant_MenuList > li').each((i, el) => {
+      const name = $(el).find('.Restaurant_Menu').text().trim()
+      const price = $(el).find('.Restaurant_MenuPrice').text().trim()
       menus.push({ name, price })
     })
 
