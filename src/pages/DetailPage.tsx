@@ -60,6 +60,7 @@ const DetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false)
@@ -89,6 +90,22 @@ const DetailPage: React.FC = () => {
     },
     [closeModal, handlePrev, handleNext, isModalOpen],
   )
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
+
+      try {
+        const res = await fetch(`https://https://capstonedesign-iota.vercel.app//api/diningcode-scrape?name=${encodeURIComponent(data.title)}`)
+        const json = await res.json()
+        if (json.menus) setMenus(json.menus)
+      } catch (err) {
+        console.error('메뉴 크롤링 실패:', err)
+      }
+    }
+
+    fetchMenus()
+  }, [data])
 
   // Naver Map 스크립트 삽입
   useEffect(() => {
@@ -334,6 +351,19 @@ const DetailPage: React.FC = () => {
           <div ref={mapRef} className={styles.mapPlaceholder}></div>
         </div>
       </div>
+
+      {data.contentTypeId === 39 && menus && (
+        <div className={styles.menuSection}>
+          <h2>대표 메뉴</h2>
+          <ul>
+            {menus.map((menu, i) => (
+              <li key={i}>
+                {menu.name} - {menu.price || '가격 정보 없음'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className={styles.detailDescription}>
         <h2>상세 설명</h2>
