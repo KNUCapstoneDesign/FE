@@ -96,16 +96,23 @@ const DetailPage: React.FC = () => {
       if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
 
       try {
-        const res = await fetch(`https://capstonedesign-iota.vercel.app/api/diningcode-scrape?name=${encodeURIComponent(data.title)}`)
-        const json = await res.json()
-        if (json.menus) setMenus(json.menus)
-      } catch (err) {
-        console.error('메뉴 크롤링 실패:', err)
-      }
-    }
+        const res = await fetch(`https://capstonedesign-iota.vercel.app/api/diningcode-scrape?name=${encodeURIComponent(data.title)}`);
+        const text = await res.text(); // JSON이 아닐 수도 있으니 먼저 텍스트로 받기
 
-    fetchMenus()
-  }, [data])
+        try {
+          const json = JSON.parse(text); // JSON 형식인지 시도
+          console.log('menus:', json);
+          setMenus(json.menus);
+        } catch {
+          console.error('⚠️ JSON 파싱 실패. 응답 내용:', text); // 응답 내용을 로그로 확인 가능
+        }
+      } catch (err) {
+        console.error('❌ fetch 실패:', err);
+      }
+    };
+
+    fetchMenus();
+  }, [data]);
 
   // Naver Map 스크립트 삽입
   useEffect(() => {
@@ -345,25 +352,24 @@ const DetailPage: React.FC = () => {
               </span>
             </p>
           )}
+          {data.contentTypeId === 39 && menus && (
+            <div className={styles.menuSection}>
+              <h2>대표 메뉴</h2>
+              <ul>
+                {menus.map((menu, i) => (
+                  <li key={i}>
+                    {menu.name} - {menu.price || '가격 정보 없음'}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <div className={styles.mapBox}>
           <h2>위치 정보</h2>
           <div ref={mapRef} className={styles.mapPlaceholder}></div>
         </div>
       </div>
-
-      {data.contentTypeId === 39 && menus && (
-        <div className={styles.menuSection}>
-          <h2>대표 메뉴</h2>
-          <ul>
-            {menus.map((menu, i) => (
-              <li key={i}>
-                {menu.name} - {menu.price || '가격 정보 없음'}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <div className={styles.detailDescription}>
         <h2>상세 설명</h2>
