@@ -96,7 +96,7 @@ const DetailPage: React.FC = () => {
       if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
 
       try {
-        const res = await fetch(`https://https://capstonedesign-iota.vercel.app//api/diningcode-scrape?name=${encodeURIComponent(data.title)}`)
+        const res = await fetch(`https://capstonedesign-iota.vercel.app/api/diningcode-scrape?name=${encodeURIComponent(data.title)}`)
         const json = await res.json()
         if (json.menus) setMenus(json.menus)
       } catch (err) {
