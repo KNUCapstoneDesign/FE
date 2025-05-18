@@ -147,18 +147,22 @@ const SearchTest: React.FC = () => {
         <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className={styles.pageButton}>
           {'<<'}
         </button>
-        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className={styles.pageButton}>
+        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}
+                className={styles.pageButton}>
           {'<'}
         </button>
         {pages.map((p) => (
-          <button key={p} onClick={() => setCurrentPage(p)} className={`${styles.pageButton} ${p === currentPage ? styles.activePage : ''}`}>
+          <button key={p} onClick={() => setCurrentPage(p)}
+                  className={`${styles.pageButton} ${p === currentPage ? styles.activePage : ''}`}>
             {p}
           </button>
         ))}
-        <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className={styles.pageButton}>
+        <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
+                className={styles.pageButton}>
           {'>'}
         </button>
-        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className={styles.pageButton}>
+        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
+                className={styles.pageButton}>
           {'>>'}
         </button>
       </div>
@@ -169,7 +173,8 @@ const SearchTest: React.FC = () => {
     <div className={styles.appContainer}>
       <header className={styles.appHeader}>
         <form onSubmit={handleSubmit} className={styles.searchBar}>
-          <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)} />
           <button type="submit" className={styles.searchBtn1}>
             검색
           </button>
@@ -209,7 +214,8 @@ const SearchTest: React.FC = () => {
                   onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)} // 클릭 시 DetailPage로 이동
                   style={{ cursor: 'pointer' }}>
                   <div className={styles.resultImageWrapper}>
-                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
+                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage}
+                         style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
                     <span className={styles.categoryLabel}>
                       {item.contenttypeid === 12
                         ? '관광지'

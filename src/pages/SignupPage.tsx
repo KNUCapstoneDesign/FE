@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import styles from '../assets/SignupPage.module.css';
+import { useState } from 'react'
+import styles from '../assets/SignupPage.module.css'
 import axios, { AxiosError } from 'axios'
 
 
@@ -9,27 +9,27 @@ const SignupPage = () => {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: ''
-  });
+    confirmPassword: '',
+  })
 
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   // 이벤트 파라미터의 타입을 명시적으로 지정
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: value
-    });
-  };
+      [name]: value,
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      setError('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-      return;
+      setError('비밀번호와 비밀번호 확인이 일치하지 않습니다.')
+      return
     }
     // 서버로 회원가입 요청
     try {
@@ -38,16 +38,16 @@ const SignupPage = () => {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-      });
+      })
 
-      setSuccessMessage(response.data.message || '회원가입이 완료되었습니다.');
-      setError('');
+      setSuccessMessage(response.data.message || '회원가입이 완료되었습니다.')
+      setError('')
     } catch (err: unknown) {
-      const axiosError = err as AxiosError<{message: string}>;
-      setError(axiosError.response?.data?.message || '회원가입에 실패했습니다.');
-      setSuccessMessage('');
+      const axiosError = err as AxiosError<{ message: string }>
+      setError(axiosError.response?.data?.message || '회원가입에 실패했습니다.')
+      setSuccessMessage('')
     }
-  };
+  }
 
   return (
     <div className={styles.signupContainer}>
@@ -118,6 +118,6 @@ const SignupPage = () => {
         <button type="submit">가입하기</button>
       </form>
     </div>
-  );
-};
-export default SignupPage;
+  )
+}
+export default SignupPage
