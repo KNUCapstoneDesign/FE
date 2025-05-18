@@ -10,7 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const searchUrl = `https://www.diningcode.com/list.dc?query=${encodeURIComponent(name)}`
-    const searchRes = await fetch(searchUrl)
+    const searchRes = await fetch(searchUrl, {
+      headers: {
+        'User-Agent' : 'Mozilla/5.0',
+      },
+    })
     const searchHtml = await searchRes.text()
     const $search = cheerio.load(searchHtml)
 
@@ -20,9 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const shopUrl = `https://www.diningcode.com${firstShopPath}`
-    const shopRes = await fetch(shopUrl)
+    const shopRes = await fetch(shopUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+    })
     const shopHtml = await shopRes.text()
     const $ = cheerio.load(shopHtml)
+
 
     const menus: { name: string; price: string }[] = []
     $('.info-menu-list .tit').each((i, el) => {
