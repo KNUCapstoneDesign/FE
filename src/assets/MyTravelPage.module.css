@@ -1,0 +1,265 @@
+.page {
+  margin: 0 auto;
+  padding: 40px 80px;
+  background-color: #f9fafb;
+  height: auto;
+}
+
+.titleFormRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: #111827;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.addForm {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.addForm input[type='text'],
+.addForm input[type='date'] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.addButton {
+  padding: 8px 12px;
+  background-color: #111827;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.addButton:hover {
+  background-color: #374151;
+}
+
+/* 카드 전체 */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  padding-bottom: 15px;
+  width: 90%;
+  height: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 카드 헤더 */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+/* 제목+수정버튼을 한 줄로 붙이기 위한 flex */
+.titleEditBox {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* 수정버튼과 제목 사이 살짝 여백 */
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.date {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.courseInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.location {
+  margin-top: 3px;
+}
+
+.cardActionRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewButton {
+  padding: 8px 12px;
+  background-color: #111827;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s;
+  font-weight: 600;
+}
+
+.removeButton {
+  padding: 8px 12px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s;
+}
+.removeButton:hover {
+  background-color: #333;
+}
+
+/* 제목 수정용 입력 필드 */
+.editInput {
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  flex: 1;
+  margin-right: 6px;
+}
+
+/* 저장 버튼 */
+.saveButton {
+  padding: 6px 10px;
+  font-size: 13px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.saveButton:hover {
+  background-color: #059669;
+}
+
+/* 수정 버튼 */
+.editButton {
+  margin-left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #4b5563;
+  transition: color 0.2s;
+}
+.editButton:hover {
+  color: #111827;
+}
+
+/* 🔽 페이지네이션 */
+.pagination {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pagination button {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #374151;
+  transition: background-color 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.activePage {
+  background-color: #111827;
+  color: white;
+  font-weight: bold;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.breadcrumbHome {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.15s;
+}
+.breadcrumbHome:hover {
+  color: #111827;
+}
+
+.breadcrumbDivider {
+  margin: 0 2px;
+}
+
+.breadcrumbCurrent {
+  cursor: pointer;
+  color: #6b7280;
+}
+.breadcrumbCurrent:hover {
+  text-decoration: underline;
+  color: #111827;
+}
+
+@media screen and (max-width: 1024px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .cardGrid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

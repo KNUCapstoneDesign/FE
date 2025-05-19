@@ -1,6 +1,6 @@
 .pageWrapper {
   font-family: sans-serif;
-  background: white;
+  background-color: #f9fafb;
   min-height: 100vh;
 }
 
@@ -189,9 +189,20 @@
   background: #f5fbff !important; /* 거의 흰색에 가까운 연파랑 */
   border-color: #90cdf4 !important; /* 밝은 연파랑 */
 }
+.mapArea {
+  display: flex;
+  flex-direction: column;
+  flex: 3;
+  min-width: 300px;
+}
 
 .mapBoxWrapper {
   flex: 3;
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  padding: 24px; /* ✅ 전체 박스의 안쪽 여백 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 .maptitle {
   text-align: left;
@@ -284,12 +295,33 @@
   cursor: pointer;
   width: fit-content;
   transition: background-color 0.2s;
+  display: flex;
+  flex-direction: row;
 }
 
 .detailButton:hover {
   background-color: #1e40af;
 }
 
+.addButton {
+  margin-top: 4px;
+  padding: 8px 12px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  width: fit-content;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addButton:hover {
+  background-color: #1e40af;
+}
 .resulttitle {
   font-size: 20px;
   font-weight: 700;
@@ -332,4 +364,79 @@
 .pageBtn:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* 모달 전체 오버레이 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.23);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 모달 내용 */
+.modalContent {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  padding: 32px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modalSelect {
+  width: 100%;
+  font-size: 16px;
+  padding: 8px 12px;
+  margin: 20px 0;
+  border-radius: 7px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.addBtn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  background: #2563eb; /* 파란색 (tailwind의 blue-600) */
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.addBtn:disabled {
+  background: #93c5fd; /* 연한 파랑 (blue-300) */
+  cursor: default;
+}
+.addBtn:hover:not(:disabled) {
+  background: #1d4ed8; /* 더 진한 파랑 (blue-700) */
+}
+
+.cancelBtn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  background: #ef4444; /* 빨간색 (tailwind의 red-500) */
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.cancelBtn:hover {
+  background: #dc2626; /* 더 진한 빨강 (red-600) */
 }
