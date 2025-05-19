@@ -1,5 +1,5 @@
 // src/pages/MyTravelPage.tsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useMyTravelStore } from '../store/useMyTravelStore'
 import styles from '../assets/MyTravelPage.module.css'
 import { useNavigate } from 'react-router-dom'
@@ -12,7 +12,8 @@ const MyTravelPage: React.FC = () => {
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -21,11 +22,29 @@ const MyTravelPage: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(courses.length / itemsPerPage))
   const paginatedCourses = courses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
+  useEffect(() => {
+    fetch('http://localhost:5001/api/schedules?user_id=40')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch schedules')
+        return res.json()
+      })
+      .then((schedules: Array<{ title: string; start_date: string; end_date: string }>) => {
+        schedules.forEach((schedule) => {
+          addCourse(schedule.title, schedule.start_date, schedule.end_date)
+        })
+      })
+      .catch((error) => {
+        console.error('Error fetching schedules:', error)
+      })
+    // eslint-disable-next-line
+  }, [])
+
   const handleAddCourse = () => {
-    if (!title || !date) return alert('제목과 날짜를 입력해주세요.')
-    addCourse(title, date)
+    if (!title || !startDate || !endDate) return alert('제목과 날짜를 입력해주세요.')
+    addCourse(title, startDate, endDate)
     setTitle('')
-    setDate('')
+    setStartDate('')
+    setEndDate('')
   }
 
   const handleSaveTitle = (id: string) => {
@@ -52,7 +71,8 @@ const MyTravelPage: React.FC = () => {
 
         <div className={styles.addForm}>
           <input type="text" placeholder="일정 제목" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           <button className={styles.addButton} onClick={handleAddCourse}>
             일정 추가
           </button>
@@ -101,7 +121,7 @@ const MyTravelPage: React.FC = () => {
                   </button>
                 </div>
               )}
-              <span className={styles.date}>{course.date}</span>
+              <span className={styles.date}>{course.startDate} ~ {course.endDate}</span>
             </div>
             <div className={styles.courseInfo}>
               <p className={styles.usetime}>

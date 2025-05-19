@@ -16,15 +16,17 @@ export interface Place {
 }
 
 export interface TravelCourse {
-  id: string // '제목-날짜' 조합으로 구성
+  id: string // '제목-시작일' 조합으로 구성
   title: string
-  date: string
+  startDate: string
+  endDate: string
   items: Place[]
+  created?: string
 }
 
 interface MyTravelState {
   courses: TravelCourse[]
-  addCourse: (title: string, date: string) => void
+  addCourse: (title: string, startDate: string, endDate: string) => void
   addPlaceToCourse: (courseId: string, place: Place) => void
   removePlaceFromCourse: (courseId: string, contentid: number) => void
   removeCourse: (courseId: string) => void
@@ -37,15 +39,16 @@ export const useMyTravelStore = create<MyTravelState>()(
       courses: [],
 
       // 1. 일정(코스) 추가
-      addCourse: (title, date) => {
-        const id = `${title}-${date}`
+      addCourse: (title, startDate, endDate) => {
+        const id = `${title}-${startDate}`
         const exists = get().courses.some((c) => c.id === id)
-        if (exists) return // 중복 방지
+        if (exists) return
 
         const newCourse: TravelCourse = {
           id,
           title,
-          date,
+          startDate,
+          endDate,
           items: [],
         }
         set((state) => ({ courses: [...state.courses, newCourse] }))
