@@ -12,7 +12,8 @@ import Test from '../pages/test.tsx'
 import SearchTest from '../pages/SearchTest.tsx'
 import DetailPage from '../pages/DetailPage.tsx'
 import AiSearchPage from '../pages/AiSearchPage.tsx'
-
+import MyTravelPage from '../pages/MyTravelPage.tsx'
+import MyTravelDetailPage from '../pages/MyTravelDetailPage.tsx'
 const Router = () => {
   React.useEffect(() => {
     console.log('Routes loaded')
@@ -32,6 +33,8 @@ const Router = () => {
             <Route path="/searchtest" element={<SearchTest />} />
             <Route path="/detail/:id/:typeid" element={<DetailPage />} />
             <Route path="/AiSearch" element={<AiSearchPage />} />
+            <Route path="/mytravel" element={<MyTravelPage />} />
+            <Route path="/mytravel/:id" element={<MyTravelDetailPage />} />
           </Routes>
           <Footer />
         </div>

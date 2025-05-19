@@ -1,0 +1,100 @@
+.page {
+  width: 70%;
+  margin: 0 auto;
+  padding: 40px 80px;
+  background-color: #ffffff;
+  height: auto;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.mainImage {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.infoContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.basicInfo {
+  flex: 1;
+  font-size: 16px;
+  min-width: 260px;
+}
+
+.mapBox {
+  flex: 1;
+  min-width: 260px;
+}
+
+.mapPlaceholder {
+  width: 100%;
+  height: 200px;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  border-radius: 8px;
+}
+
+.detailDescription {
+  margin-bottom: 24px;
+}
+
+.placeList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.placeCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.placeCard:hover {
+  background-color: #f3f4f6;
+}
+
+.placeCard h4 {
+  margin-bottom: 8px;
+}
+
+.placeImage {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #374151;
+  gap: 4px;
+}

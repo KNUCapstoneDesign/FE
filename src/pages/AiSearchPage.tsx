@@ -6,6 +6,8 @@ import { analyzeImageWithVisionAPI } from '../utils/visionApi'
 import { translateToKoreanWithGoogle } from '../utils/translate'
 import { searchTour } from '../utils/searchTour'
 import { useAiSearchStore } from '../store/AiSearchStore'
+import { Place } from '../store/useMyTravelStore'
+import AddPlaceModal from '../components/AddPlaceModal'
 
 const NAVER_SCRIPT_ID = 'naver-map-script'
 
@@ -21,17 +23,16 @@ const AiSearchPage: React.FC = () => {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const [naverReady, setNaverReady] = useState(false)
 
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+
   const itemsPerPage = 5
   const PAGE_BLOCK = 10
   const { tab, imageUrl, labels, selectedLabel, results, setTab, setImageUrl, setLabels, setSelectedLabel, setResults, reset } = useAiSearchStore()
 
-  // 페이지 진입(마운트) 시 무조건 상태 초기화!
   useEffect(() => {
     reset()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [reset])
 
-  // 네이버 스크립트 로드
   useEffect(() => {
     if (window.naver?.maps) {
       setNaverReady(true)
@@ -54,33 +55,19 @@ const AiSearchPage: React.FC = () => {
     }
   }, [])
 
-  // 위치 선택 시 지도 초기화/업데이트
   useEffect(() => {
     if (!naverReady || !selectedLocation || !mapRef.current) return
-
     const { mapx, mapy } = selectedLocation
-    const container = mapRef.current
     const position = new window.naver.maps.LatLng(mapy, mapx)
-
     if (!mapInstance.current) {
-      mapInstance.current = new window.naver.maps.Map(container, {
-        center: position,
-        zoom: 14,
-      })
+      mapInstance.current = new window.naver.maps.Map(mapRef.current, { center: position, zoom: 14 })
     } else {
       mapInstance.current.setCenter(position)
     }
-
-    if (markerInstance.current) {
-      markerInstance.current.setMap(null)
-    }
-    markerInstance.current = new window.naver.maps.Marker({
-      position,
-      map: mapInstance.current,
-    })
+    if (markerInstance.current) markerInstance.current.setMap(null)
+    markerInstance.current = new window.naver.maps.Marker({ position, map: mapInstance.current })
   }, [selectedLocation, naverReady])
 
-  // 이미지 업로드
   const handleImageUpload = async (file: File) => {
     const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
@@ -101,7 +88,6 @@ const AiSearchPage: React.FC = () => {
     }
   }
 
-  // 라벨 클릭 → API 검색
   const handleLabelClick = async (label: string) => {
     setSelectedLabel(label)
     try {
@@ -114,7 +100,6 @@ const AiSearchPage: React.FC = () => {
     }
   }
 
-  // 탭 변경
   const handleTabChange = (newTab: 'restaurant' | 'tour') => {
     setTab(newTab)
     setImageUrl(null)
@@ -124,58 +109,10 @@ const AiSearchPage: React.FC = () => {
     setCurrentPage(1)
     setSelectedLocation(null)
     setSelectedCardId(null)
-
-    if (markerInstance.current) {
-      markerInstance.current.setMap(null)
-      markerInstance.current = null
-    }
-    if (mapInstance.current) {
-      mapInstance.current = null
-    }
+    markerInstance.current?.setMap(null)
+    mapInstance.current = null
   }
 
-  // 지도 이펙트
-  useEffect(() => {
-    if (!naverReady || !mapRef.current) return
-
-    if (!selectedLocation) {
-      if (markerInstance.current) {
-        markerInstance.current.setMap(null)
-        markerInstance.current = null
-      }
-      if (mapInstance.current) {
-        const maybeMap = mapInstance.current as { destroy?: () => void }
-        if (typeof maybeMap.destroy === 'function') {
-          maybeMap.destroy()
-        }
-        mapInstance.current = null
-      }
-      return
-    }
-
-    const { mapx, mapy } = selectedLocation
-    const container = mapRef.current
-    const position = new window.naver.maps.LatLng(mapy, mapx)
-
-    if (!mapInstance.current) {
-      mapInstance.current = new window.naver.maps.Map(container, {
-        center: position,
-        zoom: 14,
-      })
-    } else {
-      mapInstance.current.setCenter(position)
-    }
-
-    if (markerInstance.current) {
-      markerInstance.current.setMap(null)
-    }
-    markerInstance.current = new window.naver.maps.Marker({
-      position,
-      map: mapInstance.current,
-    })
-  }, [selectedLocation, naverReady])
-
-  // 드래그 & 파일
   const triggerFileInput = () => inputRef.current?.click()
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -212,7 +149,6 @@ const AiSearchPage: React.FC = () => {
         <p className={styles.subtitle}>음식이나 관광지 사진을 업로드하여 관련 정보를 찾아보세요!</p>
         <p className={styles.subtitle2}>※ AI가 이미지를 판별하기 때문에 정확하지 않을 수 있습니다.</p>
 
-        {/* 탭 버튼 */}
         <div className={styles.tabButtons}>
           <button className={`${styles.tabButton} ${tab === 'restaurant' ? styles.active : ''}`} onClick={() => handleTabChange('restaurant')}>
             음식점
@@ -222,7 +158,6 @@ const AiSearchPage: React.FC = () => {
           </button>
         </div>
 
-        {/* 이미지 업로드 영역 */}
         {!imageUrl && (
           <div className={`${styles.uploadBox} ${isDragging ? styles.dragging : ''}`} onClick={triggerFileInput} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
             <div className={styles.uploadText}>이미지 업로드 또는 여기에 드래그하세요</div>
@@ -231,7 +166,6 @@ const AiSearchPage: React.FC = () => {
         )}
         {imageUrl && <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />}
 
-        {/* 분석 결과 라벨 */}
         {labels.length > 0 && (
           <div className={styles.labels}>
             <h3 className={styles.labelh3}>🔍 분석 결과</h3>
@@ -246,7 +180,6 @@ const AiSearchPage: React.FC = () => {
           </div>
         )}
 
-        {/* 검색 결과 및 지도 */}
         {selectedLabel && (
           <div className={styles.resultArea}>
             <div className={styles.resultList}>
@@ -268,25 +201,43 @@ const AiSearchPage: React.FC = () => {
                       <div className={styles.resulttitle}>{item.title}</div>
                       <div className={styles.resultaddr}>{item.addr1 || '주소 정보 없음'}</div>
                     </div>
-                    <button
-                      className={styles.detailButton}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(`/detail/${item.contentid}/${item.contenttypeid}`, '_blank')
-                      }}>
-                      자세히 보기
-                    </button>
+                    <div>
+                      <button
+                        className={styles.detailButton}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          window.open(`/detail/${item.contentid}/${item.contenttypeid}`, '_blank')
+                        }}>
+                        자세히 보기
+                      </button>
+                      <button
+                        className={styles.addButton}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedPlace({
+                            contentid: item.contentid,
+                            contenttypeid: item.contenttypeid,
+                            title: item.title,
+                            firstimage: item.firstimage,
+                            addr1: item.addr1,
+                            mapx: item.mapx,
+                            mapy: item.mapy,
+                            duration: tab === 'tour' ? '소요시간 추가 예정' : '소요시간 추가 예정',
+                          })
+                        }}>
+                        일정 추가
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
 
-              {/* 페이지네이션 */}
               {results.length > itemsPerPage && (
                 <div className={styles.pagination}>
-                  <button className={styles.pageBtn} onClick={handleFirstPage} disabled={currentPage === 1} aria-label="첫 페이지">
+                  <button className={styles.pageBtn} onClick={handleFirstPage} disabled={currentPage === 1}>
                     &laquo;
                   </button>
-                  <button className={styles.pageBtn} onClick={handlePrevBlock} disabled={blockstart === 1} aria-label="이전 10페이지">
+                  <button className={styles.pageBtn} onClick={handlePrevBlock} disabled={blockstart === 1}>
                     &lt;
                   </button>
                   {Array.from({ length: blockEnd - blockstart + 1 }).map((_, i) => {
@@ -297,24 +248,25 @@ const AiSearchPage: React.FC = () => {
                       </button>
                     )
                   })}
-                  <button className={styles.pageBtn} onClick={handleNextBlock} disabled={blockEnd === totalPages} aria-label="다음 10페이지">
+                  <button className={styles.pageBtn} onClick={handleNextBlock} disabled={blockEnd === totalPages}>
                     &gt;
                   </button>
-                  <button className={styles.pageBtn} onClick={handleLastPage} disabled={currentPage === totalPages} aria-label="마지막 페이지">
+                  <button className={styles.pageBtn} onClick={handleLastPage} disabled={currentPage === totalPages}>
                     &raquo;
                   </button>
                 </div>
               )}
             </div>
-
-            {/* 지도 영역 */}
-            <div className={styles.mapBoxWrapper}>
+            <div className={styles.mapArea}>
               <h2 className={styles.maptitle}>위치 정보</h2>
-              <div ref={mapRef} className={styles.mapBox} />
+              <div className={styles.mapBoxWrapper}>
+                <div ref={mapRef} className={styles.mapBox} />
+              </div>
             </div>
           </div>
         )}
       </main>
+      {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   )
 }
