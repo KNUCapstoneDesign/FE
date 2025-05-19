@@ -96,23 +96,16 @@ const DetailPage: React.FC = () => {
       if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
 
       try {
-        const res = await fetch(`https://capstonedesign-iota.vercel.app/api/diningcode-scrape?name=${encodeURIComponent(data.title)}`);
-        const text = await res.text(); // JSON이 아닐 수도 있으니 먼저 텍스트로 받기
-
-        try {
-          const json = JSON.parse(text); // JSON 형식인지 시도
-          console.log('menus:', json);
-          setMenus(json.menus);
-        } catch {
-          console.error('⚠️ JSON 파싱 실패. 응답 내용:', text); // 응답 내용을 로그로 확인 가능
-        }
+        const res = await fetch(`http://localhost:5001/api/menu?name=${encodeURIComponent(data.title)}`)
+        const json = await res.json()
+        setMenus(json.menus)
       } catch (err) {
-        console.error('❌ fetch 실패:', err);
+        console.error('메뉴 가져오기 실패:', err)
       }
-    };
+    }
 
-    fetchMenus();
-  }, [data]);
+    fetchMenus()
+  }, [data])
 
   // Naver Map 스크립트 삽입
   useEffect(() => {
