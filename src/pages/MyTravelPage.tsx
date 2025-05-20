@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { FaLocationDot } from 'react-icons/fa6'
 import { FaClock } from 'react-icons/fa'
 import { IoHome } from 'react-icons/io5'
+import { useAuthStore } from '../store/useAuthStore'
 
 const MyTravelPage: React.FC = () => {
   const { courses, addCourse, removeCourse, updateCourseTitle } = useMyTravelStore()
@@ -21,16 +22,23 @@ const MyTravelPage: React.FC = () => {
   const itemsPerPage = 6
   const totalPages = Math.max(1, Math.ceil(courses.length / itemsPerPage))
   const paginatedCourses = courses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const userId = useAuthStore((state) => state.userId)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const name = useAuthStore((state) => state.name)
+  const email = useAuthStore((state) => state.email)
+
+  console.log('사용자 정보 - userId:', userId, ', isAuthenticated:', isAuthenticated, ', name:', name, ', email:', email)
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/schedules?user_id=40')
+    if (!userId) return
+    fetch(`http://localhost:5001/api/schedules?user_id=${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch schedules')
         return res.json()
       })
       .then((schedules: Array<{ title: string; start_date: string; end_date: string }>) => {
         schedules.forEach((schedule) => {
-          addCourse(schedule.title, schedule.start_date, schedule.end_date)
+          addCourse(schedule.title, schedule.start_date, schedule.end_date, userId)
         })
       })
       .catch((error) => {
@@ -41,7 +49,7 @@ const MyTravelPage: React.FC = () => {
 
   const handleAddCourse = () => {
     if (!title || !startDate || !endDate) return alert('제목과 날짜를 입력해주세요.')
-    addCourse(title, startDate, endDate)
+    addCourse(title, startDate, endDate, userId)
     setTitle('')
     setStartDate('')
     setEndDate('')
@@ -91,7 +99,7 @@ const MyTravelPage: React.FC = () => {
                     onChange={(e) => setEditedTitle(e.target.value)}
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSaveTitle(course.id)
+                      if (e.key === 'Enter') handleSaveTitle(course.id!)
                       if (e.key === 'Escape') {
                         setEditingId(null)
                         setEditedTitle('')
@@ -102,7 +110,7 @@ const MyTravelPage: React.FC = () => {
                     className={styles.saveButton}
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleSaveTitle(course.id)
+                      handleSaveTitle(course.id!)
                     }}>
                     저장
                   </button>
@@ -114,7 +122,7 @@ const MyTravelPage: React.FC = () => {
                     className={styles.editButton}
                     onClick={(e) => {
                       e.stopPropagation()
-                      setEditingId(course.id)
+                      setEditingId(course.id!)
                       setEditedTitle(course.title)
                     }}>
                     ✏️
@@ -139,7 +147,7 @@ const MyTravelPage: React.FC = () => {
                 className={styles.removeButton}
                 onClick={(e) => {
                   e.stopPropagation()
-                  removeCourse(course.id)
+                  removeCourse(course.id!)
                 }}>
                 일정 삭제
               </button>

@@ -16,7 +16,7 @@ export interface Place {
 }
 
 export interface TravelCourse {
-  id: string // '제목-시작일' 조합으로 구성
+  id?: string // (optional) DB에서 자동 생성된 schedule_id를 사용할 예정
   title: string
   startDate: string
   endDate: string
@@ -26,7 +26,7 @@ export interface TravelCourse {
 
 interface MyTravelState {
   courses: TravelCourse[]
-  addCourse: (title: string, startDate: string, endDate: string) => void
+  addCourse: (title: string, startDate: string, endDate: string, userId: number) => void
   addPlaceToCourse: (courseId: string, place: Place) => void
   removePlaceFromCourse: (courseId: string, contentid: number) => void
   removeCourse: (courseId: string) => void
@@ -39,19 +39,38 @@ export const useMyTravelStore = create<MyTravelState>()(
       courses: [],
 
       // 1. 일정(코스) 추가
-      addCourse: (title, startDate, endDate) => {
+      addCourse: async (title, startDate, endDate, userId) => {
         const id = `${title}-${startDate}`
         const exists = get().courses.some((c) => c.id === id)
         if (exists) return
 
-        const newCourse: TravelCourse = {
-          id,
-          title,
-          startDate,
-          endDate,
-          items: [],
+        try {
+          const res = await fetch('http://localhost:5001/api/schedules', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user_id: userId,
+              title,
+              start_date: startDate,
+              end_date: endDate,
+            }),
+          })
+
+          const saved = await res.json()
+          const newCourse: TravelCourse = {
+            id: saved.schedule_id.toString() || undefined,
+            title,
+            startDate,
+            endDate,
+            items: [],
+            created: saved.created_at || undefined,
+          }
+          set((state) => ({ courses: [...state.courses, newCourse] }))
+        } catch (err) {
+          console.error('일정 서버 저장 실패:', err)
         }
-        set((state) => ({ courses: [...state.courses, newCourse] }))
       },
 
       // 2. 장소를 특정 일정에 추가

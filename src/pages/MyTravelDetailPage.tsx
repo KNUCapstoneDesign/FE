@@ -43,7 +43,7 @@ const MyTravelDetailPage: React.FC = () => {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>{course.title}</h1>
-      <p className={styles.subtitle}>🗓 {course.date}</p>
+      <p className={styles.subtitle}>🗓 {course.startDate} ~ {course.endDate}</p>
 
       <img src={selectedPlace.firstimage || '/noimage.jpg'} className={styles.mainImage} alt={selectedPlace.title} />
 

@@ -14,16 +14,17 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     try {
       const response = await axios.post('http://localhost:5001/api/auth/login', {
         email,
         password,
       })
 
-      const { name, token, phone } = response.data // 서버에서 받은 사용자 정보
+      const { user_id, name, token, phone } = response.data // 서버에서 받은 사용자 정보
       console.log('로그인 성공', response.data.token)
       // 상태 저장
-      login({ name, token, email, phone })
+      login({ userId: user_id, name, token, email, phone })
       // 로그인 성공 후 마이페이지로 이동
       navigate('/')
     } catch (err) {

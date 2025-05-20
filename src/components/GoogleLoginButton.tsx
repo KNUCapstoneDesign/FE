@@ -24,8 +24,8 @@ const GoogleLoginButton = () => {
     try {
       const res = await axios.post('http://localhost:5001/api/auth/google', { code });
 
-      const { isExistingMember, token, name, email, phone } = res.data;
-      login({ token, name, email, phone });
+      const { isExistingMember, token, name, email, phone, user_id } = res.data;
+      login({ userId: user_id, token, name, email, phone });
       localStorage.setItem('token', token);
 
       if (isExistingMember) {

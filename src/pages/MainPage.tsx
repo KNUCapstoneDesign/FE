@@ -19,10 +19,10 @@ const MainPage = () => {
     const fetchUserData = async () => {
       try {
         const res = await axios.post('http://localhost:5001/api/auth/google', { code })
-        const { token, name, email, phone, isExistingMember } = res.data
+        const { token, name, email, phone, isExistingMember, user_id } = res.data
 
         // AuthStore에 로그인 정보 저장
-        login({ token, name, email, phone })
+        login({ token, name, email, phone, userId: user_id})
 
         localStorage.setItem('token', token)
 
