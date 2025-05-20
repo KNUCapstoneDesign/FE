@@ -34,6 +34,7 @@ interface MyTravelState {
   removePlaceFromCourse: (courseId: string, contentid: number) => void
   removeCourse: (courseId: string) => void
   updateCourseTitle: (id: string, newTitle: string) => void
+  setCoursesFromDB: (courses: TravelCourse[]) => void
 }
 
 export const useMyTravelStore = create<MyTravelState>()(
@@ -116,6 +117,8 @@ export const useMyTravelStore = create<MyTravelState>()(
         set((state) => ({
           courses: state.courses.map((course) => (course.id === id ? { ...course, title: newTitle } : course)),
         })),
+
+      setCoursesFromDB: (courses) => set({ courses }),
     }),
     { name: 'my-travel-courses' },
   ),

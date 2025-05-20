@@ -9,7 +9,7 @@ import { IoHome } from 'react-icons/io5'
 import { useAuthStore } from '../store/useAuthStore'
 
 const MyTravelPage: React.FC = () => {
-  const { courses, addCourse, removeCourse, updateCourseTitle } = useMyTravelStore()
+  const { courses, addCourse, removeCourse, updateCourseTitle, setCoursesFromDB } = useMyTravelStore()
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
@@ -30,22 +30,28 @@ const MyTravelPage: React.FC = () => {
   console.log('사용자 정보 - userId:', userId, ', isAuthenticated:', isAuthenticated, ', name:', name, ', email:', email)
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId) return;
     fetch(`http://localhost:5001/api/schedules?user_id=${userId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch schedules')
-        return res.json()
+        if (!res.ok) throw new Error('Failed to fetch schedules');
+        return res.json();
       })
-      .then((schedules: Array<{ title: string; start_date: string; end_date: string }>) => {
-        schedules.forEach((schedule) => {
-          addCourse(schedule.title, schedule.start_date, schedule.end_date, userId)
-        })
+      .then((schedules: Array<{ title: string; start_date: string; end_date: string; schedule_id: number }>) => {
+        const formatted = schedules.map((schedule) => ({
+          id: schedule.schedule_id.toString(),
+          title: schedule.title,
+          startDate: schedule.start_date,
+          endDate: schedule.end_date,
+          items: [],
+          userId,
+        }));
+        setCoursesFromDB(formatted);
       })
       .catch((error) => {
-        console.error('Error fetching schedules:', error)
-      })
+        console.error('Error fetching schedules:', error);
+      });
     // eslint-disable-next-line
-  }, [])
+  }, [userId]);
 
   const handleAddCourse = () => {
     if (!title || !startDate || !endDate) return alert('제목과 날짜를 입력해주세요.')
