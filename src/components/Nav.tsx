@@ -1,21 +1,41 @@
-// src/components/Nav.tsx
 import { Link, useNavigate } from 'react-router-dom'
 import styles from '../assets/Nav.module.css'
 import logo from '/logo.png'
 import { useAuthStore } from '../store/useAuthStore.ts'
+import { useState } from 'react'
+import { FaSearch } from 'react-icons/fa'
+import { IoClose } from 'react-icons/io5' // ❌ X 아이콘
+
 const Nav = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0 })
-  }
+  const scrollToTop = () => window.scrollTo({ top: 0 })
 
   const navigate = useNavigate()
   const { isAuthenticated, logout, hydrated } = useAuthStore()
+
+  const [showSearch, setShowSearch] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   if (!hydrated) return null
 
   const handleLogout = () => {
     logout()
-    navigate('/') // 로그아웃 후 홈으로 이동
+    navigate('/')
+  }
+
+  const handleSearchToggle = () => {
+    if (showSearch && searchTerm.trim()) {
+      navigate(`/searchtest?q=${encodeURIComponent(searchTerm.trim())}`)
+      setSearchTerm('')
+    }
+    setShowSearch((prev) => !prev)
+  }
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      navigate(`/searchtest?q=${encodeURIComponent(searchTerm.trim())}`)
+      setSearchTerm('')
+      setShowSearch(false)
+    }
   }
 
   return (
@@ -27,6 +47,34 @@ const Nav = () => {
       </div>
 
       <ul className={styles.navRight}>
+        {/* 🔍 검색 영역 */}
+        <li className={styles.navItem} style={{ position: 'relative' }}>
+          <div className={styles.searchWrapper}>
+            {showSearch && (
+              <div className={styles.searchBox}>
+                <input
+                  type="text"
+                  className={styles.navSearchInput}
+                  placeholder="검색어 입력"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  autoFocus
+                />
+                <IoClose
+                  className={styles.closeIcon}
+                  onClick={() => {
+                    setSearchTerm('')
+                    setShowSearch(false)
+                  }}
+                />
+              </div>
+            )}
+            <FaSearch onClick={handleSearchToggle} className={styles.searchIcon} title="검색" />
+          </div>
+        </li>
+
+        {/* 기존 메뉴 */}
         <li className={styles.navItem}>
           <Link to="/travelcourse" className={styles.navLink} onClick={scrollToTop}>
             지역별 여행 코스

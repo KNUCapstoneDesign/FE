@@ -24,7 +24,7 @@ body {
 #root {
   display: flex;
   flex-direction: column;
-  flex: 1;  /* #root가 메인 콘텐츠를 밀어낼 수 있도록 설정 */
+  flex: 1; /* #root가 메인 콘텐츠를 밀어낼 수 있도록 설정 */
 }
 
 body {
@@ -55,4 +55,16 @@ main {
     margin: 0;
     padding-top: 70px;
   }
+}
+@font-face {
+  font-family: 'MapoBackpacking';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoBackpackingA.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'KakaoSmallSans-Bold';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2503@1.0/KakaoSmallSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
 }

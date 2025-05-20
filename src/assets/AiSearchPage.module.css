@@ -382,6 +382,7 @@
 
 /* 모달 내용 */
 .modalContent {
+  position: relative;
   background: white;
   border-radius: 14px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
@@ -439,4 +440,35 @@
 }
 .cancelBtn:hover {
   background: #dc2626; /* 더 진한 빨강 (red-600) */
+}
+.successAlert {
+  position: absolute;
+  top: 140px; /* 모달 내부 상단에서 8px */
+  background: #22c55e;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.16);
+  animation: fadeInOut 2s;
+  z-index: 10;
+  min-width: 220px;
+}
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }

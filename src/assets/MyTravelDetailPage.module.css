@@ -1,100 +1,237 @@
-.page {
-  width: 70%;
-  margin: 0 auto;
-  padding: 40px 80px;
-  background-color: #ffffff;
-  height: auto;
-}
-
-.title {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.subtitle {
-  font-size: 18px;
-  color: #6b7280;
-  margin-bottom: 24px;
-}
-
-.mainImage {
+.outerContainer {
   width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 32px;
-}
-
-.infoContainer {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-.basicInfo {
-  flex: 1;
-  font-size: 16px;
-  min-width: 260px;
-}
-
-.mapBox {
-  flex: 1;
-  min-width: 260px;
-}
-
-.mapPlaceholder {
-  width: 100%;
-  height: 200px;
-  background-color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7280;
-  border-radius: 8px;
-}
-
-.detailDescription {
-  margin-bottom: 24px;
-}
-
-.placeList {
+  min-height: 100vh;
+  background: #f9fafb;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  align-items: center;
 }
 
+.mainBox {
+  width: 1000px;
+  background: #fff;
+  border-radius: 28px;
+  margin: 32px 0;
+  box-shadow: 0 2px 16px rgba(120, 120, 180, 0.08);
+  padding: 40px 36px 32px 36px;
+}
+
+.titleSection {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.mainTitle {
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+
+.dateRange {
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.timelineSection {
+  display: flex;
+  margin-top: 30px;
+  position: relative;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 100%;
+}
+
+.verticalLine {
+  width: 3px;
+  background: #d1c6f7;
+  position: absolute;
+  left: 28px;
+  top: 24px;
+  bottom: 24px;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.dayCards {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-left: 55px;
+}
+
+.dayGroup {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.dayBadge {
+  position: absolute;
+  left: -70px;
+  top: -5px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  background-color: #7c3aed;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(180, 120, 220, 0.08);
+}
+
+.cardsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+/* 카드 전체 구조 (세로 배치) */
 .placeCard {
-  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.placeCardImageWrap {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}
+
+.placeCardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.placeTime {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 14px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
   border-radius: 8px;
-  padding: 16px;
-  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.placeCardContent {
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+}
+
+.placeTitleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; /* ← 양끝 정렬! */
+  font-family: 'KakaoSmallSans-Bold';
+  margin-bottom: 2px; /* 공간 살짝 */
+}
+
+.placeTitle {
+  font-size: 24px;
+}
+.placeCardButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.placeGroup {
+  background: #f1edfa;
+  color: #8d61cf;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 600;
+  padding: 3px 8px;
+}
+
+.detailBtn {
+  background: none;
+  border: none;
+  color: #8d61cf;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1.03em;
+  padding: 0;
+  transition: color 0.18s;
+}
+
+.detailBtn:hover {
+  color: #4d299c;
+  text-decoration: underline;
+}
+
+.fabBtn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: #ff6b35;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.placeCard:hover {
-  background-color: #f3f4f6;
-}
-
-.placeCard h4 {
-  margin-bottom: 8px;
-}
-
-.placeImage {
+.footer {
   width: 100%;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  text-align: center;
+  color: #888;
+  font-size: 0.95em;
+  padding: 28px 0 12px 0;
+  margin-top: 48px;
+}
+/* === Day Tab === */
+.dayTabWrapper {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 24px;
+  margin-top: 12px;
 }
 
-.meta {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  color: #374151;
-  gap: 4px;
+.dayTabBtn {
+  background: #f5f5f7;
+  color: #6a4faf;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 28px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s;
+  box-shadow: 0 1.5px 6px rgba(140, 120, 200, 0.08);
+  outline: none;
+}
+
+.dayTabBtn:hover {
+  background: #ede8fd;
+  color: #7c3aed;
+}
+
+.activeDayTab {
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 3px 16px rgba(124, 58, 237, 0.12);
 }
