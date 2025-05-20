@@ -51,7 +51,7 @@ const MyTravelPage: React.FC = () => {
         console.error('Error fetching schedules:', error);
       });
     // eslint-disable-next-line
-  }, [userId]);
+  }, []);
 
   const handleAddCourse = () => {
     if (!title || !startDate || !endDate) return alert('제목과 날짜를 입력해주세요.')
