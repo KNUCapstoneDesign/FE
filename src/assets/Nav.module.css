@@ -23,6 +23,11 @@
   }
   .navRight {
     font-size: 0.5em;
+    height: 70px;
+  }
+  .searchBox,
+  .navSearchInput {
+    width: 100px;
   }
 }
 
@@ -46,7 +51,7 @@
 .logoLink {
   display: flex;
   align-items: center;
-  margin:0;
+  margin: 0;
 }
 
 .navTitle {
@@ -67,6 +72,7 @@
   margin-left: auto;
   list-style-type: none;
   align-items: center;
+  height: 90px; /* pc일 때 높이 통일 */
 }
 
 .navLink {
@@ -91,4 +97,46 @@
 
 .navLink:hover {
   text-decoration: underline solid #888888;
+}
+
+/* ----------- 검색 영역 (아래만 완전히 교체!) ----------- */
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  gap: 6px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  z-index: 1100;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-right: 4px; /* 돋보기와 검색창 사이 약간의 여백 */
+}
+
+.navSearchInput {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  width: 250px;
+  background: transparent;
+}
+
+.searchIcon {
+  font-size: 22px;
+  cursor: pointer;
+  color: black;
+}
+
+.closeIcon {
+  font-size: 16px;
+  color: #999;
+  margin-left: 6px;
+  cursor: pointer;
 }

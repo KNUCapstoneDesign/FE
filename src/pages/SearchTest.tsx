@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styles from '../assets/SearchTest.module.css'
 import noimage from '/noimage.jpg'
+import AddPlaceModal from '../components/AddPlaceModal'
+import { Place } from '../store/useMyTravelStore'
 
 // API 응답 아이템 타입
 interface TourItem {
@@ -12,6 +14,8 @@ interface TourItem {
   addr1?: string
   contenttypeid: number
   readcount?: number
+  mapx?: number
+  mapy?: number
 }
 
 // API 원시 응답 타입
@@ -22,6 +26,8 @@ interface RawTourItem {
   addr1?: string
   contenttypeid: string
   readcount?: string
+  mapx?: string
+  mapy?: string
 }
 
 const categoryList = [
@@ -45,7 +51,7 @@ const SearchTest: React.FC = () => {
   const [results, setResults] = useState<TourItem[]>([])
   const [error, setError] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string>('전체')
-
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
@@ -83,13 +89,15 @@ const SearchTest: React.FC = () => {
         const raw = json.response?.body?.items?.item as RawTourItem | RawTourItem[] | undefined
         const arr: RawTourItem[] = raw ? (Array.isArray(raw) ? raw : [raw]) : []
 
-        const parsed: TourItem[] = arr.map(({ contentid, firstimage, title, addr1, contenttypeid, readcount }) => ({
+        const parsed: TourItem[] = arr.map(({ contentid, firstimage, title, addr1, contenttypeid, readcount, mapx, mapy }) => ({
           contentid: Number(contentid),
           firstimage,
           title,
           addr1,
           contenttypeid: Number(contenttypeid),
           readcount: readcount !== undefined ? Number(readcount) : undefined,
+          mapx: mapx !== undefined ? Number(mapx) : undefined,
+          mapy: mapy !== undefined ? Number(mapy) : undefined,
         }))
 
         setResults(parsed)
@@ -147,22 +155,18 @@ const SearchTest: React.FC = () => {
         <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className={styles.pageButton}>
           {'<<'}
         </button>
-        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}
-                className={styles.pageButton}>
+        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className={styles.pageButton}>
           {'<'}
         </button>
         {pages.map((p) => (
-          <button key={p} onClick={() => setCurrentPage(p)}
-                  className={`${styles.pageButton} ${p === currentPage ? styles.activePage : ''}`}>
+          <button key={p} onClick={() => setCurrentPage(p)} className={`${styles.pageButton} ${p === currentPage ? styles.activePage : ''}`}>
             {p}
           </button>
         ))}
-        <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
-                className={styles.pageButton}>
+        <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className={styles.pageButton}>
           {'>'}
         </button>
-        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
-                className={styles.pageButton}>
+        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className={styles.pageButton}>
           {'>>'}
         </button>
       </div>
@@ -173,8 +177,7 @@ const SearchTest: React.FC = () => {
     <div className={styles.appContainer}>
       <header className={styles.appHeader}>
         <form onSubmit={handleSubmit} className={styles.searchBar}>
-          <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)} />
+          <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           <button type="submit" className={styles.searchBtn1}>
             검색
           </button>
@@ -211,11 +214,11 @@ const SearchTest: React.FC = () => {
                 <div
                   key={item.contentid}
                   className={styles.resultCard}
-                  onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)} // 클릭 시 DetailPage로 이동
-                  style={{ cursor: 'pointer' }}>
+                  onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)}
+                  style={{ cursor: 'pointer', position: 'relative' }} // <- position: relative!
+                >
                   <div className={styles.resultImageWrapper}>
-                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage}
-                         style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
+                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
                     <span className={styles.categoryLabel}>
                       {item.contenttypeid === 12
                         ? '관광지'
@@ -240,6 +243,22 @@ const SearchTest: React.FC = () => {
                     <h3 className={styles.resultTitle}>{item.title}</h3>
                     <p className={styles.resultDescription}>{item.addr1 || '주소 정보 없음'}</p>
                   </div>
+                  <button
+                    className={styles.addButton}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedPlace({
+                        contentid: item.contentid,
+                        contenttypeid: item.contenttypeid,
+                        title: item.title,
+                        firstimage: item.firstimage,
+                        addr1: item.addr1,
+                        mapx: item.mapx,
+                        mapy: item.mapy,
+                      })
+                    }}>
+                    일정 추가
+                  </button>
                 </div>
               ))}
             </div>
@@ -251,6 +270,7 @@ const SearchTest: React.FC = () => {
           </div>
         )}
       </div>
+      {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   )
 }

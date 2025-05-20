@@ -13,10 +13,13 @@ export interface Place {
   usetime?: string
   usefee?: string
   overview?: string
+  day?: string // 병합!
+  time?: string // 병합!
+  groupName?: string // 병합!
 }
 
 export interface TravelCourse {
-  id?: string // (optional) DB에서 자동 생성된 schedule_id를 사용할 예정
+  id?: string // schedule_id(DB) 혹은 '제목-시작일'
   title: string
   startDate: string
   endDate: string
@@ -38,7 +41,7 @@ export const useMyTravelStore = create<MyTravelState>()(
     (set, get) => ({
       courses: [],
 
-      // 1. 일정(코스) 추가
+      // 1. 일정(코스) 추가 (백엔드 연동)
       addCourse: async (title, startDate, endDate, userId) => {
         const id = `${title}-${startDate}`
         const exists = get().courses.some((c) => c.id === id)
@@ -60,7 +63,7 @@ export const useMyTravelStore = create<MyTravelState>()(
 
           const saved = await res.json()
           const newCourse: TravelCourse = {
-            id: saved.schedule_id.toString() || undefined,
+            id: saved.schedule_id?.toString() || id,
             title,
             startDate,
             endDate,

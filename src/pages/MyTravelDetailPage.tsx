@@ -1,88 +1,96 @@
-// src/pages/MyTravelDetailPage.tsx
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useMyTravelStore } from '../store/useMyTravelStore'
 import styles from '../assets/MyTravelDetailPage.module.css'
+import { useNavigate } from 'react-router-dom'
 
 const MyTravelDetailPage: React.FC = () => {
+  const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const { courses } = useMyTravelStore()
   const course = courses.find((c) => c.id === id)
-  const mapRef = useRef<HTMLDivElement>(null)
-  const [selectedPlace, setSelectedPlace] = useState(() => course?.items[0])
 
-  useEffect(() => {
-    if (!selectedPlace || !selectedPlace.mapy || !selectedPlace.mapx) return
+  // course가 없어도 항상 선언
+  const days = course
+    ? course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
+        const dayKey = item.day || 'Day 1'
+        if (!acc[dayKey]) acc[dayKey] = []
+        acc[dayKey].push(item)
+        return acc
+      }, {})
+    : {}
 
-    const script = document.createElement('script')
-    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}`
-    script.async = true
-    script.onload = () => {
-      const naver = window.naver
-      if (!naver || !mapRef.current) return
+  // 숫자 기준으로 오름차순 정렬
+  const dayKeys = Object.keys(days).sort((a, b) => {
+    const numA = parseInt(a.replace(/[^0-9]/g, ''), 10)
+    const numB = parseInt(b.replace(/[^0-9]/g, ''), 10)
+    return numA - numB
+  })
+  // useState는 항상 첫 렌더링 때만 dayKeys[0]을 씁니다
+  const [selectedDay, setSelectedDay] = React.useState<string>(dayKeys[0] || '')
 
-      const map = new naver.maps.Map(mapRef.current, {
-        center: new naver.maps.LatLng(selectedPlace.mapy!, selectedPlace.mapx!),
-        zoom: 14,
-      })
-      new naver.maps.Marker({
-        position: new naver.maps.LatLng(selectedPlace.mapy!, selectedPlace.mapx!),
-        map,
-      })
+  // dayKeys가 바뀌어서 selectedDay가 더 이상 없을 때만 리셋
+  React.useEffect(() => {
+    if (!selectedDay || !dayKeys.includes(selectedDay)) {
+      setSelectedDay(dayKeys[0] || '')
     }
-
-    document.head.appendChild(script)
-    return () => {
-      document.head.removeChild(script)
-    }
-  }, [selectedPlace])
+    // eslint-disable-next-line
+  }, [dayKeys.join(',')]) // dayKeys가 바뀔 때만
 
   if (!course) return <div>일정 정보를 찾을 수 없습니다.</div>
-  if (!selectedPlace) return <div>장소 정보를 불러오는 중입니다...</div>
+
+  const period = course.startDate && course.endDate ? `${course.startDate} — ${course.endDate}` : '날짜 정보 없음'
 
   return (
-    <div className={styles.page}>
-      <h1 className={styles.title}>{course.title}</h1>
-      <p className={styles.subtitle}>🗓 {course.startDate} ~ {course.endDate}</p>
-
-      <img src={selectedPlace.firstimage || '/noimage.jpg'} className={styles.mainImage} alt={selectedPlace.title} />
-
-      <div className={styles.infoContainer}>
-        <div className={styles.basicInfo}>
-          <h3>기본 정보</h3>
-          <p>
-            <strong>소요 시간:</strong> {selectedPlace.duration || '정보 없음'}
-          </p>
-          <p>
-            <strong>주소:</strong> {selectedPlace.addr1 || '정보 없음'}
-          </p>
+    <div className={styles.outerContainer}>
+      <main className={styles.mainBox}>
+        <div className={styles.titleSection}>
+          <h2 className={styles.mainTitle}>{course.title}</h2>
+          <div className={styles.dateRange}>{period}</div>
         </div>
-        <div className={styles.mapBox}>
-          <h3>위치 정보</h3>
-          <div ref={mapRef} className={styles.mapPlaceholder}></div>
+        <div className={styles.dayTabWrapper}>
+          {dayKeys.map((dayKey) => (
+            <button key={dayKey} className={`${styles.dayTabBtn} ${selectedDay === dayKey ? styles.activeDayTab : ''}`} onClick={() => setSelectedDay(dayKey)} type="button">
+              {dayKey}
+            </button>
+          ))}
         </div>
-      </div>
-
-      <div className={styles.detailDescription}>
-        <h3>상세 설명</h3>
-        <p>여행 일정에 포함된 주요 장소를 아래에서 확인하세요.</p>
-      </div>
-
-      <div className={styles.placeList}>
-        {course.items.map((place, index) => (
-          <div key={place.contentid} className={styles.placeCard} onClick={() => setSelectedPlace(place)}>
-            <h4>
-              {index + 1}. {place.title}
-            </h4>
-            <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeImage} />
-            <p>{place.overview || '소개 정보 없음'}</p>
-            <div className={styles.meta}>
-              <p>🕒 {place.usetime || '이용시간 정보 없음'}</p>
-              <p>💰 {place.usefee || '이용요금 정보 없음'}</p>
+        <div className={styles.timelineSection}>
+          <div className={styles.timeline}>
+            <div className={styles.verticalLine} />
+            <div className={styles.dayCards}>
+              <div className={styles.dayGroup}>
+                <div className={styles.dayBadge}>{selectedDay}</div>
+                <div className={styles.cardsWrapper}>
+                  {days[selectedDay]
+                    ?.slice()
+                    .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
+                    .map((place) => (
+                      <div className={styles.placeCard} key={place.contentid}>
+                        <div className={styles.placeCardImageWrap}>
+                          <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
+                          <span className={styles.placeTime}>{place.time || '시간 정보 없음'}</span>
+                        </div>
+                        <div className={styles.placeCardContent}>
+                          <div className={styles.placeTitleRow}>
+                            <div>
+                              <strong className={styles.placeTitle}>{place.title}</strong>
+                              {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
+                            </div>
+                            <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
+                              상세 정보 {'>'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </main>
+      <button className={styles.fabBtn}>+ 여행지 추가</button>
     </div>
   )
 }
