@@ -13,22 +13,23 @@ const MyTravelDetailPage: React.FC = () => {
   console.log('[MyTravelDetailPage] userId:', userId)
   const course = courses.find((c) => c.id === id)
 
-  // course가 없어도 항상 선언
-  const days = course
-    ? course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
-        const dayKey = item.day || 'Day 1'
-        if (!acc[dayKey]) acc[dayKey] = []
-        acc[dayKey].push({
-          ...item,
-          title: item.title || '',
-          firstimage: item.firstimage || '',
-          contentid: typeof item.placeId === 'string' ? parseInt(item.placeId) || 0 : item.contentid || 0,
-          time: item.time || '',
-          contenttypeid: item.contenttypeid || 0,
-        })
-        return acc
-      }, {})
-    : {}
+  // course가 없어도 항상 선언, useMemo로 days를 캐싱
+  const days = React.useMemo(() => {
+    if (!course) return {};
+    return course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
+      const dayKey = item.day || 'Day 1';
+      if (!acc[dayKey]) acc[dayKey] = [];
+      acc[dayKey].push({
+        ...item,
+        title: item.title || '',
+        firstimage: item.firstimage || '',
+        contentid: typeof item.placeId === 'string' ? parseInt(item.placeId) || 0 : item.contentid || 0,
+        time: item.time || '',
+        contenttypeid: item.contenttypeid || 0,
+      });
+      return acc;
+    }, {});
+  }, [course]);
 
   const [placeInfoMap, setPlaceInfoMap] = React.useState<Record<number, { title: string; firstimage: string }>>({});
 
