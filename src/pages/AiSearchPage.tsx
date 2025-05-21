@@ -164,7 +164,11 @@ const AiSearchPage: React.FC = () => {
             <input type="file" ref={inputRef} accept="image/*" onChange={handleFileChange} className={styles.uploadInput} />
           </div>
         )}
-        {imageUrl && <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />}
+        {imageUrl && (
+          <div className={styles.previewImageWrapper}>
+          <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />
+          </div>
+        )}
 
         {labels.length > 0 && (
           <div className={styles.labels}>
