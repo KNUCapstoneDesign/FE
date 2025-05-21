@@ -44,7 +44,7 @@ const MyTravelPage: React.FC = () => {
         end_date: string;
         courses: Array<{
           day: number;
-          spots: Array<{ place_id: string; sequence: number }>;
+          spots: Array<{ place_id: string;contenttypeid: number; sequence: number }>;
         }>;
       }>) => {
         const formatted = schedules.map((schedule) => ({
@@ -57,15 +57,15 @@ const MyTravelPage: React.FC = () => {
               .filter((spot) => spot.place_id) // ← place_id가 없으면 제외
               .map((spot) => ({
                 placeId: spot.place_id,
-                contentid: parseInt(spot.place_id),
-              title: '',
-              firstimage: '',
-              contenttypeid: 0,
-              mapx: 0,
-              mapy: 0,
-              day: `Day ${course.day}`,
-              time: '',
-            }))
+                contentid: parseInt(spot.place_id) || 0,
+                contenttypeid: spot.contenttypeid || 0,
+                title: '',
+                firstimage: '',
+                mapx: 0,
+                mapy: 0,
+                day: `Day ${course.day}`,
+                time: '',
+              }))
           ),
         }));
         setCoursesFromDB(formatted);

@@ -36,6 +36,7 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
         schedule_id: Number(selectedCourseId),
         day: Number(day),
         place_id: String(place.contentid),
+        contenttypeid: place.contenttypeid,
         sequence: 1,
       })
 
