@@ -3,11 +3,14 @@ import { useParams } from 'react-router-dom'
 import { useMyTravelStore } from '../store/useMyTravelStore'
 import styles from '../assets/MyTravelDetailPage.module.css'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../store/useAuthStore'
 
 const MyTravelDetailPage: React.FC = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const { courses } = useMyTravelStore()
+  const userId = useAuthStore((state) => state.userId)
+  console.log('[MyTravelDetailPage] userId:', userId)
   const course = courses.find((c) => c.id === id)
 
   // course가 없어도 항상 선언
@@ -15,7 +18,14 @@ const MyTravelDetailPage: React.FC = () => {
     ? course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
         const dayKey = item.day || 'Day 1'
         if (!acc[dayKey]) acc[dayKey] = []
-        acc[dayKey].push(item)
+        acc[dayKey].push({
+          ...item,
+          title: item.title || '',
+          firstimage: item.firstimage || '',
+          contentid: typeof item.placeId === 'string' ? parseInt(item.placeId) || 0 : item.contentid || 0,
+          time: item.time || '',
+          contenttypeid: item.contenttypeid || 0,
+        })
         return acc
       }, {})
     : {}

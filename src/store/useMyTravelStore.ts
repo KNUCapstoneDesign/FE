@@ -16,6 +16,7 @@ export interface Place {
   day?: string // 병합!
   time?: string // 병합!
   groupName?: string // 병합!
+  placeId?: string // DB에서 불러올 때 contentid 대체용
 }
 
 export interface TravelCourse {
@@ -118,7 +119,13 @@ export const useMyTravelStore = create<MyTravelState>()(
           courses: state.courses.map((course) => (course.id === id ? { ...course, title: newTitle } : course)),
         })),
 
-      setCoursesFromDB: (courses) => set({ courses }),
+      setCoursesFromDB: (courses) =>
+        set({
+          courses: courses.map((course) => ({
+            ...course,
+            items: course.items || [],
+          })),
+        }),
     }),
     { name: 'my-travel-courses' },
   ),

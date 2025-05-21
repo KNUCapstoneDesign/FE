@@ -31,26 +31,48 @@ const MyTravelPage: React.FC = () => {
 
   useEffect(() => {
     if (!userId) return;
-    fetch(`http://localhost:5001/api/schedules?user_id=${userId}`)
+
+    fetch(`http://localhost:5001/api/full-schedule?user_id=${userId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch schedules');
+        if (!res.ok) throw new Error('Failed to fetch full schedules');
         return res.json();
       })
-      .then((schedules: Array<{ title: string; start_date: string; end_date: string; schedule_id: number }>) => {
+      .then((schedules: Array<{
+        schedule_id: number;
+        title: string;
+        start_date: string;
+        end_date: string;
+        courses: Array<{
+          day: number;
+          spots: Array<{ place_id: string; sequence: number }>;
+        }>;
+      }>) => {
         const formatted = schedules.map((schedule) => ({
           id: schedule.schedule_id.toString(),
           title: schedule.title,
           startDate: schedule.start_date,
           endDate: schedule.end_date,
-          items: [],
-          userId,
+          items: (schedule.courses || []).flatMap((course) =>
+            (course.spots || [])
+              .filter((spot) => spot.place_id) // ← place_id가 없으면 제외
+              .map((spot) => ({
+                placeId: spot.place_id,
+                contentid: parseInt(spot.place_id),
+              title: '',
+              firstimage: '',
+              contenttypeid: 0,
+              mapx: 0,
+              mapy: 0,
+              day: `Day ${course.day}`,
+              time: '',
+            }))
+          ),
         }));
         setCoursesFromDB(formatted);
       })
       .catch((error) => {
-        console.error('Error fetching schedules:', error);
+        console.error('Error fetching full schedules:', error);
       });
-    // eslint-disable-next-line
   }, []);
 
   const handleAddCourse = () => {
