@@ -30,6 +30,48 @@ const MyTravelDetailPage: React.FC = () => {
       }, {})
     : {}
 
+  const [placeInfoMap, setPlaceInfoMap] = React.useState<Record<number, { title: string; firstimage: string }>>({});
+
+  const fetchPlaceInfo = async (contentid: number, contenttypeid: number) => {
+    try {
+      const res = await fetch(
+        `https://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&contentTypeId=${contenttypeid}&defaultYN=Y&firstImageYN=Y&_type=json`
+      );
+      const data = await res.json();
+      const item = data.response?.body?.items?.item?.[0];
+      return {
+        title: item?.title || '',
+        firstimage: item?.firstimage || '',
+      };
+    } catch (err) {
+      console.error('TourAPI fetch failed for contentid:', contentid, err);
+      return { title: '', firstimage: '' };
+    }
+  };
+
+  React.useEffect(() => {
+    const missing = Object.values(days)
+      .flat()
+      .filter(p => !p.title || !p.firstimage);
+
+    const fetchAll = async () => {
+      const updates: Record<number, { title: string; firstimage: string }> = {};
+      await Promise.all(
+        missing.map(async (p) => {
+          if (p.contentid && p.contenttypeid) {
+            const info = await fetchPlaceInfo(p.contentid, p.contenttypeid);
+            updates[p.contentid] = info;
+          }
+        })
+      );
+      setPlaceInfoMap((prev) => ({ ...prev, ...updates }));
+    };
+
+    if (Object.keys(days).length) {
+      fetchAll();
+    }
+  }, [days]);
+
   // 숫자 기준으로 오름차순 정렬
   const dayKeys = Object.keys(days).sort((a, b) => {
     const numA = parseInt(a.replace(/[^0-9]/g, ''), 10)
@@ -78,13 +120,13 @@ const MyTravelDetailPage: React.FC = () => {
                     .map((place) => (
                       <div className={styles.placeCard} key={place.contentid}>
                         <div className={styles.placeCardImageWrap}>
-                          <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
+                          <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
                           <span className={styles.placeTime}>{place.time || '시간 정보 없음'}</span>
                         </div>
                         <div className={styles.placeCardContent}>
                           <div className={styles.placeTitleRow}>
                             <div>
-                              <strong className={styles.placeTitle}>{place.title}</strong>
+                              <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
                               {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
                             </div>
                             <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
