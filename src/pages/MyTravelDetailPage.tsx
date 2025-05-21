@@ -52,25 +52,23 @@ const MyTravelDetailPage: React.FC = () => {
   React.useEffect(() => {
     const missing = Object.values(days)
       .flat()
-      .filter(p => !p.title || !p.firstimage);
+      .filter(p => !placeInfoMap[p.contentid] && p.contentid && p.contenttypeid);
+
+    if (!missing.length) return;
 
     const fetchAll = async () => {
       const updates: Record<number, { title: string; firstimage: string }> = {};
       await Promise.all(
         missing.map(async (p) => {
-          if (p.contentid && p.contenttypeid) {
-            const info = await fetchPlaceInfo(p.contentid, p.contenttypeid);
-            updates[p.contentid] = info;
-          }
+          const info = await fetchPlaceInfo(p.contentid, p.contenttypeid);
+          updates[p.contentid] = info;
         })
       );
       setPlaceInfoMap((prev) => ({ ...prev, ...updates }));
     };
 
-    if (Object.keys(days).length) {
-      fetchAll();
-    }
-  }, [days]);
+    fetchAll();
+  }, [days, placeInfoMap]);
 
   // 숫자 기준으로 오름차순 정렬
   const dayKeys = Object.keys(days).sort((a, b) => {

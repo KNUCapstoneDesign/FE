@@ -31,6 +31,7 @@ const MyTravelPage: React.FC = () => {
 
   useEffect(() => {
     if (!userId) return;
+    let isMounted = true;
 
     fetch(`http://localhost:5001/api/full-schedule?user_id=${userId}`)
       .then((res) => {
@@ -54,7 +55,7 @@ const MyTravelPage: React.FC = () => {
           endDate: schedule.end_date,
           items: (schedule.courses || []).flatMap((course) =>
             (course.spots || [])
-              .filter((spot) => spot.place_id) // ← place_id가 없으면 제외
+              .filter((spot) => spot.place_id)
               .map((spot) => ({
                 placeId: spot.place_id,
                 contentid: parseInt(spot.place_id) || 0,
@@ -68,11 +69,17 @@ const MyTravelPage: React.FC = () => {
               }))
           ),
         }));
-        setCoursesFromDB(formatted);
+        if (isMounted) {
+          setCoursesFromDB(formatted);
+        }
       })
       .catch((error) => {
         console.error('Error fetching full schedules:', error);
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleAddCourse = () => {
