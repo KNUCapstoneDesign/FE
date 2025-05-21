@@ -410,6 +410,14 @@
   margin-top: 16px;
 }
 
+.daylabel {
+  font-size: 15px;
+  margin: 10px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center;
+}
 .addBtn {
   padding: 8px 20px;
   border-radius: 6px;
@@ -443,7 +451,7 @@
 }
 .successAlert {
   position: absolute;
-  top: 140px; /* 모달 내부 상단에서 8px */
+  top: 190px; /* 모달 내부 상단에서 8px */
   background: #22c55e;
   color: #fff;
   padding: 10px 24px;

@@ -6,6 +6,8 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import AddPlaceModal from '../components/AddPlaceModal'
+import { Place } from '../store/useMyTravelStore'
 
 interface DetailItem {
   title: string
@@ -61,6 +63,20 @@ const DetailPage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+
+  const handleAddPlaceClick = () => {
+    if (!data) return
+    setSelectedPlace({
+      contentid: Number(id),
+      contenttypeid: Number(typeid),
+      title: data.title,
+      firstimage: data.images[0], // 첫 번째 이미지
+      addr1: data.addr1,
+      mapx: data.mapx,
+      mapy: data.mapy,
+    })
+  }
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false)
@@ -286,7 +302,13 @@ const DetailPage: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>{data.title}</h1>
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>{data.title}</h1>
+        <button className={styles.addButton} onClick={handleAddPlaceClick}>
+          일정 추가
+        </button>
+      </div>
+
       <span className={styles.typeLabel}>{getCategoryLabel(data.contentTypeId)}</span>
       <span className={styles.titleaddress}>{data.addr1 || '정보 없음'}</span>
       <div className={styles.heroImageWrapper}>
@@ -399,6 +421,7 @@ const DetailPage: React.FC = () => {
           </div>
         </div>
       )}
+      {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   )
 }

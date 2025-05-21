@@ -14,40 +14,36 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
   const [selectedCourseId, setSelectedCourseId] = useState<string>('')
   const [showAlert, setShowAlert] = useState(false)
   const [day, setDay] = useState('1')
-  const [time, setTime] = useState('')
   const userId = useAuthStore((state) => state.userId)
-  // 선택한 일정 객체 찾기
+
   const selectedCourse = useMemo(() => courses.find((course) => course.id === selectedCourseId), [courses, selectedCourseId])
 
-  // Day 드롭다운에 들어갈 총 일수 계산
   const courseDays = useMemo(() => {
     if (selectedCourse && selectedCourse.startDate && selectedCourse.endDate) {
       const start = new Date(selectedCourse.startDate)
       const end = new Date(selectedCourse.endDate)
-      // 날짜 차이 + 1 (ex. 2024-05-20~2024-05-22 → 3일)
       return Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) + 1))
     }
-    return 7 // 기본값
+    return 7
   }, [selectedCourse])
 
-  // 일정이 바뀌면 day를 1로 리셋
   const handleAdd = async () => {
     if (!selectedCourseId || !place.contentid) return
 
     try {
       await axios.post('http://localhost:5001/api/schedulespots', {
         user_id: userId,
-        schedule_id: Number(selectedCourseId), // 현재 선택한 일정 ID
-        day: Number(day),                     // 몇일차인지
-        place_id: String(place.contentid),    // 장소 ID
-        sequence: 1                           // 지금은 기본값으로 1 (추후 동적으로 계산 가능)
+        schedule_id: Number(selectedCourseId),
+        day: Number(day),
+        place_id: String(place.contentid),
+        sequence: 1,
       })
 
       setShowAlert(true)
       setTimeout(() => {
         setShowAlert(false)
         onClose()
-      }, 2000)
+      }, 1000)
     } catch (err) {
       console.error('장소 추가 실패:', err)
       alert('장소 추가 중 오류가 발생했습니다.')
@@ -70,15 +66,15 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
               <option value="">일정을 선택하세요</option>
               {courses.map((course) => (
                 <option key={course.id} value={course.id}>
-                  {course.title} {course.startDate} ~ {course.endDate}
+                  {course.title} {course.startDate.slice(0, 10)} ~ {course.endDate.slice(0, 10)}
                 </option>
               ))}
             </select>
-            {/* Day/시간 입력란 */}
-            <div style={{ display: 'flex', gap: 12, width: '100%', margin: '10px 0' }}>
+
+            <div className={styles.daylabel}>
               <label>
                 Day:
-                <select value={day} onChange={(e) => setDay(e.target.value)} style={{ width: 110, marginLeft: 4 }}>
+                <select value={day} onChange={(e) => setDay(e.target.value)} style={{ width: 110, marginLeft: 4, fontSize: 15 }}>
                   {Array.from({ length: courseDays }, (_, i) => (
                     <option value={String(i + 1)} key={i + 1}>
                       {i + 1}일차
@@ -86,15 +82,10 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
                   ))}
                 </select>
               </label>
-              <label>
-                시간:
-                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} style={{ marginLeft: 4, width: 110 }} />
-              </label>
             </div>
           </>
         )}
 
-        {/* alert 위치 - 버튼 위에 자연스럽게 */}
         {showAlert && <div className={styles.successAlert}>일정에 추가되었습니다!</div>}
 
         <div className={styles.modalButtons}>
