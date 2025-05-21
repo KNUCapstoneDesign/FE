@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react'
 import { useMyTravelStore, Place } from '../store/useMyTravelStore'
 import styles from '../assets/AiSearchPage.module.css'
+import axios from 'axios'
+import { useAuthStore } from '../store/useAuthStore.ts'
 
 interface AddPlaceModalProps {
   place: Place
@@ -8,12 +10,12 @@ interface AddPlaceModalProps {
 }
 
 const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
-  const { courses, addPlaceToCourse } = useMyTravelStore()
+  const { courses } = useMyTravelStore()
   const [selectedCourseId, setSelectedCourseId] = useState<string>('')
   const [showAlert, setShowAlert] = useState(false)
   const [day, setDay] = useState('1')
   const [time, setTime] = useState('')
-
+  const userId = useAuthStore((state) => state.userId)
   // 선택한 일정 객체 찾기
   const selectedCourse = useMemo(() => courses.find((course) => course.id === selectedCourseId), [courses, selectedCourseId])
 
@@ -29,22 +31,26 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
   }, [selectedCourse])
 
   // 일정이 바뀌면 day를 1로 리셋
-  React.useEffect(() => {
-    setDay('1')
-  }, [selectedCourseId])
+  const handleAdd = async () => {
+    if (!selectedCourseId || !place.contentid) return
 
-  const handleAdd = () => {
-    if (selectedCourseId) {
-      addPlaceToCourse(selectedCourseId, {
-        ...place,
-        day: `Day ${day}`,
-        time: time,
+    try {
+      await axios.post('http://localhost:5001/api/schedulespots', {
+        user_id: userId,
+        schedule_id: Number(selectedCourseId), // 현재 선택한 일정 ID
+        day: Number(day),                     // 몇일차인지
+        place_id: String(place.contentid),    // 장소 ID
+        sequence: 1                           // 지금은 기본값으로 1 (추후 동적으로 계산 가능)
       })
+
       setShowAlert(true)
       setTimeout(() => {
         setShowAlert(false)
         onClose()
       }, 2000)
+    } catch (err) {
+      console.error('장소 추가 실패:', err)
+      alert('장소 추가 중 오류가 발생했습니다.')
     }
   }
 
