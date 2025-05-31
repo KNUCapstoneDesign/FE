@@ -27,60 +27,71 @@ const MyTravelPage: React.FC = () => {
   const name = useAuthStore((state) => state.name)
   const email = useAuthStore((state) => state.email)
 
+  // ✅ 로그인하지 않은 경우 로그인 페이지로 이동
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login')
+    }
+  }, [isAuthenticated, navigate])
+
   console.log('사용자 정보 - userId:', userId, ', isAuthenticated:', isAuthenticated, ', name:', name, ', email:', email)
 
   useEffect(() => {
-    if (!userId) return;
-    let isMounted = true;
+    if (!userId) return
+    let isMounted = true
 
     fetch(`http://localhost:5001/api/full-schedule?user_id=${userId}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch full schedules');
-        return res.json();
+        if (!res.ok) throw new Error('Failed to fetch full schedules')
+        return res.json()
       })
-      .then((schedules: Array<{
-        schedule_id: number;
-        title: string;
-        start_date: string;
-        end_date: string;
-        courses: Array<{
-          day: number;
-          spots: Array<{ place_id: string;contenttypeid: number; sequence: number }>;
-        }>;
-      }>) => {
-        const formatted = schedules.map((schedule) => ({
-          id: schedule.schedule_id.toString(),
-          title: schedule.title,
-          startDate: schedule.start_date,
-          endDate: schedule.end_date,
-          items: (schedule.courses || []).flatMap((course) =>
-            (course.spots || [])
-              .filter((spot) => spot.place_id)
-              .map((spot) => ({
-                placeId: spot.place_id,
-                contentid: parseInt(spot.place_id) || 0,
-                contenttypeid: spot.contenttypeid || 0,
-                title: '',
-                firstimage: '',
-                mapx: 0,
-                mapy: 0,
-                day: `Day ${course.day}`,
-                time: '',
-              }))
-          ),
-        }));
-        if (isMounted) {
-          setCoursesFromDB(formatted);
-        }
-      })
+      .then(
+        (
+          schedules: Array<{
+            schedule_id: number
+            title: string
+            start_date: string
+            end_date: string
+            courses: Array<{
+              day: number
+              spots: Array<{ place_id: string; contenttypeid: number; sequence: number }>
+            }>
+          }>,
+        ) => {
+          const formatted = schedules.map((schedule) => ({
+            id: schedule.schedule_id.toString(),
+            title: schedule.title,
+            startDate: schedule.start_date,
+            endDate: schedule.end_date,
+            items: (schedule.courses || []).flatMap((course) =>
+              (course.spots || [])
+                .filter((spot) => spot.place_id)
+                .map((spot) => ({
+                  placeId: spot.place_id,
+                  contentid: parseInt(spot.place_id) || 0,
+                  contenttypeid: spot.contenttypeid || 0,
+                  title: '',
+                  firstimage: '',
+                  mapx: 0,
+                  mapy: 0,
+                  day: `Day ${course.day}`,
+                  time: '',
+                })),
+            ),
+          }))
+          if (isMounted) {
+            setCoursesFromDB(formatted)
+          }
+        },
+      )
       .catch((error) => {
-        console.error('Error fetching full schedules:', error);
-      });
+        console.error('Error fetching full schedules:', error)
+      })
 
     return () => {
-      isMounted = false;
-    };
-  }, []);
+      isMounted = false
+    }
+  }, [userId, setCoursesFromDB])
 
   const handleAddCourse = () => {
     if (!title || !startDate || !endDate) return alert('제목과 날짜를 입력해주세요.')
@@ -164,7 +175,9 @@ const MyTravelPage: React.FC = () => {
                   </button>
                 </div>
               )}
-              <span className={styles.date}>{course.startDate} ~ {course.endDate}</span>
+              <span className={styles.date}>
+                {course.startDate} ~ {course.endDate}
+              </span>
             </div>
             <div className={styles.courseInfo}>
               <p className={styles.usetime}>

@@ -257,9 +257,18 @@
   border-color: #e5e7eb;
 }
 .resultCard {
-  /* ... 기존 스타일 ... */
-  position: relative; /* 필수! */
-  padding-bottom: 56px; /* 버튼 공간 확보, 필요시 */
+  position: relative;
+  height: 320px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+.resultCard:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
 
 .addButton {
@@ -282,4 +291,22 @@
 
 .addButton:hover {
   background: #1253a1;
+}
+.areaSelect {
+  margin-left: 10px;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  height: 44px;
+  line-height: 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.areaSelect:hover {
+  background-color: #2563eb;
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import styles from '../assets/DetailPage.module.css'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Navigation, Pagination } from 'swiper/modules'
@@ -8,6 +9,13 @@ import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
+
+interface NearbyPlace {
+  contentid: string
+  contenttypeid: string
+  title: string
+  firstimage?: string
+}
 
 interface DetailItem {
   title: string
@@ -64,6 +72,55 @@ const DetailPage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
+  const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
+
+  useEffect(() => {
+    if (!data?.mapx || !data.mapy) return
+
+    const fetchNearby = async () => {
+      const locationUrl =
+        `https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${API_KEY}` +
+        `&MobileOS=ETC&MobileApp=TestApp&_type=json` +
+        `&mapX=${data.mapx}&mapY=${data.mapy}&radius=3000&arrange=E&numOfRows=20`
+
+      try {
+        const res = await fetch(locationUrl)
+        const json = await res.json()
+        const items = json.response?.body?.items?.item || []
+        const results = Array.isArray(items) ? items : [items]
+
+        // ✅ contenttypeid로 필터링하지 않음. 자기 자신만 제외
+        const filtered = results.filter((place) => place.contentid !== id)
+        setNearbyPlaces(filtered.slice(0, 8))
+      } catch (err) {
+        console.error('주변 장소 불러오기 실패:', err)
+      }
+    }
+
+    fetchNearby()
+  }, [data, API_KEY, id])
+
+  useEffect(() => {
+    if (!data?.addr1) return
+    const sido = data.addr1.split(' ')[0]
+    const sigungu = data.addr1.split(' ')[1] || ''
+    const fetchPopular = async () => {
+      const areaUrl =
+        `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}` + `&MobileOS=ETC&MobileApp=TestApp&_type=json` + `&arrange=B&numOfRows=5&keyword=${sido} ${sigungu}`
+
+      try {
+        const res = await fetch(areaUrl)
+        const json = await res.json()
+        const items = json.response?.body?.items?.item || []
+        const results = Array.isArray(items) ? items : [items]
+        setPopularPlaces(results)
+      } catch (err) {
+        console.error('인기 장소 불러오기 실패:', err)
+      }
+    }
+    fetchPopular()
+  }, [data, API_KEY])
 
   const handleAddPlaceClick = () => {
     if (!data) return
@@ -422,6 +479,34 @@ const DetailPage: React.FC = () => {
         </div>
       )}
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
+      {nearbyPlaces.length > 0 && (
+        <div className={styles.recommendSection}>
+          <h2>주변 장소</h2>
+          <div className={styles.recommendList}>
+            {nearbyPlaces.map((place) => (
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+                <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
+                <div className={styles.recommendTitle}>{place.title}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 같은 지역 인기 여행지 */}
+      {popularPlaces.length > 0 && (
+        <div className={styles.recommendSection}>
+          <h2>🔥 이 지역의 인기 장소</h2>
+          <div className={styles.recommendList}>
+            {popularPlaces.map((place) => (
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+                <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
+                <div className={styles.recommendTitle}>{place.title}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -5,8 +5,8 @@ import styles from '../assets/SearchTest.module.css'
 import noimage from '/noimage.jpg'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
+import AreaSelectModal from '../components/AreaSelectModal'
 
-// API 응답 아이템 타입
 interface TourItem {
   contentid: number
   firstimage?: string
@@ -18,7 +18,6 @@ interface TourItem {
   mapy?: number
 }
 
-// API 원시 응답 타입
 interface RawTourItem {
   contentid: string
   firstimage?: string
@@ -42,21 +41,46 @@ const categoryList = [
   { id: '음식점', label: '음식점', typeIds: [39] },
 ]
 
+const AREA_LIST = [
+  { code: '', name: '전체 지역' },
+  { code: '1', name: '서울' },
+  { code: '2', name: '인천' },
+  { code: '3', name: '대전' },
+  { code: '4', name: '대구' },
+  { code: '5', name: '광주' },
+  { code: '6', name: '부산' },
+  { code: '7', name: '울산' },
+  { code: '8', name: '세종' },
+  { code: '31', name: '경기' },
+  { code: '32', name: '강원' },
+  { code: '33', name: '충북' },
+  { code: '34', name: '충남' },
+  { code: '35', name: '경북' },
+  { code: '36', name: '경남' },
+  { code: '37', name: '전북' },
+  { code: '38', name: '전남' },
+  { code: '39', name: '제주' },
+]
+
 const SearchTest: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('') // 입력값
-  const [submittedTerm, setSubmittedTerm] = useState<string>('') // 실제 검색에 쓸 값
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const pageSize = 10
-  const [loading, setLoading] = useState<boolean>(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [submittedTerm, setSubmittedTerm] = useState('')
+  const [areaCode, setAreaCode] = useState('')
+  const [district, setDistrict] = useState<string>('')
+  const [areaModalOpen, setAreaModalOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<TourItem[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string>('전체')
+  const [activeCategory, setActiveCategory] = useState('전체')
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+  const [districtName, setDistrictName] = useState<string>('')
+
+  const pageSize = 10
   const location = useLocation()
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
 
-  // URL(q) → searchTerm, submittedTerm 동기화
   useEffect(() => {
     const q = new URLSearchParams(location.search).get('q') || ''
     setSearchTerm(q)
@@ -64,40 +88,64 @@ const SearchTest: React.FC = () => {
     setCurrentPage(1)
   }, [location.search])
 
-  // API 호출: 최대 1000건 한 번에 가져오기
   const fetchResults = useCallback(
     async (term: string) => {
-      if (!term.trim()) {
+      if (!term.trim() && !areaCode && !district) {
         setResults([])
         return
       }
+
       setLoading(true)
       setError(null)
+
       try {
-        const url = [
-          `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${API_KEY}`,
-          `numOfRows=1000`,
-          `pageNo=1`,
-          `MobileOS=ETC`,
-          `MobileApp=TestApp`,
-          `_type=json`,
-          `keyword=${encodeURIComponent(term)}`,
-        ].join('&')
+        let url = ''
+
+        if (term.trim()) {
+          // 검색어 기반
+          url = [
+            `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${API_KEY}`,
+            `numOfRows=1000`,
+            `pageNo=1`,
+            `MobileOS=ETC`,
+            `MobileApp=TestApp`,
+            `_type=json`,
+            `keyword=${encodeURIComponent(term)}`,
+            areaCode && `areaCode=${areaCode}`,
+            areaCode && district && `sigunguCode=${district}`,
+          ]
+            .filter(Boolean)
+            .join('&')
+        } else if (areaCode || district) {
+          // 지역 기반
+          url = [
+            `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}`,
+            `numOfRows=1000`,
+            `pageNo=1`,
+            `MobileOS=ETC`,
+            `MobileApp=TestApp`,
+            `_type=json`,
+            areaCode && `areaCode=${areaCode}`,
+            district && `sigunguCode=${district}`,
+          ]
+            .filter(Boolean)
+            .join('&')
+        }
 
         const res = await fetch(url)
         const json = await res.json()
         const raw = json.response?.body?.items?.item as RawTourItem | RawTourItem[] | undefined
         const arr: RawTourItem[] = raw ? (Array.isArray(raw) ? raw : [raw]) : []
 
-        const parsed: TourItem[] = arr.map(({ contentid, firstimage, title, addr1, contenttypeid, readcount, mapx, mapy }) => ({
-          contentid: Number(contentid),
-          firstimage,
-          title,
-          addr1,
-          contenttypeid: Number(contenttypeid),
-          readcount: readcount !== undefined ? Number(readcount) : undefined,
-          mapx: mapx !== undefined ? Number(mapx) : undefined,
-          mapy: mapy !== undefined ? Number(mapy) : undefined,
+        const parsed: TourItem[] = arr.map((item) => ({
+          contentid: Number(item.contentid),
+          firstimage: item.firstimage,
+          title: item.title,
+          addr1: item.addr1,
+          contenttypeid: Number(item.contenttypeid),
+          readcount: item.readcount ? Number(item.readcount) : undefined,
+          mapx: item.mapx ? Number(item.mapx) : undefined,
+          mapy: item.mapy ? Number(item.mapy) : undefined,
         }))
 
         setResults(parsed)
@@ -107,15 +155,13 @@ const SearchTest: React.FC = () => {
         setLoading(false)
       }
     },
-    [API_KEY],
+    [API_KEY, areaCode, district],
   )
 
-  // submittedTerm이 바뀔 때마다 전체 데이터 재로딩
   useEffect(() => {
     fetchResults(submittedTerm)
   }, [submittedTerm, fetchResults])
 
-  // URL 동기화
   useEffect(() => {
     if (submittedTerm.trim()) {
       navigate(`/searchtest?q=${encodeURIComponent(submittedTerm)}`)
@@ -124,26 +170,20 @@ const SearchTest: React.FC = () => {
     }
   }, [submittedTerm, navigate])
 
-  // 검색 폼
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setCurrentPage(1)
     setSubmittedTerm(searchTerm)
   }
 
-  // 카테고리 필터
   const filtered = React.useMemo(() => {
     if (activeCategory === '전체') return results
     const { typeIds } = categoryList.find((c) => c.id === activeCategory)!
     return results.filter((item) => typeIds.includes(item.contenttypeid))
   }, [results, activeCategory])
 
-  // 페이지네이션 렌더
   const renderPagination = () => {
-    const totalItems = filtered.length
-    const totalPages = Math.ceil(totalItems / pageSize)
-    if (totalPages <= 1) return null
-
+    const totalPages = Math.ceil(filtered.length / pageSize)
     const blockSize = 10
     const blockIndex = Math.floor((currentPage - 1) / blockSize)
     const start = blockIndex * blockSize + 1
@@ -152,10 +192,10 @@ const SearchTest: React.FC = () => {
 
     return (
       <div className={styles.pagination}>
-        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className={styles.pageButton}>
+        <button className={styles.pageButton} onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
           {'<<'}
         </button>
-        <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className={styles.pageButton}>
+        <button className={styles.pageButton} onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
           {'<'}
         </button>
         {pages.map((p) => (
@@ -163,10 +203,10 @@ const SearchTest: React.FC = () => {
             {p}
           </button>
         ))}
-        <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className={styles.pageButton}>
+        <button className={styles.pageButton} onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
           {'>'}
         </button>
-        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className={styles.pageButton}>
+        <button className={styles.pageButton} onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
           {'>>'}
         </button>
       </div>
@@ -178,11 +218,28 @@ const SearchTest: React.FC = () => {
       <header className={styles.appHeader}>
         <form onSubmit={handleSubmit} className={styles.searchBar}>
           <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <button type="button" className={styles.areaSelect} onClick={() => setAreaModalOpen(true)}>
+            {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
+          </button>
+
           <button type="submit" className={styles.searchBtn1}>
             검색
           </button>
         </form>
-
+        <AreaSelectModal
+          open={areaModalOpen}
+          onClose={() => setAreaModalOpen(false)}
+          onSelect={(code, dist, distName) => {
+            setAreaCode(code)
+            setDistrict(dist || '')
+            setDistrictName(distName || '')
+            if (!searchTerm.trim()) {
+              setSubmittedTerm('')
+            }
+          }}
+          selectedAreaCode={areaCode}
+          selectedDistrict={district}
+        />
         <div className={styles.categoryTabs}>
           {categoryList.map((c) => (
             <button
@@ -197,6 +254,7 @@ const SearchTest: React.FC = () => {
           ))}
         </div>
       </header>
+
       <div className={styles.resultsContainer}>
         {loading ? (
           <div className={styles.loadingIndicator}>
@@ -211,32 +269,20 @@ const SearchTest: React.FC = () => {
             <p className={styles.resultsCount}>{filtered.length}개의 검색결과</p>
             <div className={styles.resultsGrid}>
               {filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((item) => (
-                <div
-                  key={item.contentid}
-                  className={styles.resultCard}
-                  onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)}
-                  style={{ cursor: 'pointer', position: 'relative' }} // <- position: relative!
-                >
+                <div key={item.contentid} className={styles.resultCard} onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)}>
                   <div className={styles.resultImageWrapper}>
-                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} style={{ objectFit: item.firstimage ? 'cover' : 'fill' }} />
+                    <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} />
                     <span className={styles.categoryLabel}>
-                      {item.contenttypeid === 12
-                        ? '관광지'
-                        : item.contenttypeid === 14
-                          ? '문화시설'
-                          : item.contenttypeid === 15
-                            ? '행사/공연/축제'
-                            : item.contenttypeid === 25
-                              ? '여행코스'
-                              : item.contenttypeid === 28
-                                ? '레포츠'
-                                : item.contenttypeid === 32
-                                  ? '숙박'
-                                  : item.contenttypeid === 38
-                                    ? '쇼핑'
-                                    : item.contenttypeid === 39
-                                      ? '음식점'
-                                      : '기타'}
+                      {{
+                        12: '관광지',
+                        14: '문화시설',
+                        15: '행사/공연/축제',
+                        25: '여행코스',
+                        28: '레포츠',
+                        32: '숙박',
+                        38: '쇼핑',
+                        39: '음식점',
+                      }[item.contenttypeid] || '기타'}
                     </span>
                   </div>
                   <div className={styles.resultContent}>
@@ -270,6 +316,7 @@ const SearchTest: React.FC = () => {
           </div>
         )}
       </div>
+
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   )

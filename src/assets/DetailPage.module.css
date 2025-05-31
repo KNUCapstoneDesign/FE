@@ -284,3 +284,73 @@
     transform: scale(1);
   }
 }
+/* 주변 추천 섹션 */
+.recommendSection {
+  margin-bottom: 2rem;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.recommendSection h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+  text-align: left;
+}
+
+.recommendList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.recommendCard {
+  width: calc(25% - 1rem);
+  min-width: 200px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.recommendCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.recommendImage {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.recommendTitle {
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
+/* 반응형 대응 */
+@media (max-width: 1024px) {
+  .recommendCard {
+    width: calc(33.333% - 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .recommendCard {
+    width: calc(50% - 1rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .recommendCard {
+    width: 100%;
+  }
+}
