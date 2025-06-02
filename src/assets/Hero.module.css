@@ -47,10 +47,6 @@ button.searchBtn {
   box-sizing: border-box;
 }
 
-button.searchBtn:hover {
-  background-color: #2563eb !important;
-}
-
 @media screen and (max-width: 699px) {
   .hero {
     height: 400px;
@@ -75,4 +71,29 @@ button.searchBtn:hover {
     font-size: 14px;
     line-height: 20px;
   }
+}
+.areaSelect {
+  margin-left: 10px;
+  color: #4b5563; /* 기본 글자색 */
+  background-color: #f3f4f6; /* 기본 배경색 */
+  border: none;
+  padding: 10px 20px;
+  height: 44px;
+  line-height: 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  box-sizing: border-box;
+}
+
+.areaSelect:hover {
+  background-color: #e5e7eb; /* hover 시 밝은 회색 */
+}
+
+.areaSelect.active {
+  background-color: #3b82f6; /* 활성화 시 파란 배경 */
+  color: #ffffff; /* 활성화 시 흰 글자 */
 }

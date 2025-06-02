@@ -82,19 +82,20 @@ const SearchTest: React.FC = () => {
   const API_KEY = import.meta.env.VITE_API_KEY1
 
   useEffect(() => {
-    const q = new URLSearchParams(location.search).get('q') || ''
+    const params = new URLSearchParams(location.search)
+    const q = params.get('q') || ''
+    const area = params.get('areaCode') || ''
+    const dist = params.get('district') || ''
+
     setSearchTerm(q)
-    setSubmittedTerm(q)
+    setAreaCode(area)
+    setDistrict(dist)
+    setSubmittedTerm(q || area || dist ? q : '') // 적어도 하나라도 있으면 검색 실행
     setCurrentPage(1)
   }, [location.search])
 
   const fetchResults = useCallback(
     async (term: string) => {
-      if (!term.trim() && !areaCode && !district) {
-        setResults([])
-        return
-      }
-
       setLoading(true)
       setError(null)
 
@@ -102,7 +103,7 @@ const SearchTest: React.FC = () => {
         let url = ''
 
         if (term.trim()) {
-          // 검색어 기반
+          // 🔍 검색어 기반
           url = [
             `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
@@ -116,8 +117,8 @@ const SearchTest: React.FC = () => {
           ]
             .filter(Boolean)
             .join('&')
-        } else if (areaCode || district) {
-          // 지역 기반
+        } else {
+          // 🌐 전체 지역 또는 지역 기반
           url = [
             `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
@@ -160,7 +161,7 @@ const SearchTest: React.FC = () => {
 
   useEffect(() => {
     fetchResults(submittedTerm)
-  }, [submittedTerm, fetchResults])
+  }, [submittedTerm, areaCode, district, fetchResults])
 
   useEffect(() => {
     if (submittedTerm.trim()) {
@@ -218,7 +219,7 @@ const SearchTest: React.FC = () => {
       <header className={styles.appHeader}>
         <form onSubmit={handleSubmit} className={styles.searchBar}>
           <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-          <button type="button" className={styles.areaSelect} onClick={() => setAreaModalOpen(true)}>
+          <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setAreaModalOpen(true)}>
             {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
           </button>
 

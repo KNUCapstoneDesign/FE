@@ -294,12 +294,12 @@
 }
 .areaSelect {
   margin-left: 10px;
-  background-color: #000;
-  color: #fff;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  border: none;
   padding: 10px 20px;
   height: 44px;
   line-height: 24px;
-  border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
@@ -308,5 +308,10 @@
 }
 
 .areaSelect:hover {
-  background-color: #2563eb;
+  background-color: #e5e7eb;
+}
+
+.areaSelect.active {
+  background-color: #3b82f6;
+  color: #ffffff;
 }
