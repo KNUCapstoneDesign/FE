@@ -21,24 +21,31 @@ const TestPage: React.FC = () => {
   useEffect(() => {
     const fetchTourData = async () => {
       try {
-        const res = await fetch(
-          `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?` +
-            `serviceKey=${API_KEY}` +
-            `&numOfRows=10` +
-            `&pageNo=1` +
-            `&MobileOS=ETC` +
-            `&MobileApp=TestApp` +
-            `&_type=json` +
-            `&contentTypeId=25` + // 여행코스만
-            `&areaCode=1`,
-        )
-        if (!res.ok) {
-          throw new Error('API 호출 실패')
-        }
-        const json = await res.json()
-        const items = json.response.body.items.item as TourItem | TourItem[] | undefined
-        const arr = items ? (Array.isArray(items) ? items : [items]) : []
-        setData(arr)
+        let all: TourItem[] = []
+        let page = 1
+        let totalCount = 0
+        const numOfRows = 100
+        do {
+          const res = await fetch(
+            `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?` +
+              `serviceKey=${API_KEY}` +
+              `&numOfRows=${numOfRows}` +
+              `&pageNo=${page}` +
+              `&MobileOS=ETC` +
+              `&MobileApp=TestApp` +
+              `&_type=json` +
+              `&contentTypeId=25` +
+              `&areaCode=1`,
+          )
+          if (!res.ok) throw new Error('API 호출 실패')
+          const json = await res.json()
+          const items = json.response.body.items.item as TourItem | TourItem[] | undefined
+          const arr = items ? (Array.isArray(items) ? items : [items]) : []
+          all = all.concat(arr)
+          totalCount = json.response.body.totalCount
+          page++
+        } while (all.length < totalCount && page <= Math.ceil(totalCount / numOfRows))
+        setData(all)
       } catch (e) {
         console.error(e)
         setError((e as Error).message)
@@ -49,11 +56,16 @@ const TestPage: React.FC = () => {
     fetchTourData()
   }, [API_KEY])
 
-  // 데이터 중 랜덤 3개만
-  const sample3 = React.useMemo(() => {
-    if (data.length <= 3) return data
-    // shuffle copy
-    return [...data].sort(() => Math.random() - 0.5).slice(0, 3)
+  // 데이터 중 랜덤 9개만 (전체 셔플)
+  const sample9 = React.useMemo(() => {
+    if (data.length <= 9) return data
+    // Fisher-Yates shuffle
+    const arr = [...data]
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr.slice(0, 9)
   }, [data])
 
   if (loading) return <p>불러오는 중...</p>
@@ -64,7 +76,7 @@ const TestPage: React.FC = () => {
       <h1 className={styles.courseh1}>🌟 이런 여행 코스는 어떠세요?</h1>
       <div className={styles.hotCourses}>
         <div className={styles.courseList}>
-          {sample3.map((course) => (
+          {sample9.map((course) => (
             <div key={course.contentid} className={styles.courseCard}>
               <img src={course.firstimage || course1} alt={course.title} className={styles.courseImage} />
               <h3>{course.title}</h3>
