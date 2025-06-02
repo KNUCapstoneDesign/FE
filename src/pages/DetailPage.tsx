@@ -255,12 +255,37 @@ const DetailPage: React.FC = () => {
           `contentId=${id}`,
           `contentTypeId=${typeid}`,
         ].join('&')
+        // detailInfo1 API (여행코스용)
+        let infoJson = null
+        if (typeid === '25') {
+          const infoUrl = [
+            `https://apis.data.go.kr/B551011/KorService1/detailInfo1?serviceKey=${API_KEY}`,
+            `MobileOS=ETC`,
+            `MobileApp=TestAPP`,
+            `_type=json`,
+            `contentId=${id}`,
+            `contentTypeId=${typeid}`,
+          ].join('&')
+          const infoRes = await fetch(infoUrl)
+          infoJson = await infoRes.json()
+          // 콘솔에 detailInfo1 결과 출력
+          console.log('detailInfo1:', infoJson)
+        }
 
-        const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
+        const [commonRes, imageRes, introRes] = await Promise.all([
+          fetch(commonUrl),
+          fetch(imageUrl),
+          fetch(introUrl),
+        ])
 
         const commonJson = await commonRes.json()
         const imageJson = await imageRes.json()
         const introJson = await introRes.json()
+
+        // 모든 API 응답을 콘솔에 출력
+        console.log('detailCommon1:', commonJson)
+        console.log('detailImage1:', imageJson)
+        console.log('detailIntro1:', introJson)
 
         const rawItem = commonJson.response?.body?.items?.item
         const item = Array.isArray(rawItem) ? rawItem[0] : rawItem

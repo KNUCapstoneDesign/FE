@@ -71,10 +71,10 @@
 
 .dayBadge {
   position: absolute;
-  left: -70px;
+  left: -89px;
   top: -5px;
   padding: 6px 14px;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   border-radius: 12px;
   background-color: #7c3aed;
   color: #fff;

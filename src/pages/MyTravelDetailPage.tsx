@@ -58,7 +58,7 @@ const MyTravelDetailPage: React.FC = () => {
     if (!missing.length) return;
 
     const fetchAll = async () => {
-      const updates: Record<number, { title: string; firstimage: string }> = {};
+      const updates: Record<  number, { title: string; firstimage: string }> = {};
       await Promise.all(
         missing.map(async (p) => {
           const info = await fetchPlaceInfo(p.contentid, p.contenttypeid);
@@ -77,16 +77,19 @@ const MyTravelDetailPage: React.FC = () => {
     const numB = parseInt(b.replace(/[^0-9]/g, ''), 10)
     return numA - numB
   })
+  // All 탭 추가
+  const allKey = 'All'
+  const tabKeys = [allKey, ...dayKeys]
   // useState는 항상 첫 렌더링 때만 dayKeys[0]을 씁니다
-  const [selectedDay, setSelectedDay] = React.useState<string>(dayKeys[0] || '')
+  const [selectedDay, setSelectedDay] = React.useState<string>(tabKeys[0] || '')
 
   // dayKeys가 바뀌어서 selectedDay가 더 이상 없을 때만 리셋
   React.useEffect(() => {
-    if (!selectedDay || !dayKeys.includes(selectedDay)) {
-      setSelectedDay(dayKeys[0] || '')
+    if (!selectedDay || !tabKeys.includes(selectedDay)) {
+      setSelectedDay(tabKeys[0] || '')
     }
     // eslint-disable-next-line
-  }, [dayKeys.join(',')]) // dayKeys가 바뀔 때만
+  }, [tabKeys.join(',')]) // tabKeys가 바뀔 때만
 
   if (!course) return <div>일정 정보를 찾을 수 없습니다.</div>
 
@@ -100,9 +103,9 @@ const MyTravelDetailPage: React.FC = () => {
           <div className={styles.dateRange}>{period}</div>
         </div>
         <div className={styles.dayTabWrapper}>
-          {dayKeys.map((dayKey) => (
+          {tabKeys.map((dayKey) => (
             <button key={dayKey} className={`${styles.dayTabBtn} ${selectedDay === dayKey ? styles.activeDayTab : ''}`} onClick={() => setSelectedDay(dayKey)} type="button">
-              {dayKey}
+              {dayKey === allKey ? 'All' : dayKey}
             </button>
           ))}
         </div>
@@ -110,33 +113,64 @@ const MyTravelDetailPage: React.FC = () => {
           <div className={styles.timeline}>
             <div className={styles.verticalLine} />
             <div className={styles.dayCards}>
-              <div className={styles.dayGroup}>
-                <div className={styles.dayBadge}>{selectedDay}</div>
-                <div className={styles.cardsWrapper}>
-                  {days[selectedDay]
-                    ?.slice()
-                    .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
-                    .map((place) => (
-                      <div className={styles.placeCard} key={place.contentid}>
-                        <div className={styles.placeCardImageWrap}>
-                          <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
-                          <span className={styles.placeTime}>{place.time || '시간 정보 없음'}</span>
-                        </div>
-                        <div className={styles.placeCardContent}>
-                          <div className={styles.placeTitleRow}>
-                            <div>
-                              <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
-                              {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
+              {selectedDay === allKey ? (
+                // All 탭: 날짜별로 그룹핑해서 출력
+                dayKeys.map((dayKey) => (
+                  <div className={styles.dayGroup} key={dayKey}>
+                    <div className={styles.dayBadge}>{dayKey}</div>
+                    <div className={styles.cardsWrapper}>
+                      {(days[dayKey] || [])
+                        .slice()
+                        .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
+                        .map((place) => (
+                          <div className={styles.placeCard} key={place.contentid}>
+                            <div className={styles.placeCardImageWrap}>
+                              <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
                             </div>
-                            <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
-                              상세 정보 {'>'}
-                            </button>
+                            <div className={styles.placeCardContent}>
+                              <div className={styles.placeTitleRow}>
+                                <div>
+                                  <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
+                                  {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
+                                </div>
+                                <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
+                                  상세 정보 {'>'}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.dayGroup}>
+                  <div className={styles.dayBadge}>{selectedDay}</div>
+                  <div className={styles.cardsWrapper}>
+                    {(days[selectedDay] || [])
+                      .slice()
+                      .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
+                      .map((place) => (
+                        <div className={styles.placeCard} key={place.contentid}>
+                          <div className={styles.placeCardImageWrap}>
+                            <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
+                          </div>
+                          <div className={styles.placeCardContent}>
+                            <div className={styles.placeTitleRow}>
+                              <div>
+                                <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
+                                {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
+                              </div>
+                              <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
+                                상세 정보 {'>'}
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
