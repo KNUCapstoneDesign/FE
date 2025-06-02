@@ -455,3 +455,56 @@
   }
 }
 
+/* ===== 메뉴 섹션 ===== */
+.menuSection {
+  margin-top: 2rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+}
+.menuSection h2 {
+  font-size: 1.15rem;
+  color: #2563eb;
+  margin-bottom: 0.7rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.4rem;
+  text-align: left;
+}
+.menuSection ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.menuSection li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #e5e7eb;
+  font-size: 1.05rem;
+  color: #333;
+}
+.menuSection li:last-child {
+  border-bottom: none;
+}
+.menuSection .menuName {
+  font-weight: 500;
+  color: #222;
+}
+.menuSection .menuPrice {
+  color: #2563eb;
+  font-weight: 500;
+  margin-left: 1.2rem;
+  min-width: 80px;
+  text-align: right;
+}
+@media (max-width: 700px) {
+  .menuSection {
+    padding: 1rem 0.7rem 1.2rem 0.7rem;
+  }
+  .menuSection li {
+    font-size: 0.98rem;
+  }
+}
