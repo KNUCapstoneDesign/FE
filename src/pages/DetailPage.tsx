@@ -74,6 +74,7 @@ const DetailPage: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
+  const [courseSpots, setCourseSpots] = useState<any[]>([])
 
   useEffect(() => {
     if (!data?.mapx || !data.mapy) return
@@ -257,6 +258,7 @@ const DetailPage: React.FC = () => {
         ].join('&')
         // detailInfo1 API (여행코스용)
         let infoJson = null
+        let courseSpotsArr: any[] = []
         if (typeid === '25') {
           const infoUrl = [
             `https://apis.data.go.kr/B551011/KorService1/detailInfo1?serviceKey=${API_KEY}`,
@@ -268,8 +270,38 @@ const DetailPage: React.FC = () => {
           ].join('&')
           const infoRes = await fetch(infoUrl)
           infoJson = await infoRes.json()
-          // 콘솔에 detailInfo1 결과 출력
           console.log('detailInfo1:', infoJson)
+          // 하위 코스별 장소 정보 요청
+          const items = infoJson.response?.body?.items?.item || []
+          const arr = Array.isArray(items) ? items : [items]
+          // subcontentid로 detailCommon1 요청
+          courseSpotsArr = await Promise.all(
+            arr.map(async (spot) => {
+              if (!spot.subcontentid) return null
+              const spotUrl = [
+                `https://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${API_KEY}`,
+                `MobileOS=ETC`,
+                `MobileApp=TestAPP`,
+                `_type=json`,
+                `contentId=${spot.subcontentid}`,
+                `defaultYN=Y`,
+                `firstImageYN=Y`,
+              ].join('&')
+              try {
+                const res = await fetch(spotUrl)
+                const json = await res.json()
+                const item = json.response?.body?.items?.item
+                const info = Array.isArray(item) ? item[0] : item
+                return {
+                  ...spot,
+                  detail: info,
+                }
+              } catch (e) {
+                return { ...spot, detail: null }
+              }
+            })
+          )
+          setCourseSpots(courseSpotsArr.filter(Boolean))
         }
 
         const [commonRes, imageRes, introRes] = await Promise.all([
@@ -472,6 +504,27 @@ const DetailPage: React.FC = () => {
         <h2>상세 설명</h2>
         <p>{data.overview || '설명 정보 없음'}</p>
       </div>
+      {/* 여행코스 하위 장소 정보 */}
+      {data.contentTypeId === 25 && courseSpots.length > 0 && (
+        <div className={styles.courseSpotsSection}>
+          <h2>코스별 주요 장소</h2>
+          <ul className={styles.courseSpotsList}>
+            {courseSpots.map((spot, idx) => (
+              <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
+                <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
+                  <div className={styles.courseSpotImgWrap}>
+                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                  </div>
+                  <div className={styles.courseSpotInfo}>
+                    <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
+                    <div>{spot.subdetailoverview || spot.detail?.overview || '설명 없음'}</div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {isModalOpen && selectedImage && (
         <div className={styles.modalOverlay} onClick={closeModal}>
