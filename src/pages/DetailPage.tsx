@@ -299,16 +299,12 @@ const DetailPage: React.FC = () => {
               } catch (e) {
                 return { ...spot, detail: null }
               }
-            })
+            }),
           )
           setCourseSpots(courseSpotsArr.filter(Boolean))
         }
 
-        const [commonRes, imageRes, introRes] = await Promise.all([
-          fetch(commonUrl),
-          fetch(imageUrl),
-          fetch(introUrl),
-        ])
+        const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
 
         const commonJson = await commonRes.json()
         const imageJson = await imageRes.json()
@@ -451,7 +447,10 @@ const DetailPage: React.FC = () => {
           ))}
         </Swiper>
       </div>
-
+      <div className={styles.detailDescription}>
+        <h2>상세 설명</h2>
+        <p>{data.overview || '설명 정보 없음'}</p>
+      </div>
       <div className={styles.infoSection}>
         <div className={styles.infoBox}>
           <h2>기본 정보</h2>
@@ -500,10 +499,6 @@ const DetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.detailDescription}>
-        <h2>상세 설명</h2>
-        <p>{data.overview || '설명 정보 없음'}</p>
-      </div>
       {/* 여행코스 하위 장소 정보 */}
       {data.contentTypeId === 25 && courseSpots.length > 0 && (
         <div className={styles.courseSpotsSection}>
