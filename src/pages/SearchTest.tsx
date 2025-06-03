@@ -86,10 +86,13 @@ const SearchTest: React.FC = () => {
     const q = params.get('q') || ''
     const area = params.get('areaCode') || ''
     const dist = params.get('district') || ''
+    const distName = params.get('districtName') || ''
+
 
     setSearchTerm(q)
     setAreaCode(area)
     setDistrict(dist)
+    setDistrictName(distName)
     setSubmittedTerm(q || area || dist ? q : '') // 적어도 하나라도 있으면 검색 실행
     setCurrentPage(1)
   }, [location.search])
@@ -159,22 +162,39 @@ const SearchTest: React.FC = () => {
     [API_KEY, areaCode, district],
   )
 
+  // Hero에서 넘어올 때 쿼리가 있으면 바로 검색결과를 보여줌
   useEffect(() => {
-    fetchResults(submittedTerm)
-  }, [submittedTerm, areaCode, district, fetchResults])
+    const params = new URLSearchParams(location.search)
+    const q = params.get('q') || ''
+    const area = params.get('areaCode') || ''
+    const dist = params.get('district') || ''
+    const distName = params.get('districtName') || ''
 
-  useEffect(() => {
-    if (submittedTerm.trim()) {
-      navigate(`/searchtest?q=${encodeURIComponent(submittedTerm)}`)
+    setSearchTerm(q)
+    setAreaCode(area)
+    setDistrict(dist)
+    setDistrictName(distName)
+    setCurrentPage(1)
+    // 쿼리가 있으면 바로 검색 (필터 적용)
+    if (q.trim() || area || dist) {
+      fetchResults(q || '')
     } else {
-      navigate('/searchtest')
+      setResults([])
     }
-  }, [submittedTerm, navigate])
+  }, [location.search, fetchResults, areaCode, district])
 
+  // 검색 버튼을 눌렀을 때만 검색 실행
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setCurrentPage(1)
-    setSubmittedTerm(searchTerm)
+    const params = new URLSearchParams()
+    if (searchTerm.trim()) params.append('q', searchTerm.trim())
+    if (areaCode) params.append('areaCode', areaCode)
+    if (district) params.append('district', district)
+    if (districtName) params.append('districtName', districtName)
+    navigate(`/searchtest?${params.toString()}`)
+    // 검색 버튼을 눌렀을 때만 fetchResults
+    fetchResults(searchTerm)
   }
 
   const filtered = React.useMemo(() => {
