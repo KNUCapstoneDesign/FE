@@ -97,16 +97,18 @@ const SearchTest: React.FC = () => {
     setCurrentPage(1)
   }, [location.search])
 
+  // fetchResults: 파라미터를 명시적으로 받아서 항상 최신값 사용
   const fetchResults = useCallback(
-    async (term: string) => {
+    async (
+      term: string,
+      areaParam: string = areaCode,
+      districtParam: string = district
+    ) => {
       setLoading(true)
       setError(null)
-
       try {
         let url = ''
-
         if (term.trim()) {
-          // 🔍 검색어 기반
           url = [
             `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
@@ -115,13 +117,12 @@ const SearchTest: React.FC = () => {
             `MobileApp=TestApp`,
             `_type=json`,
             `keyword=${encodeURIComponent(term)}`,
-            areaCode && `areaCode=${areaCode}`,
-            areaCode && district && `sigunguCode=${district}`,
+            areaParam && `areaCode=${areaParam}`,
+            areaParam && districtParam && `sigunguCode=${districtParam}`,
           ]
             .filter(Boolean)
             .join('&')
         } else {
-          // 🌐 전체 지역 또는 지역 기반
           url = [
             `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
@@ -129,18 +130,16 @@ const SearchTest: React.FC = () => {
             `MobileOS=ETC`,
             `MobileApp=TestApp`,
             `_type=json`,
-            areaCode && `areaCode=${areaCode}`,
-            district && `sigunguCode=${district}`,
+            areaParam && `areaCode=${areaParam}`,
+            districtParam && `sigunguCode=${districtParam}`,
           ]
             .filter(Boolean)
             .join('&')
         }
-
         const res = await fetch(url)
         const json = await res.json()
         const raw = json.response?.body?.items?.item as RawTourItem | RawTourItem[] | undefined
         const arr: RawTourItem[] = raw ? (Array.isArray(raw) ? raw : [raw]) : []
-
         const parsed: TourItem[] = arr.map((item) => ({
           contentid: Number(item.contentid),
           firstimage: item.firstimage,
@@ -151,18 +150,15 @@ const SearchTest: React.FC = () => {
           mapx: item.mapx ? Number(item.mapx) : undefined,
           mapy: item.mapy ? Number(item.mapy) : undefined,
         }))
-
         setResults(parsed)
       } catch {
         setError('데이터를 불러오는 중 오류가 발생했습니다.')
       } finally {
         setLoading(false)
       }
-    },
-    [API_KEY, areaCode, district],
-  )
+    }, [API_KEY])
 
-  // Hero에서 넘어올 때 쿼리가 있으면 바로 검색결과를 보여줌 (0.3초 딜레이)
+  // Hero에서 넘어올 때 쿼리가 있으면 0.3초 뒤에 검색결과를 보여줌 (필터 적용)
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const q = params.get('q') || ''
@@ -178,13 +174,22 @@ const SearchTest: React.FC = () => {
     // 쿼리가 있으면 0.3초 뒤에 검색 (필터 적용)
     if (q.trim() || area || dist) {
       const timer = setTimeout(() => {
-        fetchResults(q)
+        fetchResults(q, area, dist)
       }, 300)
       return () => clearTimeout(timer)
     } else {
       setResults([])
     }
   }, [location.search, fetchResults])
+
+  // 지역(시/군/구) 필터가 변경될 때마다 자동으로 검색 실행
+  useEffect(() => {
+    // 검색어 입력 중에는 자동 검색 방지, 검색어가 그대로거나 비어있을 때만 동작
+    if (areaCode || district) {
+      fetchResults(searchTerm, areaCode, district)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [areaCode, district, districtName])
 
   // 검색 버튼을 눌렀을 때만 검색 실행
   const handleSubmit = (e: React.FormEvent) => {
@@ -197,7 +202,7 @@ const SearchTest: React.FC = () => {
     if (districtName) params.append('districtName', districtName)
     navigate(`/searchtest?${params.toString()}`)
     // 검색 버튼을 눌렀을 때만 fetchResults
-    fetchResults(searchTerm)
+    fetchResults(searchTerm, areaCode, district)
   }
 
   const filtered = React.useMemo(() => {
