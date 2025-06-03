@@ -64,7 +64,7 @@ const AREA_LIST = [
 
 const SearchTest: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [submittedTerm, setSubmittedTerm] = useState('')
+  const [, setSubmittedTerm] = useState('')
   const [areaCode, setAreaCode] = useState('')
   const [district, setDistrict] = useState<string>('')
   const [areaModalOpen, setAreaModalOpen] = useState(false)
