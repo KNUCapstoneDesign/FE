@@ -102,7 +102,7 @@
 .placeCardImageWrap {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 500px;
   overflow: hidden;
   border-bottom: 1px solid #eee;
 }
