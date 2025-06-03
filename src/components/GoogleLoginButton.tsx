@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {useAuthStore} from '../store/useAuthStore.ts'
+import styles from '../assets/LoginPage.module.css'
 
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
@@ -44,10 +45,16 @@ const GoogleLoginButton = () => {
   }, []);
 
   return (
-    <button onClick={handleLogin}>
+    <button onClick={handleLogin} className={styles.googleLoginButton}>
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google Logo"
+        style={{ width: 20, height: 20, marginRight: 8, verticalAlign: 'middle' }}
+      />
       구글로 로그인하기
     </button>
   );
 };
 
 export default GoogleLoginButton;
+
