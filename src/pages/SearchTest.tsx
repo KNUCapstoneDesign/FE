@@ -162,7 +162,7 @@ const SearchTest: React.FC = () => {
     [API_KEY, areaCode, district],
   )
 
-  // Hero에서 넘어올 때 쿼리가 있으면 바로 검색결과를 보여줌
+  // Hero에서 넘어올 때 쿼리가 있으면 바로 검색결과를 보여줌 (0.3초 딜레이)
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const q = params.get('q') || ''
@@ -175,13 +175,16 @@ const SearchTest: React.FC = () => {
     setDistrict(dist)
     setDistrictName(distName)
     setCurrentPage(1)
-    // 쿼리가 있으면 바로 검색 (필터 적용)
+    // 쿼리가 있으면 0.3초 뒤에 검색 (필터 적용)
     if (q.trim() || area || dist) {
-      fetchResults(q || '')
+      const timer = setTimeout(() => {
+        fetchResults(q)
+      }, 300)
+      return () => clearTimeout(timer)
     } else {
       setResults([])
     }
-  }, [location.search, fetchResults, areaCode, district])
+  }, [location.search, fetchResults])
 
   // 검색 버튼을 눌렀을 때만 검색 실행
   const handleSubmit = (e: React.FormEvent) => {
