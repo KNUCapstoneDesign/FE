@@ -107,7 +107,14 @@ export const useMyTravelStore = create<MyTravelState>()(
       },
 
       // 4. 전체 일정(코스) 제거
-      removeCourse: (courseId) => {
+      removeCourse: async (courseId) => {
+        try {
+          await fetch(`http://localhost:5001/api/schedules/${courseId}`, {
+            method: 'DELETE',
+          })
+        } catch (err) {
+          console.error('일정 서버 삭제 실패:', err)
+        }
         set((state) => ({
           courses: state.courses.filter((c) => c.id !== courseId),
         }))

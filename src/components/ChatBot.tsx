@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import styles from '../assets/ChatBot.module.css';
 import axios from 'axios';
 
@@ -67,7 +67,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
     setInput('');
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
