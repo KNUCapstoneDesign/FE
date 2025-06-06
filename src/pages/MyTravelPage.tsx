@@ -195,7 +195,9 @@ const MyTravelPage: React.FC = () => {
                 className={styles.removeButton}
                 onClick={(e) => {
                   e.stopPropagation()
-                  removeCourse(course.id!)
+                  if (window.confirm('정말 이 일정을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.')) {
+                    removeCourse(course.id!)
+                  }
                 }}>
                 일정 삭제
               </button>
