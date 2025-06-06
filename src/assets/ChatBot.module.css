@@ -1,0 +1,115 @@
+.modalOverlay {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: auto;
+  max-height: 50vh;
+  height: auto;
+  background: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 2000;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  width: 420px;
+  min-height: 520px;
+  max-height: 70vh;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px 20px;
+  background: #1976d2;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.chatBox {
+  flex: 1;
+  padding: 18px 16px 8px 16px;
+  background: #f4f6f8;
+  overflow-y: auto;
+  font-size: 1rem;
+}
+
+.botMessage {
+  align-self: flex-start;
+  margin-bottom: 10px;
+  background: #e3eafc;
+  color: #1976d2;
+  padding: 10px 14px;
+  border-radius: 12px 12px 12px 4px;
+  max-width: 90%;
+  word-break: break-word;
+}
+
+.userMessage {
+  align-self: flex-end;
+  margin-bottom: 10px;
+  background: #1976d2;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px 12px 4px 12px;
+  max-width: 90%;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  width: 100%;
+}
+
+.input {
+  flex: 8 1 0%;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #fff;
+  margin-right: 8px;
+  min-width: 0;
+}
+
+.sendBtn {
+  flex: 2 1 0%;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 0;
+  width: auto;
+  flex-shrink: 1;
+}
+.sendBtn:disabled {
+  background: #b0b8c1;
+  cursor: not-allowed;
+}

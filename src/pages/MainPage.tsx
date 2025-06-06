@@ -5,11 +5,13 @@ import HotCourses from '../components/TestPage.tsx'
 import { useAuthStore } from '../store/useAuthStore.ts'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import ChatBot from '../components/ChatBot.tsx'
 
 const MainPage = () => {
   const navigate = useNavigate()
   const { login } = useAuthStore()
+  const [showChatBot, setShowChatBot] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -49,8 +51,13 @@ const MainPage = () => {
         <br />
       </div>
       <div className={styles.HotCourseContainer}></div>
+      <button className={styles.chatbotButton} title="챗봇" onClick={() => setShowChatBot(true)}>
+        💬
+      </button>
+      {showChatBot && <ChatBot onClose={() => setShowChatBot(false)} />}
     </div>
   )
 }
 
 export default MainPage
+
