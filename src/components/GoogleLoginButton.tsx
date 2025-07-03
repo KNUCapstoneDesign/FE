@@ -23,7 +23,7 @@ const GoogleLoginButton = () => {
     if (!code) return;
 
     try {
-      const res = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/google', { code }, {
+      const res = await axios.post('https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/google', { code }, {
         withCredentials: true
       });
 
