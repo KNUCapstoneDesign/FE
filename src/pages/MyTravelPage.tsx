@@ -40,7 +40,7 @@ const MyTravelPage: React.FC = () => {
     if (!userId) return
     let isMounted = true
 
-    fetch(`https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/full-schedule?user_id=${userId}`)
+    fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/full-schedule?user_id=${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch full schedules')
         return res.json()

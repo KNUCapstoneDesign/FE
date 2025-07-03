@@ -26,7 +26,7 @@ const MyPage = () => {
 
     try {
       await axios.post(
-        'https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/change-password',
+        'https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/change-password',
         { email, newPassword },
         { headers: { Authorization: `Bearer ${token}` } },
       )
