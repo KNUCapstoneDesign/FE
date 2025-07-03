@@ -170,7 +170,9 @@ const DetailPage: React.FC = () => {
       if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
 
       try {
-        const res = await fetch(`https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`)
+        const res = await fetch(`https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`, {
+          credentials: 'include', // withCredentials: true와 동일한 효과
+        })
         const json = await res.json()
         setMenus(json.menus)
       } catch (err) {

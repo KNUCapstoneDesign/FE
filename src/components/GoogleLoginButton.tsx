@@ -23,7 +23,9 @@ const GoogleLoginButton = () => {
     if (!code) return;
 
     try {
-      const res = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/google', { code });
+      const res = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/google', { code }, {
+        withCredentials: true
+      });
 
       const { isExistingMember, token, name, email, phone, user_id } = res.data;
       login({ userId: user_id, token, name, email, phone });
