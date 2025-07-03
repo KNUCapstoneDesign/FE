@@ -12,7 +12,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: 'https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app',
         changeOrigin: true,
         secure: false,
       },
