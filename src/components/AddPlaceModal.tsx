@@ -31,7 +31,7 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
     if (!selectedCourseId || !place.contentid) return
 
     try {
-      await axios.post('http://localhost:5001/api/schedulespots', {
+      await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/schedulespots', {
         user_id: userId,
         schedule_id: Number(selectedCourseId),
         day: Number(day),

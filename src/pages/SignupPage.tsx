@@ -33,7 +33,7 @@ const SignupPage = () => {
     }
     // 서버로 회원가입 요청
     try {
-      const response = await axios.post('http://localhost:5001/api/auth/signup', {
+      const response = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/signup', {
         name: formData.name,
         email: formData.email,
         password: formData.password,

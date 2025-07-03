@@ -20,7 +20,7 @@ const MainPage = () => {
 
     const fetchUserData = async () => {
       try {
-        const res = await axios.post('http://localhost:5001/api/auth/google', { code })
+        const res = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/google', { code })
         const { token, name, email, phone, isExistingMember, user_id } = res.data
 
         // AuthStore에 로그인 정보 저장
@@ -60,4 +60,3 @@ const MainPage = () => {
 }
 
 export default MainPage
-

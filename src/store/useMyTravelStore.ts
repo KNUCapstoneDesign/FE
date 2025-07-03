@@ -50,7 +50,7 @@ export const useMyTravelStore = create<MyTravelState>()(
         if (exists) return
 
         try {
-          const res = await fetch('http://localhost:5001/api/schedules', {
+          const res = await fetch('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/schedules', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export const useMyTravelStore = create<MyTravelState>()(
       // 4. 전체 일정(코스) 제거
       removeCourse: async (courseId) => {
         try {
-          await fetch(`http://localhost:5001/api/schedules/${courseId}`, {
+          await fetch(`https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/schedules/${courseId}`, {
             method: 'DELETE',
           })
         } catch (err) {

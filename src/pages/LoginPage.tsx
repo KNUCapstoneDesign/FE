@@ -16,7 +16,7 @@ const LoginPage = () => {
     e.preventDefault()
 
     try {
-      const response = await axios.post('http://localhost:5001/api/auth/login', {
+      const response = await axios.post('https://port-0-planit-be-mcmt59q6ef387a77.sel5.cloudtype.app/api/auth/login', {
         email,
         password,
       })
