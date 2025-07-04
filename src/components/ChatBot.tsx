@@ -44,7 +44,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
         { role: 'user', content: question },
       ];
       const response = await axios.post(
-        '/api/chatbot',
+        'https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/chatbot',
         {
           messages: apiMessages,
         }
