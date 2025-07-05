@@ -521,9 +521,11 @@ const DetailPage: React.FC = () => {
           <ul className={styles.courseSpotsList}>
             {courseSpots.map((spot, idx) => (
               <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
-                <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
+                <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`}
+                      className={styles.courseSpotLink}>
                   <div className={styles.courseSpotImgWrap}>
-                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'}
+                         alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
                   </div>
                   <div className={styles.courseSpotInfo}>
                     <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
@@ -572,7 +574,8 @@ const DetailPage: React.FC = () => {
           <h2>주변 장소</h2>
           <div className={styles.recommendList}>
             {nearbyPlaces.map((place) => (
-              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
+                    className={styles.recommendCard}>
                 <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                 <div className={styles.recommendTitle}>{place.title}</div>
               </Link>
@@ -587,7 +590,8 @@ const DetailPage: React.FC = () => {
           <h2>🔥 이 지역의 인기 장소</h2>
           <div className={styles.recommendList}>
             {popularPlaces.map((place) => (
-              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
+                    className={styles.recommendCard}>
                 <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                 <div className={styles.recommendTitle}>{place.title}</div>
               </Link>
