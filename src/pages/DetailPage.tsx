@@ -301,7 +301,7 @@ const DetailPage: React.FC = () => {
                 return {
                   ...spot,
                   detail: info,
-                } 
+                }
               } catch (e) {
                 return { ...spot, detail: null }
               }
@@ -492,7 +492,7 @@ const DetailPage: React.FC = () => {
               {menusLoading ? (
                 <div className={styles.menuLoadingWrapper}>
                   <div className={styles.menuSpinner}></div>
-                  <div>메뉴 탐색중...</div>
+                  <div>메뉴 탐색중...(3~40초 소요)</div>
                 </div>
               ) : menus && menus.length > 0 ? (
                 <ul>
