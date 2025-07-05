@@ -8,7 +8,7 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import AddPlaceModal from '../components/AddPlaceModal'
-import { Place } from '../store/useMyTravelStore'
+import { Place, useMyTravelStore } from '../store/useMyTravelStore'
 
 interface NearbyPlace {
   contentid: string
@@ -71,6 +71,9 @@ const DetailPage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
+  // zustand 메뉴 캐시 활용
+  const menuCache = useMyTravelStore((s) => s.menuCache)
+  const setMenuCache = useMyTravelStore((s) => s.setMenuCache)
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
@@ -166,22 +169,26 @@ const DetailPage: React.FC = () => {
   )
 
   useEffect(() => {
+    if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
+    // 메뉴 캐시 확인
+    if (menuCache[data.title]) {
+      setMenus(menuCache[data.title])
+      return
+    }
     const fetchMenus = async () => {
-      if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
-
       try {
         const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`, {
-          credentials: 'include', // withCredentials: true와 동일한 효과
+          credentials: 'include',
         })
         const json = await res.json()
         setMenus(json.menus)
+        setMenuCache(data.title, json.menus)
       } catch (err) {
         console.error('메뉴 가져오기 실패:', err)
       }
     }
-
     fetchMenus()
-  }, [data])
+  }, [data, menuCache, setMenuCache])
 
   // Naver Map 스크립트 삽입
   useEffect(() => {
