@@ -187,9 +187,15 @@ const DetailPage: React.FC = () => {
     fetchMenus()
   }, [data])
 
-  // Naver Map 스크립트 삽입
+  // Naver Map 스크립트 삽입 (SPA 라우팅 대응)
   useEffect(() => {
+    // 이미 스크립트가 있으면 추가로 삽입하지 않음
+    if (document.getElementById('naver-map-script')) {
+      setIsMapScriptLoaded(true)
+      return
+    }
     const script = document.createElement('script')
+    script.id = 'naver-map-script'
     script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`
     script.async = true
     script.onload = () => {
@@ -200,25 +206,32 @@ const DetailPage: React.FC = () => {
       setError('지도 스크립트를 불러오지 못했습니다.')
     }
     document.head.appendChild(script)
-
-    return () => {
-      document.head.removeChild(script)
-    }
+    // SPA에서는 스크립트 제거하지 않음
+    return () => {}
   }, [NAVER_MAP_CLIENT_ID])
 
-  // 지도 생성
+  // 지도 생성 (window.naver가 완전히 로드될 때까지 polling)
   useEffect(() => {
-    if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const naver = (window as any).naver
-    if (!naver) return
-
-    const location = new naver.maps.LatLng(data.mapy, data.mapx)
-    const map = new naver.maps.Map(mapRef.current, {
-      center: location,
-      zoom: 14,
-    })
-    new naver.maps.Marker({ position: location, map })
+    if (!data?.mapx || !data.mapy || !mapRef.current) return
+    let timer: NodeJS.Timeout
+    function createMap() {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const naver = (window as any).naver
+      if (!naver || !naver.maps || !naver.maps.LatLng) {
+        timer = setTimeout(createMap, 100)
+        return
+      }
+      const location = new naver.maps.LatLng(data.mapy, data.mapx)
+      const map = new naver.maps.Map(mapRef.current, {
+        center: location,
+        zoom: 14,
+      })
+      new naver.maps.Marker({ position: location, map })
+    }
+    createMap()
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
   }, [isMapScriptLoaded, data])
 
   useEffect(() => {
