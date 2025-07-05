@@ -212,7 +212,7 @@ const DetailPage: React.FC = () => {
 
   // 지도 생성 (window.naver가 완전히 로드될 때까지 polling)
   useEffect(() => {
-    if (!data?.mapx || !data.mapy || !mapRef.current) return
+    if (!isMapScriptLoaded || !data || !data.mapx || !data.mapy || !mapRef.current) return
     let timer: NodeJS.Timeout
     function createMap() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
