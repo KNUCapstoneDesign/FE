@@ -71,6 +71,7 @@ const DetailPage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
+  const [menusLoading, setMenusLoading] = useState(false)
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
@@ -166,20 +167,23 @@ const DetailPage: React.FC = () => {
   )
 
   useEffect(() => {
+    if (data?.contentTypeId !== 39 || !data.title) return
+    setMenus(null)
+    setMenusLoading(true)
     const fetchMenus = async () => {
-      if (data?.contentTypeId !== 39 || !data.title) return // 음식점 아니면 무시
-
       try {
         const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`, {
-          credentials: 'include', // withCredentials: true와 동일한 효과
+          credentials: 'include',
         })
         const json = await res.json()
         setMenus(json.menus)
       } catch (err) {
         console.error('메뉴 가져오기 실패:', err)
+        setMenus(null)
+      } finally {
+        setMenusLoading(false)
       }
     }
-
     fetchMenus()
   }, [data])
 
@@ -482,16 +486,25 @@ const DetailPage: React.FC = () => {
               </span>
             </p>
           )}
-          {data.contentTypeId === 39 && menus && (
+          {data.contentTypeId === 39 && (
             <div className={styles.menuSection}>
               <h2>대표 메뉴</h2>
-              <ul>
-                {menus.map((menu, i) => (
-                  <li key={i}>
-                    {menu.name} - {menu.price || '가격 정보 없음'}
-                  </li>
-                ))}
-              </ul>
+              {menusLoading ? (
+                <div className={styles.menuLoadingWrapper}>
+                  <div className={styles.menuSpinner}></div>
+                  <div>메뉴 탐색중...</div>
+                </div>
+              ) : menus && menus.length > 0 ? (
+                <ul>
+                  {menus.map((menu, i) => (
+                    <li key={i}>
+                      {menu.name} - {menu.price || '가격 정보 없음'}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>메뉴 정보 없음</div>
+              )}
             </div>
           )}
         </div>
