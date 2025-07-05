@@ -36,17 +36,12 @@ interface MyTravelState {
   removeCourse: (courseId: string) => void
   updateCourseTitle: (id: string, newTitle: string) => void
   setCoursesFromDB: (courses: TravelCourse[]) => void
-  // 메뉴 캐시 추가
-  menuCache: { [name: string]: { name: string; price: string }[] }
-  setMenuCache: (name: string, menus: { name: string; price: string }[]) => void
 }
 
 export const useMyTravelStore = create<MyTravelState>()(
   persist(
     (set, get) => ({
       courses: [],
-      menuCache: {},
-      setMenuCache: (name, menus) => set((state) => ({ menuCache: { ...state.menuCache, [name]: menus } })),
 
       // 1. 일정(코스) 추가 (백엔드 연동)
       addCourse: async (title, startDate, endDate, userId) => {
