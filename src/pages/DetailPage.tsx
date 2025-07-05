@@ -301,7 +301,7 @@ const DetailPage: React.FC = () => {
                 return {
                   ...spot,
                   detail: info,
-                }
+                } 
               } catch (e) {
                 return { ...spot, detail: null }
               }
