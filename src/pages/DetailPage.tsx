@@ -209,16 +209,25 @@ const DetailPage: React.FC = () => {
   // 지도 생성
   useEffect(() => {
     if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const naver = (window as any).naver
-    if (!naver) return
-
-    const location = new naver.maps.LatLng(data.mapy, data.mapx)
-    const map = new naver.maps.Map(mapRef.current, {
-      center: location,
-      zoom: 14,
-    })
-    new naver.maps.Marker({ position: location, map })
+    let timer: NodeJS.Timeout | undefined
+    function createMap() {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const naver = (window as any).naver
+      if (!naver || !naver.maps || !naver.maps.LatLng) {
+        timer = setTimeout(createMap, 100)
+        return
+      }
+      const location = new naver.maps.LatLng(data.mapy, data.mapx)
+      const map = new naver.maps.Map(mapRef.current, {
+        center: location,
+        zoom: 14,
+      })
+      new naver.maps.Marker({ position: location, map })
+    }
+    createMap()
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
   }, [isMapScriptLoaded, data])
 
   useEffect(() => {
