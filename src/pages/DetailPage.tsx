@@ -177,9 +177,18 @@ const DetailPage: React.FC = () => {
     setMenus(null)
     setMenusLoading(true)
     setRating(null) // ⭐ 메뉴 로딩 시작 시 별점 초기화
+    // 주소에서 구 추출 (예: 서울특별시 종로구 인사동 12-3 → 종로구)
+    let gu = ''
+    if (data.addr1) {
+      const addrParts = data.addr1.split(' ')
+      if (addrParts.length >= 2) {
+        gu = addrParts[1]
+      }
+    }
+    const searchName = gu ? `${data.title} ${gu}` : data.title
     const fetchMenus = async () => {
       try {
-        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`,
+        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(searchName)}`,
           { credentials: 'include' })
         const json = await res.json()
         setMenus(json.menus)
