@@ -75,6 +75,7 @@
   gap: 2rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+  align-items: stretch;
 }
 
 .infoBox,
@@ -85,6 +86,9 @@
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .infoBox h2,
@@ -490,23 +494,22 @@
 
 /* ===== 메뉴 섹션 ===== */
 .menuSection {
-  margin-top: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
-  padding: 2rem 2.5rem 2.5rem 2.5rem;
+  margin-top: 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.07);
+  padding: 1.2rem 1.2rem 1.2rem 1.2rem;
   position: relative;
   overflow: hidden;
   border: 2px solid #dbeafe;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: auto;
 }
 .menuSection h2 {
-  font-size: 1.25rem;
-  color: #2563eb;
-  margin-bottom: 1.2rem;
-  font-weight: 700;
-  border-bottom: 2px solid #a5b4fc;
-  padding-bottom: 0.7rem;
-  text-align: left;
-  letter-spacing: 0.02em;
+  font-size: 1.05rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.3rem;
 }
 .menuSection ul {
   list-style: none;
@@ -517,102 +520,102 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.7rem 0.2rem;
-  border-bottom: 1px dashed #c7d2fe;
-  font-size: 1.13rem;
+  padding: 0.35rem 0.1rem;
+  font-size: 0.93rem;
   color: #222;
-  border-radius: 6px;
-  margin-bottom: 0.3rem;
+  border-radius: 4px;
+  margin-bottom: 0.18rem;
   transition: background 0.2s;
 }
 .menuSection li:last-child {
   border-bottom: none;
 }
 .menuSection .menuName {
-  font-weight: 600;
+  font-weight: 500;
   color: #3730a3;
-  font-size: 1.08em;
+  font-size: 0.97em;
   letter-spacing: 0.01em;
 }
 .menuSection .menuPrice {
   color: #2563eb;
-  font-weight: 600;
-  margin-left: 1.2rem;
-  min-width: 80px;
+  font-weight: 500;
+  margin-left: 0.7rem;
+  min-width: 60px;
   text-align: right;
-  font-size: 1.05em;
+  font-size: 0.93em;
 }
 .menuLoadingWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  margin: 1.2rem 0;
+  gap: 0.5rem;
+  margin: 0.7rem 0;
 }
 .menuSpinner {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #e0e7ef;
-  border-top: 5px solid #2563eb;
+  width: 32px;
+  height: 32px;
+  border: 4px solid #e0e7ef;
+  border-top: 4px solid #2563eb;
   border-radius: 50%;
   animation: menuSpin 1s linear infinite;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
-@keyframes menuSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  @keyframes menuSpin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
 }
 .menuSection .noMenu {
   color: #64748b;
-  font-size: 1.08rem;
+  font-size: 0.97rem;
   text-align: center;
-  margin-top: 1.2rem;
+  margin-top: 0.7rem;
   font-style: italic;
 }
 /* 평점 강조 */
 .menuRatingBox {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
-  margin-bottom: 1.2rem;
-  padding: 0.7rem 1.3rem;
-  box-shadow: 0 2px 8px rgba(251,191,36,0.08);
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  box-shadow: 0 1px 4px rgba(251,191,36,0.07);
   width: fit-content;
-  min-width: 160px;
+  min-width: 110px;
   position: relative;
 }
 .menuRatingBox .starRating {
-  font-size: 2.1rem;
-  margin-right: 0.5rem;
+  font-size: 1.3rem;
+  margin-right: 0.3rem;
   position: relative;
   top: 1px;
 }
 .menuRatingBox .ratingValue {
-  font-size: 1.45rem;
+  font-size: 1.05rem;
   color: #b45309;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.01em;
   text-shadow: 0 1px 0 #fffbe9;
 }
 .menuRatingBox .ratingLabel {
-  font-size: 1.05rem;
+  font-size: 0.93rem;
   color: #a16207;
   font-weight: 500;
-  margin-left: 0.5rem;
+  margin-left: 0.3rem;
 }
 @media (max-width: 700px) {
   .menuSection {
-    padding: 1.2rem 0.7rem 1.5rem 0.7rem;
+    padding: 0.7rem 0.4rem 1rem 0.4rem;
   }
   .menuSection li {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
   .menuRatingBox {
-    padding: 0.5rem 0.7rem;
-    font-size: 1rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.93rem;
   }
 }
