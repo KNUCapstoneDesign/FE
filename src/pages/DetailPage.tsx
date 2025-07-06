@@ -76,6 +76,7 @@ const DetailPage: React.FC = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
   const [courseSpots, setCourseSpots] = useState<any[]>([])
+  const [rating, setRating] = useState<string | null>(null)
 
   useEffect(() => {
     if (!data?.mapx || !data.mapy) return
@@ -167,19 +168,25 @@ const DetailPage: React.FC = () => {
   )
 
   useEffect(() => {
-    if (data?.contentTypeId !== 39 || !data.title) return
+    if (data?.contentTypeId !== 39 || !data.title) {
+      setMenus(null)
+      setRating(null) // ⭐ 페이지 이동 시 별점 초기화
+      return
+    }
     setMenus(null)
     setMenusLoading(true)
+    setRating(null) // ⭐ 메뉴 로딩 시작 시 별점 초기화
     const fetchMenus = async () => {
       try {
-        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`, {
-          credentials: 'include',
-        })
+        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(data.title)}`,
+          { credentials: 'include' })
         const json = await res.json()
         setMenus(json.menus)
+        setRating(json.rating || null)
       } catch (err) {
         console.error('메뉴 가져오기 실패:', err)
         setMenus(null)
+        setRating(null)
       } finally {
         setMenusLoading(false)
       }
@@ -489,6 +496,23 @@ const DetailPage: React.FC = () => {
           {data.contentTypeId === 39 && (
             <div className={styles.menuSection}>
               <h2>대표 메뉴</h2>
+              {/* 평점 표시 */}
+              {rating && (
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.7rem', gap: '0.5rem' }}>
+                  <span className={styles.starRating}>
+                    <span className={styles.starRatingBg}>★★★★★</span>
+                    <span
+                      className={styles.starRatingFg}
+                      style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}
+                    >
+                      ★★★★★
+                    </span>
+                  </span>
+                  <span style={{ fontSize: '1.1rem', color: '#222', fontWeight: 500 }}>
+                    {rating}
+                  </span>
+                </div>
+              )}
               {menusLoading ? (
                 <div className={styles.menuLoadingWrapper}>
                   <div className={styles.menuSpinner}></div>

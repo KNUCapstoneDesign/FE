@@ -157,6 +157,35 @@
   text-align: left;
 }
 
+/* 별점 */
+.starRating {
+  position: relative;
+  display: inline-block;
+  font-size: 1.3rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+.starRatingBg {
+  color: #e5e7eb;
+  z-index: 1;
+  /* 별이 겹칠 때 배경 별이 아래로 가도록 */
+}
+.starRatingFg {
+  color: #fbbf24;
+  position: absolute;
+  top: 0; left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  pointer-events: none;
+  height: 100%;
+  z-index: 2;
+  /* 배경 별 위에 노란 별이 겹치도록 */
+  mix-blend-mode: normal;
+}
+.starRating .starRatingFg span {
+  color: #fbbf24 !important;
+}
+
 /* 반응형 */
 @media (max-width: 768px) {
   .heroImage {
