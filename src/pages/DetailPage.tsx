@@ -514,7 +514,7 @@ const DetailPage: React.FC = () => {
               <h2>대표 메뉴</h2>
               {/* 평점 표시 */}
               {rating && (
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.7rem', gap: '0.5rem' }}>
+                <div className={styles.menuRatingBox}>
                   <span className={styles.starRating}>
                     <span className={styles.starRatingBg}>★★★★★</span>
                     <span
@@ -524,9 +524,8 @@ const DetailPage: React.FC = () => {
                       ★★★★★
                     </span>
                   </span>
-                  <span style={{ fontSize: '1.1rem', color: '#222', fontWeight: 500 }}>
-                    {rating}
-                  </span>
+                  <span className={styles.ratingValue}>{rating}</span>
+                  <span className={styles.ratingLabel}>평점</span>
                 </div>
               )}
               {menusLoading ? (
@@ -538,12 +537,13 @@ const DetailPage: React.FC = () => {
                 <ul>
                   {menus.map((menu, i) => (
                     <li key={i}>
-                      {menu.name} - {menu.price || '가격 정보 없음'}
-                    </li>
+                  <span className={styles.menuName}>{menu.name}</span>
+                  <span className={styles.menuPrice}>{menu.price || '가격 정보 없��'}</span>
+                </li>
                   ))}
                 </ul>
               ) : (
-                <div>메뉴 정보 없음</div>
+                <div className={styles.noMenu}>메뉴 정보 없음</div>
               )}
             </div>
           )}
