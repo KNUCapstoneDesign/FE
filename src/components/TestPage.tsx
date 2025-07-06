@@ -15,6 +15,7 @@ const TestPage: React.FC = () => {
   const [data, setData] = useState<TourItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showCount, setShowCount] = useState(9)
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
 
@@ -56,16 +57,15 @@ const TestPage: React.FC = () => {
     fetchTourData()
   }, [API_KEY])
 
-  // 데이터 중 랜덤 9개만 (전체 셔플)
-  const sample9 = React.useMemo(() => {
-    if (data.length <= 9) return data
-    // Fisher-Yates shuffle
+  // 데이터 전체 셔플 (랜덤 순서)
+  const shuffledData = React.useMemo(() => {
+    if (data.length <= 1) return data
     const arr = [...data]
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
       ;[arr[i], arr[j]] = [arr[j], arr[i]]
     }
-    return arr.slice(0, 9)
+    return arr
   }, [data])
 
   if (loading) return <p>불러오는 중...</p>
@@ -76,20 +76,36 @@ const TestPage: React.FC = () => {
       <h1 className={styles.courseh1}>🌟 이런 여행 코스는 어떠세요?</h1>
       <div className={styles.hotCourses}>
         <div className={styles.courseList}>
-          {sample9.map((course) => (
-            <div key={course.contentid} className={styles.courseCard}>
+          {shuffledData.slice(0, showCount).map((course) => (
+            <div
+              key={course.contentid}
+              className={styles.courseCard}
+              onClick={() => navigate(`/detail/${course.contentid}/25`)}
+              style={{ cursor: 'pointer' }}
+            >
               <img src={course.firstimage || course1} alt={course.title} className={styles.courseImage} />
               <h3>{course.title}</h3>
               <p>{course.addr1 || '주소 정보 없음'}</p>
               <button
                 className={styles.detailBtn}
-                onClick={() => navigate(`/detail/${course.contentid}/25`)} // typeid=25
+                onClick={e => {
+                  e.stopPropagation();
+                  navigate(`/detail/${course.contentid}/25`)
+                }}
               >
                 자세히 보기
               </button>
             </div>
           ))}
         </div>
+        {shuffledData.length > showCount && (
+          <button
+            style={{ margin: '24px auto 0', display: 'block', padding: '12px 32px', fontSize: '1rem', borderRadius: '8px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
+            onClick={() => setShowCount(c => c + 3)}
+          >
+            더보기
+          </button>
+        )}
       </div>
     </div>
   )

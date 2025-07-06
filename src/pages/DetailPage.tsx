@@ -77,6 +77,7 @@ const DetailPage: React.FC = () => {
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
   const [courseSpots, setCourseSpots] = useState<any[]>([])
   const [rating, setRating] = useState<string | null>(null)
+  const [expandedSpots, setExpandedSpots] = useState<{ [key: number]: boolean }>({})
 
   useEffect(() => {
     if (!data?.mapx || !data.mapy) return
@@ -408,6 +409,10 @@ const DetailPage: React.FC = () => {
     fetchDetail()
   }, [id, typeid, API_KEY])
 
+  const handleToggleExpand = (idx: number) => {
+    setExpandedSpots(prev => ({ ...prev, [idx]: !prev[idx] }))
+  }
+
   if (loading) return <div className={styles.loading}>로딩 중...</div>
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
@@ -543,21 +548,38 @@ const DetailPage: React.FC = () => {
         <div className={styles.courseSpotsSection}>
           <h2>코스별 주요 장소</h2>
           <ul className={styles.courseSpotsList}>
-            {courseSpots.map((spot, idx) => (
-              <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
-                <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`}
-                      className={styles.courseSpotLink}>
-                  <div className={styles.courseSpotImgWrap}>
-                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'}
-                         alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
-                  </div>
-                  <div className={styles.courseSpotInfo}>
-                    <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
-                    <div>{spot.subdetailoverview || spot.detail?.overview || '설명 없음'}</div>
-                  </div>
-                </Link>
-              </li>
-            ))}
+            {courseSpots.map((spot, idx) => {
+              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음').replace(/<br\s*\/?>/gi, '')
+              const isExpanded = expandedSpots[idx]
+              const isLong = desc.length > 200
+              const shortDesc = desc.slice(0, 200)
+              return (
+                <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
+                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`}
+                        className={styles.courseSpotLink}>
+                    <div className={styles.courseSpotImgWrap}>
+                      <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'}
+                           alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                    </div>
+                    <div className={styles.courseSpotInfo}>
+                      <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
+                      <div style={{ whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {isExpanded || !isLong ? desc : shortDesc + '...'}
+                        {isLong && (
+                          <button
+                            type="button"
+                            style={{ marginLeft: 8, color: '#007bff', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
+                            onClick={e => { e.preventDefault(); handleToggleExpand(idx) }}
+                          >
+                            {isExpanded ? '접기' : '더보기'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
@@ -568,7 +590,7 @@ const DetailPage: React.FC = () => {
             <button className={styles.modalNavPrev} onClick={handlePrev}>
               ‹
             </button>
-            <img src={selectedImage} alt="확대 이미지" className={styles.modalImage} />
+            <img src={selectedImage} alt="확대 이���지" className={styles.modalImage} />
             <button className={styles.modalNavNext} onClick={handleNext}>
               ›
             </button>

@@ -22,7 +22,7 @@ const Router = () => {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID!}>
       <BrowserRouter>
-        <div className="pages-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div className="pages-container" style={{ minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
           <Nav />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <Routes>
