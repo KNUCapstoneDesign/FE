@@ -1,7 +1,8 @@
 /* src/assets/SignupPage.module.css */
 
 .signupContainer {
-    max-width: 450px;
+    max-width: 600px;
+    width: 100%; /* flex 컨테이너 영향 방지 */
     margin: 100px auto;
     padding: 35px;
     background-color: #ffffff;
