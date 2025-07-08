@@ -238,7 +238,29 @@ const DetailPage: React.FC = () => {
       zoom: 14,
     })
     new naver.maps.Marker({ position: location, map })
-  }, [isMapScriptLoaded, data])
+
+    // 지도 크기 문제 해결: relayout 호출
+    setTimeout(() => {
+      map.relayout()
+    }, 0)
+
+    // 윈도우 리사이즈 시에도 relayout
+    const handleResize = () => map.relayout()
+    window.addEventListener('resize', handleResize)
+
+    // 메뉴 로딩 후 mapPlaceholder 크기 변화 감지 (MutationObserver)
+    const observer = new window.MutationObserver(() => {
+      map.relayout()
+    })
+    if (mapRef.current) {
+      observer.observe(mapRef.current, { attributes: true, childList: true, subtree: true })
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      observer.disconnect()
+    }
+  }, [isMapScriptLoaded, data, menusLoading])
 
   useEffect(() => {
     if (isModalOpen) window.addEventListener('keydown', handleKeyDown)
