@@ -225,6 +225,8 @@ const DetailPage: React.FC = () => {
     }
   }, [NAVER_MAP_CLIENT_ID])
 
+  const mapInstance = useRef<any>(null)
+
   // 지도 생성
   useEffect(() => {
     if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
@@ -237,20 +239,21 @@ const DetailPage: React.FC = () => {
       center: location,
       zoom: 14,
     })
+    mapInstance.current = map
     new naver.maps.Marker({ position: location, map })
 
     // 지도 크기 문제 해결: relayout 호출
     setTimeout(() => {
-      map.relayout()
+      mapInstance.current?.relayout?.()
     }, 0)
 
     // 윈도우 리사이즈 시에도 relayout
-    const handleResize = () => map.relayout()
+    const handleResize = () => mapInstance.current?.relayout?.()
     window.addEventListener('resize', handleResize)
 
     // 메뉴 로딩 후 mapPlaceholder 크기 변화 감지 (MutationObserver)
     const observer = new window.MutationObserver(() => {
-      map.relayout()
+      mapInstance.current?.relayout?.()
     })
     if (mapRef.current) {
       observer.observe(mapRef.current, { attributes: true, childList: true, subtree: true })
