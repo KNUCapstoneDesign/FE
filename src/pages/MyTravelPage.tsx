@@ -30,6 +30,7 @@ const MyTravelPage: React.FC = () => {
   // ✅ 로그인하지 않은 경우 로그인 페이지로 이동
   useEffect(() => {
     if (!isAuthenticated) {
+      alert("로그인이 필요합니다.")
       navigate('/login')
     }
   }, [isAuthenticated, navigate])
