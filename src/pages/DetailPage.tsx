@@ -503,7 +503,7 @@ const DetailPage: React.FC = () => {
       </div>
       <div className={styles.detailDescription}>
         <h2>상세 설명</h2>
-        <p>{data.overview || '설명 정보 없음'}</p>
+        <p>{data.overview ? data.overview.replace(/<[^>]+>/g, '') : '설명 정보 없음'}</p>
       </div>
       <div className={styles.infoSection}>
         <div className={styles.infoBox}>
@@ -563,7 +563,7 @@ const DetailPage: React.FC = () => {
                   {menus.map((menu, i) => (
                     <li key={i}>
                   <span className={styles.menuName}>{menu.name}</span>
-                  <span className={styles.menuPrice}>{menu.price || '가격 정보 없��'}</span>
+                  <span className={styles.menuPrice}>{menu.price || '가격 정보 없음'}</span>
                 </li>
                   ))}
                 </ul>
@@ -585,7 +585,8 @@ const DetailPage: React.FC = () => {
           <h2>코스별 주요 장소</h2>
           <ul className={styles.courseSpotsList}>
             {courseSpots.map((spot, idx) => {
-              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음').replace(/<br\s*\/?>/gi, '')
+              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음')
+                .replace(/<[^>]+>/g, '') // 모든 태그 제거
               const isExpanded = expandedSpots[idx]
               const isLong = desc.length > 200
               const shortDesc = desc.slice(0, 200)
@@ -626,7 +627,7 @@ const DetailPage: React.FC = () => {
             <button className={styles.modalNavPrev} onClick={handlePrev}>
               ‹
             </button>
-            <img src={selectedImage} alt="확대 이���지" className={styles.modalImage} />
+            <img src={selectedImage} alt="확대 이미지" className={styles.modalImage} />
             <button className={styles.modalNavNext} onClick={handleNext}>
               ›
             </button>
