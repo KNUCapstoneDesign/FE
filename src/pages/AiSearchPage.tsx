@@ -8,6 +8,8 @@ import { searchTour } from '../utils/searchTour'
 import { useAiSearchStore } from '../store/AiSearchStore'
 import { Place } from '../store/useMyTravelStore'
 import AddPlaceModal from '../components/AddPlaceModal'
+import { useAuthStore } from '../store/useAuthStore'
+import { useNavigate } from 'react-router-dom'
 
 const NAVER_SCRIPT_ID = 'naver-map-script'
 
@@ -28,6 +30,8 @@ const AiSearchPage: React.FC = () => {
   const itemsPerPage = 5
   const PAGE_BLOCK = 10
   const { tab, imageUrl, labels, selectedLabel, results, setTab, setImageUrl, setLabels, setSelectedLabel, setResults, reset } = useAiSearchStore()
+  const navigate = useNavigate();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   useEffect(() => {
     reset()
@@ -141,6 +145,13 @@ const AiSearchPage: React.FC = () => {
   const handleNextBlock = () => setCurrentPage(Math.min(totalPages, blockEnd + 1))
 
   const paginatedResults = results.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      alert('로그인 후 이용 가능합니다.')
+      navigate('/login')
+    }
+  }, [isAuthenticated, navigate])
 
   return (
     <div className={styles.pageWrapper}>
