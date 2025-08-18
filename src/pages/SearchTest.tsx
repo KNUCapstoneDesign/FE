@@ -88,7 +88,6 @@ const SearchTest: React.FC = () => {
     const dist = params.get('district') || ''
     const distName = params.get('districtName') || ''
 
-
     setSearchTerm(q)
     setAreaCode(area)
     setDistrict(dist)
@@ -99,18 +98,14 @@ const SearchTest: React.FC = () => {
 
   // fetchResults: 파라미터를 명시적으로 받아서 항상 최신값 사용
   const fetchResults = useCallback(
-    async (
-      term: string,
-      areaParam: string = areaCode,
-      districtParam: string = district
-    ) => {
+    async (term: string, areaParam: string = areaCode, districtParam: string = district) => {
       setLoading(true)
       setError(null)
       try {
         let url = ''
         if (term.trim()) {
           url = [
-            `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${API_KEY}`,
+            `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
             `pageNo=1`,
             `MobileOS=ETC`,
@@ -124,7 +119,7 @@ const SearchTest: React.FC = () => {
             .join('&')
         } else {
           url = [
-            `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}`,
+            `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${API_KEY}`,
             `numOfRows=1000`,
             `pageNo=1`,
             `MobileOS=ETC`,
@@ -156,7 +151,9 @@ const SearchTest: React.FC = () => {
       } finally {
         setLoading(false)
       }
-    }, [API_KEY])
+    },
+    [API_KEY],
+  )
 
   // Hero에서 넘어올 때 쿼리가 있으면 0.3초 뒤에 검색결과를 보여줌 (필터 적용)
   useEffect(() => {

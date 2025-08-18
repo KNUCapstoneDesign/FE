@@ -28,7 +28,7 @@ const TestPage: React.FC = () => {
         const numOfRows = 100
         do {
           const res = await fetch(
-            `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?` +
+            `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?` +
               `serviceKey=${API_KEY}` +
               `&numOfRows=${numOfRows}` +
               `&pageNo=${page}` +
@@ -77,22 +77,16 @@ const TestPage: React.FC = () => {
       <div className={styles.hotCourses}>
         <div className={styles.courseList}>
           {shuffledData.slice(0, showCount).map((course) => (
-            <div
-              key={course.contentid}
-              className={styles.courseCard}
-              onClick={() => navigate(`/detail/${course.contentid}/25`)}
-              style={{ cursor: 'pointer' }}
-            >
+            <div key={course.contentid} className={styles.courseCard} onClick={() => navigate(`/detail/${course.contentid}/25`)} style={{ cursor: 'pointer' }}>
               <img src={course.firstimage || course1} alt={course.title} className={styles.courseImage} />
               <h3>{course.title}</h3>
               <p>{course.addr1 || '주소 정보 없음'}</p>
               <button
                 className={styles.detailBtn}
-                onClick={e => {
-                  e.stopPropagation();
+                onClick={(e) => {
+                  e.stopPropagation()
                   navigate(`/detail/${course.contentid}/25`)
-                }}
-              >
+                }}>
                 자세히 보기
               </button>
             </div>
@@ -101,8 +95,7 @@ const TestPage: React.FC = () => {
         {shuffledData.length > showCount && (
           <button
             style={{ margin: '24px auto 0', display: 'block', padding: '12px 32px', fontSize: '1rem', borderRadius: '8px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
-            onClick={() => setShowCount(c => c + 3)}
-          >
+            onClick={() => setShowCount((c) => c + 3)}>
             더보기
           </button>
         )}

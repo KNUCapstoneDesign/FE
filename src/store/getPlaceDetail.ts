@@ -9,7 +9,7 @@ export const getPlaceDetail = async (contentid: number): Promise<Partial<Place>>
     const encodedKey = encodeURIComponent(SERVICE_KEY)
 
     const res = await fetch(
-      `https://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${encodedKey}&MobileOS=ETC&MobileApp=Test&_type=json&contentId=${contentid}&defaultYN=Y&overviewYN=Y&addrinfoYN=Y`,
+      `https://apis.data.go.kr/B551011/KorService2/detailCommon2?ServiceKey=${encodedKey}&MobileOS=ETC&MobileApp=Test&_type=json&contentId=${contentid}&defaultYN=Y&overviewYN=Y&addrinfoYN=Y`,
     )
 
     if (!res.ok) {

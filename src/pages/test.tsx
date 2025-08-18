@@ -24,7 +24,7 @@ const TestPage: React.FC = () => {
 
   useEffect(() => {
     const fetchCategoryData = async (contentTypeId: number) => {
-      const url = `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}&numOfRows=5&pageNo=2&MobileOS=ETC&MobileApp=TestApp&_type=json&contentTypeId=${contentTypeId}&areaCode=1`
+      const url = `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${API_KEY}&numOfRows=5&pageNo=2&MobileOS=ETC&MobileApp=TestApp&_type=json&contentTypeId=${contentTypeId}&areaCode=1`
       const response = await fetch(url)
       const json = await response.json()
       return json.response.body.items.item
