@@ -13,7 +13,6 @@ const MyTravelDetailPage: React.FC = () => {
   console.log('[MyTravelDetailPage] userId:', userId)
   const course = courses.find((c) => c.id === id)
 
-  // course가 없어도 항상 선언, useMemo로 days를 캐싱
   const days = React.useMemo(() => {
     if (!course) return {}
     return course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
@@ -33,13 +32,12 @@ const MyTravelDetailPage: React.FC = () => {
 
   const [placeInfoMap, setPlaceInfoMap] = React.useState<Record<number, { title: string; firstimage: string }>>({})
 
-  const fetchPlaceInfo = async (contentid: number, contenttypeid: number) => {
+  const fetchPlaceInfo = async (contentid: number) => {
     try {
-      const res = await fetch(
-        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?ServiceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&contentTypeId=${contenttypeid}&defaultYN=Y&firstImageYN=Y&_type=json`,
-      )
+      const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&_type=json`)
       const data = await res.json()
-      const item = data.response?.body?.items?.item?.[0]
+      const raw = data.response?.body?.items?.item
+      const item = Array.isArray(raw) ? raw[0] : raw
       return {
         title: item?.title || '',
         firstimage: item?.firstimage || '',
@@ -53,7 +51,7 @@ const MyTravelDetailPage: React.FC = () => {
   React.useEffect(() => {
     const missing = Object.values(days)
       .flat()
-      .filter((p) => !placeInfoMap[p.contentid] && p.contentid && p.contenttypeid)
+      .filter((p) => p.contentid && !placeInfoMap[p.contentid])
 
     if (!missing.length) return
 
@@ -61,35 +59,36 @@ const MyTravelDetailPage: React.FC = () => {
       const updates: Record<number, { title: string; firstimage: string }> = {}
       await Promise.all(
         missing.map(async (p) => {
-          const info = await fetchPlaceInfo(p.contentid, p.contenttypeid)
-          updates[p.contentid] = info
+          try {
+            const info = await fetchPlaceInfo(p.contentid)
+            updates[p.contentid] = info
+          } catch (e) {
+            updates[p.contentid] = { title: '', firstimage: '' }
+          }
         }),
       )
       setPlaceInfoMap((prev) => ({ ...prev, ...updates }))
     }
 
     fetchAll()
-  }, [days, placeInfoMap])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [days])
 
-  // 숫자 기준으로 오름차순 정렬
   const dayKeys = Object.keys(days).sort((a, b) => {
     const numA = parseInt(a.replace(/[^0-9]/g, ''), 10)
     const numB = parseInt(b.replace(/[^0-9]/g, ''), 10)
     return numA - numB
   })
-  // All 탭 추가
   const allKey = 'All'
   const tabKeys = [allKey, ...dayKeys]
-  // useState는 항상 첫 렌더링 때만 dayKeys[0]을 씁니다
   const [selectedDay, setSelectedDay] = React.useState<string>(tabKeys[0] || '')
 
-  // dayKeys가 바뀌어서 selectedDay가 더 이상 없을 때만 리셋
   React.useEffect(() => {
     if (!selectedDay || !tabKeys.includes(selectedDay)) {
       setSelectedDay(tabKeys[0] || '')
     }
     // eslint-disable-next-line
-  }, [tabKeys.join(',')]) // tabKeys가 바뀔 때만
+  }, [tabKeys.join(',')])
 
   if (!course) return <div>일정 정보를 찾을 수 없습니다.</div>
 
@@ -114,7 +113,6 @@ const MyTravelDetailPage: React.FC = () => {
             <div className={styles.verticalLine} />
             <div className={styles.dayCards}>
               {selectedDay === allKey ? (
-                // All 탭: 날짜별로 그룹핑해서 출력
                 dayKeys.map((dayKey) => (
                   <div className={styles.dayGroup} key={dayKey}>
                     <div className={styles.dayBadge}>{dayKey}</div>
