@@ -40,7 +40,7 @@ const AreaSelectModal: React.FC<AreaSelectModalProps> = ({ open, onClose, onSele
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const res = await fetch(`https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=${API_KEY}&numOfRows=17&MobileOS=ETC&MobileApp=AppTest&_type=json`)
+        const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/areaCode2?serviceKey=${API_KEY}&numOfRows=17&MobileOS=ETC&MobileApp=AppTest&_type=json`)
         const json = await res.json()
         const items = json.response?.body?.items?.item || []
         const result: TourAPIItem[] = Array.isArray(items) ? items : [items]
@@ -60,7 +60,7 @@ const AreaSelectModal: React.FC<AreaSelectModalProps> = ({ open, onClose, onSele
         return
       }
       try {
-        const res = await fetch(`https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=${API_KEY}&numOfRows=50&areaCode=${areaCode}&MobileOS=ETC&MobileApp=AppTest&_type=json`)
+        const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/areaCode2?serviceKey=${API_KEY}&numOfRows=50&areaCode=${areaCode}&MobileOS=ETC&MobileApp=AppTest&_type=json`)
         const json = await res.json()
         const items = json.response?.body?.items?.item || []
         const result: TourAPIItem[] = Array.isArray(items) ? items : [items]

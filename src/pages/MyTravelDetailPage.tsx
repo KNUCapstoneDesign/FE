@@ -15,10 +15,10 @@ const MyTravelDetailPage: React.FC = () => {
 
   // course가 없어도 항상 선언, useMemo로 days를 캐싱
   const days = React.useMemo(() => {
-    if (!course) return {};
+    if (!course) return {}
     return course.items.reduce<{ [day: string]: typeof course.items }>((acc, item) => {
-      const dayKey = item.day || 'Day 1';
-      if (!acc[dayKey]) acc[dayKey] = [];
+      const dayKey = item.day || 'Day 1'
+      if (!acc[dayKey]) acc[dayKey] = []
       acc[dayKey].push({
         ...item,
         title: item.title || '',
@@ -26,50 +26,50 @@ const MyTravelDetailPage: React.FC = () => {
         contentid: typeof item.placeId === 'string' ? parseInt(item.placeId) || 0 : item.contentid || 0,
         time: item.time || '',
         contenttypeid: item.contenttypeid || 0,
-      });
-      return acc;
-    }, {});
-  }, [course]);
+      })
+      return acc
+    }, {})
+  }, [course])
 
-  const [placeInfoMap, setPlaceInfoMap] = React.useState<Record<number, { title: string; firstimage: string }>>({});
+  const [placeInfoMap, setPlaceInfoMap] = React.useState<Record<number, { title: string; firstimage: string }>>({})
 
   const fetchPlaceInfo = async (contentid: number, contenttypeid: number) => {
     try {
       const res = await fetch(
-        `https://apis.data.go.kr/B551011/KorService1/detailCommon1?ServiceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&contentTypeId=${contenttypeid}&defaultYN=Y&firstImageYN=Y&_type=json`
-      );
-      const data = await res.json();
-      const item = data.response?.body?.items?.item?.[0];
+        `https://apis.data.go.kr/B551011/KorService2/detailCommon2?ServiceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&contentTypeId=${contenttypeid}&defaultYN=Y&firstImageYN=Y&_type=json`,
+      )
+      const data = await res.json()
+      const item = data.response?.body?.items?.item?.[0]
       return {
         title: item?.title || '',
         firstimage: item?.firstimage || '',
-      };
+      }
     } catch (err) {
-      console.error('TourAPI fetch failed for contentid:', contentid, err);
-      return { title: '', firstimage: '' };
+      console.error('TourAPI fetch failed for contentid:', contentid, err)
+      return { title: '', firstimage: '' }
     }
-  };
+  }
 
   React.useEffect(() => {
     const missing = Object.values(days)
       .flat()
-      .filter(p => !placeInfoMap[p.contentid] && p.contentid && p.contenttypeid);
+      .filter((p) => !placeInfoMap[p.contentid] && p.contentid && p.contenttypeid)
 
-    if (!missing.length) return;
+    if (!missing.length) return
 
     const fetchAll = async () => {
-      const updates: Record<  number, { title: string; firstimage: string }> = {};
+      const updates: Record<number, { title: string; firstimage: string }> = {}
       await Promise.all(
         missing.map(async (p) => {
-          const info = await fetchPlaceInfo(p.contentid, p.contenttypeid);
-          updates[p.contentid] = info;
-        })
-      );
-      setPlaceInfoMap((prev) => ({ ...prev, ...updates }));
-    };
+          const info = await fetchPlaceInfo(p.contentid, p.contenttypeid)
+          updates[p.contentid] = info
+        }),
+      )
+      setPlaceInfoMap((prev) => ({ ...prev, ...updates }))
+    }
 
-    fetchAll();
-  }, [days, placeInfoMap]);
+    fetchAll()
+  }, [days, placeInfoMap])
 
   // 숫자 기준으로 오름차순 정렬
   const dayKeys = Object.keys(days).sort((a, b) => {

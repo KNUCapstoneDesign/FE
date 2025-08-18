@@ -78,13 +78,14 @@ const DetailPage: React.FC = () => {
   const [courseSpots, setCourseSpots] = useState<any[]>([])
   const [rating, setRating] = useState<string | null>(null)
   const [expandedSpots, setExpandedSpots] = useState<{ [key: number]: boolean }>({})
+  const [distance, setDistance] = useState<number | null>(null)
 
   useEffect(() => {
     if (!data?.mapx || !data.mapy) return
 
     const fetchNearby = async () => {
       const locationUrl =
-        `https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=${API_KEY}` +
+        `https://apis.data.go.kr/B551011/KorService2/locationBasedList2?serviceKey=${API_KEY}` +
         `&MobileOS=ETC&MobileApp=TestApp&_type=json` +
         `&mapX=${data.mapx}&mapY=${data.mapy}&radius=3000&arrange=E&numOfRows=20`
 
@@ -94,7 +95,6 @@ const DetailPage: React.FC = () => {
         const items = json.response?.body?.items?.item || []
         const results = Array.isArray(items) ? items : [items]
 
-        // ✅ contenttypeid로 필터링하지 않음. 자기 자신만 제외
         const filtered = results.filter((place) => place.contentid !== id)
         setNearbyPlaces(filtered.slice(0, 8))
       } catch (err) {
@@ -111,7 +111,9 @@ const DetailPage: React.FC = () => {
     const sigungu = data.addr1.split(' ')[1] || ''
     const fetchPopular = async () => {
       const areaUrl =
-        `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${API_KEY}` + `&MobileOS=ETC&MobileApp=TestApp&_type=json` + `&arrange=B&numOfRows=5&keyword=${sido} ${sigungu}`
+        `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${API_KEY}` +
+        `&MobileOS=ETC&MobileApp=TestApp&_type=json` +
+        `&arrange=B&numOfRows=5&keyword=${encodeURIComponent(`${sido} ${sigungu}`)}`
 
       try {
         const res = await fetch(areaUrl)
@@ -132,7 +134,7 @@ const DetailPage: React.FC = () => {
       contentid: Number(id),
       contenttypeid: Number(typeid),
       title: data.title,
-      firstimage: data.images[0], // 첫 번째 이미지
+      firstimage: data.images[0],
       addr1: data.addr1,
       mapx: data.mapx,
       mapy: data.mapy,
@@ -171,13 +173,12 @@ const DetailPage: React.FC = () => {
   useEffect(() => {
     if (data?.contentTypeId !== 39 || !data.title) {
       setMenus(null)
-      setRating(null) // ⭐ 페이지 이동 시 별점 초기화
+      setRating(null)
       return
     }
     setMenus(null)
     setMenusLoading(true)
-    setRating(null) // ⭐ 메뉴 로딩 시작 시 별점 초기화
-    // 주소에서 시와 구 추출 (예: 서울특별시 종로구 인사동 12-3 → 서울특별시 종로구)
+    setRating(null)
     let sido = ''
     let gu = ''
     if (data.addr1) {
@@ -190,8 +191,7 @@ const DetailPage: React.FC = () => {
     const searchName = gu && sido ? `${data.title} ${sido} ${gu}` : data.title
     const fetchMenus = async () => {
       try {
-        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(searchName)}`,
-          { credentials: 'include' })
+        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(searchName)}`, { credentials: 'include' })
         const json = await res.json()
         setMenus(json.menus)
         setRating(json.rating || null)
@@ -206,7 +206,6 @@ const DetailPage: React.FC = () => {
     fetchMenus()
   }, [data])
 
-  // Naver Map 스크립트 삽입
   useEffect(() => {
     const script = document.createElement('script')
     script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`
@@ -227,31 +226,99 @@ const DetailPage: React.FC = () => {
 
   const mapInstance = useRef<any>(null)
 
-  // 지도 생성
   useEffect(() => {
     if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const naver = (window as any).naver
     if (!naver) return
 
-    const location = new naver.maps.LatLng(data.mapy, data.mapx)
-    const map = new naver.maps.Map(mapRef.current, {
-      center: location,
-      zoom: 14,
-    })
-    mapInstance.current = map
-    new naver.maps.Marker({ position: location, map })
+    const placeLocation = new naver.maps.LatLng(data.mapy, data.mapx)
+    let distanceLabelMarker: any = null
 
-    // 지도 크기 문제 해결: relayout 호출
-    setTimeout(() => {
-      mapInstance.current?.relayout?.()
-    }, 0)
+    const initializeMap = (myLocation?: any) => {
+      const bounds = new naver.maps.LatLngBounds()
+      bounds.extend(placeLocation)
+      if (myLocation) {
+        bounds.extend(myLocation)
+      }
 
-    // 윈도우 리사이즈 시에도 relayout
+      const map = new naver.maps.Map(mapRef.current, {
+        center: myLocation ? bounds.getCenter() : placeLocation,
+        zoom: 10,
+      })
+      mapInstance.current = map
+
+      new naver.maps.Marker({ position: placeLocation, map, title: data.title })
+
+      if (myLocation) {
+        new naver.maps.Marker({ position: myLocation, map, title: '내 위치' })
+        new naver.maps.Polyline({
+          map: map,
+          path: [placeLocation, myLocation],
+          strokeColor: '#5347AA',
+          strokeOpacity: 0.8,
+          strokeWeight: 4,
+          zIndex: 10,
+        })
+
+        naver.maps.Event.once(map, 'idle', () => {
+          map.fitBounds(bounds, { padding: 50 })
+        })
+
+        const projection = map.getProjection()
+        const calculatedDistance = projection.getDistance(placeLocation, myLocation)
+        setDistance(calculatedDistance)
+
+        const midPoint = new naver.maps.LatLng((placeLocation.y + myLocation.y) / 2, (placeLocation.x + myLocation.x) / 2)
+        const distanceText = `${(calculatedDistance / 1000).toFixed(2)}km`
+
+        distanceLabelMarker = new naver.maps.Marker({
+          position: midPoint,
+          map: map,
+          icon: {
+            content: `
+                    <div style="
+                        position: relative;
+                        transform: translate(-50%, -100%);
+                        padding: 2px 8px;
+                        background-color: white;
+                        border: 1px solid #5347AA;
+                        border-radius: 10px;
+                        color: #5347AA;
+                        font-size: 14px;
+                        font-weight: bold;
+                        white-space: nowrap;
+                    ">
+                        ${distanceText}
+                    </div>
+                `,
+          },
+        })
+      } else {
+        setDistance(null)
+        map.setCenter(placeLocation)
+        map.setZoom(14)
+      }
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const myLocation = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude)
+          initializeMap(myLocation)
+        },
+        () => {
+          console.error('Error getting current location: Geolocation failed.')
+          initializeMap()
+        },
+      )
+    } else {
+      console.log('Geolocation is not supported by this browser.')
+      initializeMap()
+    }
+
     const handleResize = () => mapInstance.current?.relayout?.()
     window.addEventListener('resize', handleResize)
 
-    // 메뉴 로딩 후 mapPlaceholder 크기 변화 감지 (MutationObserver)
     const observer = new window.MutationObserver(() => {
       mapInstance.current?.relayout?.()
     })
@@ -262,6 +329,9 @@ const DetailPage: React.FC = () => {
     return () => {
       window.removeEventListener('resize', handleResize)
       observer.disconnect()
+      if (distanceLabelMarker) {
+        distanceLabelMarker.setMap(null)
+      }
     }
   }, [isMapScriptLoaded, data, menusLoading])
 
@@ -275,43 +345,35 @@ const DetailPage: React.FC = () => {
     const fetchDetail = async () => {
       try {
         setLoading(true)
-        const commonUrl = [
-          `https://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${API_KEY}`,
-          `MobileOS=ETC`,
-          `MobileApp=TestAPP`,
-          `_type=json`,
-          `contentId=${id}`,
-          `contentTypeId=${typeid}`,
-          `defaultYN=Y`,
-          `overviewYN=Y`,
-          `addrinfoYN=Y`,
-          `firstImageYN=Y`,
-          `mapinfoYN=Y`,
-        ].join('&')
+
+        // detailCommon2: contentTypeId and YN params removed per v2 변경
+        const commonUrl = [`https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}`, `MobileOS=ETC`, `MobileApp=TestAPP`, `_type=json`, `contentId=${id}`].join('&')
+
+        // detailImage2: subImageYN removed
         const imageUrl = [
-          `https://apis.data.go.kr/B551011/KorService1/detailImage1?serviceKey=${API_KEY}`,
+          `https://apis.data.go.kr/B551011/KorService2/detailImage2?serviceKey=${API_KEY}`,
           `MobileOS=ETC`,
           `MobileApp=TestAPP`,
           `_type=json`,
           `contentId=${id}`,
           `imageYN=Y`,
-          `subImageYN=Y`,
           `numOfRows=100`,
         ].join('&')
+
         const introUrl = [
-          `https://apis.data.go.kr/B551011/KorService1/detailIntro1?serviceKey=${API_KEY}`,
+          `https://apis.data.go.kr/B551011/KorService2/detailIntro2?serviceKey=${API_KEY}`,
           `MobileOS=ETC`,
           `MobileApp=TestAPP`,
           `_type=json`,
           `contentId=${id}`,
           `contentTypeId=${typeid}`,
         ].join('&')
-        // detailInfo1 API (여행코스용)
+
         let infoJson = null
         let courseSpotsArr: any[] = []
         if (typeid === '25') {
           const infoUrl = [
-            `https://apis.data.go.kr/B551011/KorService1/detailInfo1?serviceKey=${API_KEY}`,
+            `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}`,
             `MobileOS=ETC`,
             `MobileApp=TestAPP`,
             `_type=json`,
@@ -320,22 +382,19 @@ const DetailPage: React.FC = () => {
           ].join('&')
           const infoRes = await fetch(infoUrl)
           infoJson = await infoRes.json()
-          console.log('detailInfo1:', infoJson)
-          // 하위 코스별 장소 정보 요청
+          console.log('detailInfo2:', infoJson)
           const items = infoJson.response?.body?.items?.item || []
           const arr = Array.isArray(items) ? items : [items]
-          // subcontentid로 detailCommon1 요청
           courseSpotsArr = await Promise.all(
             arr.map(async (spot) => {
               if (!spot.subcontentid) return null
+              // spot detail: remove YN params
               const spotUrl = [
-                `https://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${API_KEY}`,
+                `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}`,
                 `MobileOS=ETC`,
                 `MobileApp=TestAPP`,
                 `_type=json`,
                 `contentId=${spot.subcontentid}`,
-                `defaultYN=Y`,
-                `firstImageYN=Y`,
               ].join('&')
               try {
                 const res = await fetch(spotUrl)
@@ -355,15 +414,13 @@ const DetailPage: React.FC = () => {
         }
 
         const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
-
         const commonJson = await commonRes.json()
         const imageJson = await imageRes.json()
         const introJson = await introRes.json()
 
-        // 모든 API 응답을 콘솔에 출력
-        console.log('detailCommon1:', commonJson)
-        console.log('detailImage1:', imageJson)
-        console.log('detailIntro1:', introJson)
+        console.log('detailCommon2:', commonJson)
+        console.log('detailImage2:', imageJson)
+        console.log('detailIntro2:', introJson)
 
         const rawItem = commonJson.response?.body?.items?.item
         const item = Array.isArray(rawItem) ? rawItem[0] : rawItem
@@ -446,7 +503,7 @@ const DetailPage: React.FC = () => {
   }, [id, typeid, API_KEY])
 
   const handleToggleExpand = (idx: number) => {
-    setExpandedSpots(prev => ({ ...prev, [idx]: !prev[idx] }))
+    setExpandedSpots((prev) => ({ ...prev, [idx]: !prev[idx] }))
   }
 
   if (loading) return <div className={styles.loading}>로딩 중...</div>
@@ -537,15 +594,11 @@ const DetailPage: React.FC = () => {
           {data.contentTypeId === 39 && (
             <div className={styles.menuSection}>
               <h2>대표 메뉴</h2>
-              {/* 평점 표시 */}
               {rating && (
                 <div className={styles.menuRatingBox}>
                   <span className={styles.starRating}>
                     <span className={styles.starRatingBg}>★★★★★</span>
-                    <span
-                      className={styles.starRatingFg}
-                      style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}
-                    >
+                    <span className={styles.starRatingFg} style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}>
                       ★★★★★
                     </span>
                   </span>
@@ -562,9 +615,9 @@ const DetailPage: React.FC = () => {
                 <ul>
                   {menus.map((menu, i) => (
                     <li key={i}>
-                  <span className={styles.menuName}>{menu.name}</span>
-                  <span className={styles.menuPrice}>{menu.price || '가격 정보 없음'}</span>
-                </li>
+                      <span className={styles.menuName}>{menu.name}</span>
+                      <span className={styles.menuPrice}>{menu.price || '가격 정보 없음'}</span>
+                    </li>
                   ))}
                 </ul>
               ) : (
@@ -576,27 +629,24 @@ const DetailPage: React.FC = () => {
         <div className={styles.mapBox}>
           <h2>위치 정보</h2>
           <div ref={mapRef} className={styles.mapPlaceholder}></div>
+          {distance !== null && <div className={styles.distanceInfo}> - 현재 위치와의 직선 거리: {(distance / 1000).toFixed(2)}km</div>}
         </div>
       </div>
 
-      {/* 여행코스 하위 장소 정보 */}
       {data.contentTypeId === 25 && courseSpots.length > 0 && (
         <div className={styles.courseSpotsSection}>
           <h2>코스별 주요 장소</h2>
           <ul className={styles.courseSpotsList}>
             {courseSpots.map((spot, idx) => {
-              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음')
-                .replace(/<[^>]+>/g, '') // 모든 태그 제거
+              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음').replace(/<[^>]+>/g, '')
               const isExpanded = expandedSpots[idx]
               const isLong = desc.length > 200
               const shortDesc = desc.slice(0, 200)
               return (
                 <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
-                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`}
-                        className={styles.courseSpotLink}>
+                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
                     <div className={styles.courseSpotImgWrap}>
-                      <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'}
-                           alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                      <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
                     </div>
                     <div className={styles.courseSpotInfo}>
                       <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
@@ -606,8 +656,10 @@ const DetailPage: React.FC = () => {
                           <button
                             type="button"
                             style={{ marginLeft: 8, color: '#007bff', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
-                            onClick={e => { e.preventDefault(); handleToggleExpand(idx) }}
-                          >
+                            onClick={(e) => {
+                              e.preventDefault()
+                              handleToggleExpand(idx)
+                            }}>
                             {isExpanded ? '접기' : '더보기'}
                           </button>
                         )}
@@ -657,8 +709,7 @@ const DetailPage: React.FC = () => {
           <h2>주변 장소</h2>
           <div className={styles.recommendList}>
             {nearbyPlaces.map((place) => (
-              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
-                    className={styles.recommendCard}>
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
                 <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                 <div className={styles.recommendTitle}>{place.title}</div>
               </Link>
@@ -667,14 +718,12 @@ const DetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* 같은 지역 인기 여행지 */}
       {popularPlaces.length > 0 && (
         <div className={styles.recommendSection}>
           <h2>🔥 이 지역의 인기 장소</h2>
           <div className={styles.recommendList}>
             {popularPlaces.map((place) => (
-              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
-                    className={styles.recommendCard}>
+              <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
                 <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                 <div className={styles.recommendTitle}>{place.title}</div>
               </Link>
