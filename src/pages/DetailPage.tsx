@@ -10,6 +10,21 @@ import 'swiper/css/pagination'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
 
+// #region --- 타입 정의 (Interfaces) ---
+
+// TourAPI 기본 응답 구조
+interface TourAPIBaseResponse<T> {
+  response?: {
+    body?: {
+      items?: {
+        item: T | T[]
+      }
+      totalCount?: number
+    }
+  }
+}
+
+// 주변/인기 장소 정보
 interface NearbyPlace {
   contentid: string
   contenttypeid: string
@@ -17,6 +32,76 @@ interface NearbyPlace {
   firstimage?: string
 }
 
+// 이미지 API 아이템
+interface ImageItem {
+  originimgurl: string
+}
+
+// 공통 정보 (detailCommon2)
+interface DetailCommonItem {
+  title: string
+  overview: string
+  addr1: string
+  homepage: string
+  firstimage?: string
+  mapx: number
+  mapy: number
+  contenttypeid: number
+}
+
+// 소개 정보 (detailIntro2) - 각 타입별 필드가 매우 다르므로 필요한 것만 옵셔널로 정의
+interface DetailIntroItem {
+  infocenter?: string
+  usetime?: string
+  usefee?: string
+  infocenterculture?: string
+  usetimeculture?: string
+  sponsor1tel?: string
+  playtime?: string
+  usetimefestival?: string
+  infocentertourcourse?: string
+  taketime?: string
+  infocenterleports?: string
+  usetimeleports?: string
+  infocenterlodging?: string
+  checkintime?: string
+  checkouttime?: string
+  infocenterfood?: string
+  opentimefood?: string
+}
+
+// 숙박 추가 정보 (detailInfo2 for type 32)
+interface LodgingInfoItem {
+  roomtitle?: string
+  reservationlodging?: string
+  reservationurl?: string
+  parkinglodging?: string
+  roomsize1?: string
+  roomcount?: string
+  roomtype?: string
+  roombasecount?: string
+  roommaxcount?: string
+  // 객실 이미지는 roomimg1, roomimg2... 형태
+  [key: string]: string | undefined
+}
+
+// 소개 정보와 숙박 추가 정보를 병합한 타입
+type ExtraIntroData = DetailIntroItem & LodgingInfoItem
+
+// 여행 코스 스팟 정보 (detailInfo2 for type 25)
+interface CourseInfoItem {
+  subcontentid: string
+  subdetailimg: string
+  subdetailoverview: string
+  subname: string
+}
+
+// API에서 받아온 CourseInfoItem에 상세정보(detail)를 추가한 타입
+interface CourseSpotItem extends CourseInfoItem {
+  detail: DetailCommonItem | null
+}
+
+// 최종적으로 컴포넌트가 사용할 데이터 구조
 interface DetailItem {
   title: string
   contentTypeId: number
@@ -29,11 +114,28 @@ interface DetailItem {
   images: string[]
   mapx?: number
   mapy?: number
-  extraIntro?: Record<string, any> // 원본 intro 데이터 보관
+  extraIntro: ExtraIntroData
 }
 
-interface ImageItem {
-  originimgurl: string
+// 메뉴/평점 API 응답 타입
+interface MenuResponse {
+  menus: { name: string; price: string }[]
+  rating?: string
+}
+
+// Naver Maps 타입을 위한 전역 window 객체 확장
+declare global {
+  interface Window {
+    naver: any
+  }
+}
+
+// #endregion
+
+// API 응답의 item이 단일 객체이거나 배열일 경우를 정규화하는 헬퍼 함수
+function normalizeToArray<T>(item: T | T[] | undefined): T[] {
+  if (!item) return []
+  return Array.isArray(item) ? item : [item]
 }
 
 const getCategoryLabel = (typeId: number) => {
@@ -66,21 +168,27 @@ const DetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const API_KEY = import.meta.env.VITE_API_KEY1!
   const NAVER_MAP_CLIENT_ID = import.meta.env.VITE_NAVER_MAP_CLIENT_ID!
+
   const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstance = useRef<any>(null)
+
   const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [galleryImages, setGalleryImages] = useState<string[]>([]) // 모달에서 보여줄 현재 갤러리
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [modalGallery, setModalGallery] = useState<'main' | 'room'>('main')
+
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
   const [menusLoading, setMenusLoading] = useState(false)
+  const [rating, setRating] = useState<string | null>(null)
+
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
-  const [courseSpots, setCourseSpots] = useState<any[]>([])
-  const [rating, setRating] = useState<string | null>(null)
-  const [expandedSpots, setExpandedSpots] = useState<{ [key: number]: boolean }>({})
+  const [courseSpots, setCourseSpots] = useState<CourseSpotItem[]>([])
+
+  const [expandedSpots, setExpandedSpots] = useState<Record<number, boolean>>({})
   const [distance, setDistance] = useState<number | null>(null)
 
   useEffect(() => {
@@ -94,11 +202,9 @@ const DetailPage: React.FC = () => {
 
       try {
         const res = await fetch(locationUrl)
-        const json = await res.json()
-        const items = json.response?.body?.items?.item || []
-        const results = Array.isArray(items) ? items : [items]
-
-        const filtered = results.filter((place) => place.contentid !== id)
+        const json: TourAPIBaseResponse<NearbyPlace> = await res.json()
+        const items = normalizeToArray(json.response?.body?.items?.item)
+        const filtered = items.filter((place) => place.contentid !== id)
         setNearbyPlaces(filtered.slice(0, 8))
       } catch (err) {
         console.error('주변 장소 불러오기 실패:', err)
@@ -120,10 +226,9 @@ const DetailPage: React.FC = () => {
 
       try {
         const res = await fetch(areaUrl)
-        const json = await res.json()
-        const items = json.response?.body?.items?.item || []
-        const results = Array.isArray(items) ? items : [items]
-        setPopularPlaces(results)
+        const json: TourAPIBaseResponse<NearbyPlace> = await res.json()
+        const items = normalizeToArray(json.response?.body?.items?.item)
+        setPopularPlaces(items)
       } catch (err) {
         console.error('인기 장소 불러오기 실패:', err)
       }
@@ -132,7 +237,7 @@ const DetailPage: React.FC = () => {
   }, [data, API_KEY])
 
   const handleAddPlaceClick = () => {
-    if (!data) return
+    if (!data || !id || !typeid) return
     setSelectedPlace({
       contentid: Number(id),
       contenttypeid: Number(typeid),
@@ -149,19 +254,64 @@ const DetailPage: React.FC = () => {
     setSelectedImage(null)
   }, [])
 
+  const makeSecureUrl = (url?: string | null): string | null => {
+    if (!url) return null
+    try {
+      const s = String(url).trim()
+      if (s.startsWith('https://')) return s
+      if (s.startsWith('//')) return 'https:' + s
+      if (s.startsWith('http://')) return s.replace(/^http:\/\//i, 'https://')
+      return s
+    } catch {
+      return url
+    }
+  }
+
+  const extractImgUrl = (htmlOrUrl?: string | null): string | null => {
+    if (!htmlOrUrl) return null
+    const str = String(htmlOrUrl)
+    const imgMatch = str.match(/<img[^>]+src=["']([^"']+)["']/i)
+    if (imgMatch) return imgMatch[1]
+    const urlMatch = str.match(/https?:\/\/[^\s'"]+/i)
+    return urlMatch ? urlMatch[0] : null
+  }
+
+  const getRoomImageUrls = useCallback(() => {
+    if (!data?.extraIntro) return []
+    const urls: string[] = []
+    for (let i = 1; i <= 6; i++) {
+      const key = `roomimg${i}`
+      const raw = data.extraIntro[key]
+      if (!raw) continue
+      const src = extractImgUrl(raw)
+      if (src) urls.push(makeSecureUrl(src) || src)
+    }
+    const fallbackKeys = ['roomimg', 'roomimage', 'roomphoto']
+    for (const k of fallbackKeys) {
+      if (data.extraIntro[k]) {
+        const raw = data.extraIntro[k]
+        const src = extractImgUrl(raw)
+        if (src) urls.push(makeSecureUrl(src) || src)
+      }
+    }
+    return Array.from(new Set(urls)).filter(Boolean)
+  }, [data?.extraIntro])
+
   const handlePrev = useCallback(() => {
-    if (!galleryImages || galleryImages.length === 0) return
-    const prev = (currentIndex - 1 + galleryImages.length) % galleryImages.length
-    setCurrentIndex(prev)
-    setSelectedImage(galleryImages[prev])
-  }, [currentIndex, galleryImages])
+    const currentGallery = galleryImages.length ? galleryImages : modalGallery === 'room' ? getRoomImageUrls() : data?.images || []
+    if (currentGallery.length === 0) return
+    const prevIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length
+    setCurrentIndex(prevIndex)
+    setSelectedImage(currentGallery[prevIndex])
+  }, [currentIndex, galleryImages, modalGallery, data, getRoomImageUrls])
 
   const handleNext = useCallback(() => {
-    if (!galleryImages || galleryImages.length === 0) return
-    const next = (currentIndex + 1) % galleryImages.length
-    setCurrentIndex(next)
-    setSelectedImage(galleryImages[next])
-  }, [currentIndex, galleryImages])
+    const currentGallery = galleryImages.length ? galleryImages : modalGallery === 'room' ? getRoomImageUrls() : data?.images || []
+    if (currentGallery.length === 0) return
+    const nextIndex = (currentIndex + 1) % currentGallery.length
+    setCurrentIndex(nextIndex)
+    setSelectedImage(currentGallery[nextIndex])
+  }, [currentIndex, galleryImages, modalGallery, data, getRoomImageUrls])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -179,9 +329,8 @@ const DetailPage: React.FC = () => {
       setRating(null)
       return
     }
-    setMenus(null)
+
     setMenusLoading(true)
-    setRating(null)
     let sido = ''
     let gu = ''
     if (data.addr1) {
@@ -192,10 +341,11 @@ const DetailPage: React.FC = () => {
       }
     }
     const searchName = gu && sido ? `${data.title} ${sido} ${gu}` : data.title
+
     const fetchMenus = async () => {
       try {
         const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(searchName)}`, { credentials: 'include' })
-        const json = await res.json()
+        const json: MenuResponse = await res.json()
         setMenus(json.menus)
         setRating(json.rating || null)
       } catch (err) {
@@ -213,9 +363,7 @@ const DetailPage: React.FC = () => {
     const script = document.createElement('script')
     script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`
     script.async = true
-    script.onload = () => {
-      setIsMapScriptLoaded(true)
-    }
+    script.onload = () => setIsMapScriptLoaded(true)
     script.onerror = () => {
       console.error('Failed to load Naver Maps script')
       setError('지도 스크립트를 불러오지 못했습니다.')
@@ -223,15 +371,17 @@ const DetailPage: React.FC = () => {
     document.head.appendChild(script)
 
     return () => {
-      document.head.removeChild(script)
+      const existingScript = document.querySelector(`script[src*="${NAVER_MAP_CLIENT_ID}"]`)
+      if (existingScript) {
+        document.head.removeChild(existingScript)
+      }
     }
   }, [NAVER_MAP_CLIENT_ID])
 
-  const mapInstance = useRef<any>(null)
-
   useEffect(() => {
     if (!isMapScriptLoaded || !data?.mapx || !data.mapy || !mapRef.current) return
-    const naver = (window as any).naver
+
+    const { naver } = window
     if (!naver) return
 
     const placeLocation = new naver.maps.LatLng(data.mapy, data.mapx)
@@ -244,7 +394,7 @@ const DetailPage: React.FC = () => {
         bounds.extend(myLocation)
       }
 
-      const map = new naver.maps.Map(mapRef.current, {
+      const map = new naver.maps.Map(mapRef.current!, {
         center: myLocation ? bounds.getCenter() : placeLocation,
         zoom: 10,
       })
@@ -279,21 +429,21 @@ const DetailPage: React.FC = () => {
           map: map,
           icon: {
             content: `
-                    <div style="
-                        position: relative;
-                        transform: translate(-50%, -100%);
-                        padding: 2px 8px;
-                        background-color: white;
-                        border: 1px solid #5347AA;
-                        border-radius: 10px;
-                        color: #5347AA;
-                        font-size: 14px;
-                        font-weight: bold;
-                        white-space: nowrap;
-                    ">
-                        ${distanceText}
-                    </div>
-                `,
+              <div style="
+                position: relative;
+                transform: translate(-50%, -100%);
+                padding: 2px 8px;
+                background-color: white;
+                border: 1px solid #5347AA;
+                border-radius: 10px;
+                color: #5347AA;
+                font-size: 14px;
+                font-weight: bold;
+                white-space: nowrap;
+              ">
+                ${distanceText}
+              </div>
+            `,
           },
         })
       } else {
@@ -336,7 +486,7 @@ const DetailPage: React.FC = () => {
         distanceLabelMarker.setMap(null)
       }
     }
-  }, [isMapScriptLoaded, data, menusLoading])
+  }, [isMapScriptLoaded, data])
 
   useEffect(() => {
     if (isModalOpen) window.addEventListener('keydown', handleKeyDown)
@@ -346,165 +496,115 @@ const DetailPage: React.FC = () => {
 
   useEffect(() => {
     const fetchDetail = async () => {
+      if (!id || !typeid) {
+        setError('ID 또는 타입 정보가 없습니다.')
+        setLoading(false)
+        return
+      }
+
       try {
         setLoading(true)
 
-        // detailCommon2: contentTypeId and YN params removed per v2 변경
-        const commonUrl = [`https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}`, `MobileOS=ETC`, `MobileApp=TestAPP`, `_type=json`, `contentId=${id}`].join('&')
-
-        // detailImage2: subImageYN removed
-        const imageUrl = [
-          `https://apis.data.go.kr/B551011/KorService2/detailImage2?serviceKey=${API_KEY}`,
-          `MobileOS=ETC`,
-          `MobileApp=TestAPP`,
-          `_type=json`,
-          `contentId=${id}`,
-          `imageYN=Y`,
-          `numOfRows=100`,
-        ].join('&')
-
-        const introUrl = [
-          `https://apis.data.go.kr/B551011/KorService2/detailIntro2?serviceKey=${API_KEY}`,
-          `MobileOS=ETC`,
-          `MobileApp=TestAPP`,
-          `_type=json`,
-          `contentId=${id}`,
-          `contentTypeId=${typeid}`,
-        ].join('&')
-
-        let infoJson = null
-        let lodgingInfoJson: any = null
-        let courseSpotsArr: any[] = []
-        if (typeid === '25') {
-          const infoUrl = [
-            `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}`,
-            `MobileOS=ETC`,
-            `MobileApp=TestAPP`,
-            `_type=json`,
-            `contentId=${id}`,
-            `contentTypeId=${typeid}`,
-          ].join('&')
-          const infoRes = await fetch(infoUrl)
-          infoJson = await infoRes.json()
-          console.log('detailInfo2:', infoJson)
-          const items = infoJson.response?.body?.items?.item || []
-          const arr = Array.isArray(items) ? items : [items]
-          courseSpotsArr = await Promise.all(
-            arr.map(async (spot) => {
-              if (!spot.subcontentid) return null
-              // spot detail: remove YN params
-              const spotUrl = [
-                `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}`,
-                `MobileOS=ETC`,
-                `MobileApp=TestAPP`,
-                `_type=json`,
-                `contentId=${spot.subcontentid}`,
-              ].join('&')
-              try {
-                const res = await fetch(spotUrl)
-                const json = await res.json()
-                const item = json.response?.body?.items?.item
-                const info = Array.isArray(item) ? item[0] : item
-                return {
-                  ...spot,
-                  detail: info,
-                }
-              } catch (e) {
-                return { ...spot, detail: null }
-              }
-            }),
-          )
-          setCourseSpots(courseSpotsArr.filter(Boolean))
-        }
-
-        // 숙박(contentTypeId === 32)인 경우 detailInfo2에서 추가 필드 가져오기
-        if (typeid === '32') {
-          try {
-            const lodgingInfoUrl = [
-              `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}`,
-              `MobileOS=ETC`,
-              `MobileApp=TestAPP`,
-              `_type=json`,
-              `contentId=${id}`,
-              `contentTypeId=${typeid}`,
-            ].join('&')
-            const lodgingRes = await fetch(lodgingInfoUrl)
-            lodgingInfoJson = await lodgingRes.json()
-            console.log('detailInfo2 (lodging):', lodgingInfoJson)
-          } catch (err) {
-            console.error('숙박 상세 info 불러오기 실패:', err)
-            lodgingInfoJson = null
-          }
-        }
+        const commonUrl = `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}`
+        const imageUrl = `https://apis.data.go.kr/B551011/KorService2/detailImage2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&imageYN=Y&numOfRows=100`
+        const introUrl = `https://apis.data.go.kr/B551011/KorService2/detailIntro2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
 
         const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
-        const commonJson = await commonRes.json()
-        const imageJson = await imageRes.json()
-        const introJson = await introRes.json()
 
-        console.log('detailCommon2:', commonJson)
-        console.log('detailImage2:', imageJson)
-        console.log('detailIntro2:', introJson)
+        const commonJson: TourAPIBaseResponse<DetailCommonItem> = await commonRes.json()
+        const imageJson: TourAPIBaseResponse<ImageItem> = await imageRes.json()
+        const introJson: TourAPIBaseResponse<DetailIntroItem> = await introRes.json()
 
-        const rawItem = commonJson.response?.body?.items?.item
-        const item = Array.isArray(rawItem) ? rawItem[0] : rawItem
-
-        const rawImages = imageJson.response?.body?.items?.item || []
-        const arr = Array.isArray(rawImages) ? rawImages : [rawImages]
-        const imageUrls = (arr as ImageItem[]).map((i) => i.originimgurl).filter(Boolean)
-
-        const rawIntro = introJson.response?.body?.items?.item
-        const introItem = Array.isArray(rawIntro) ? rawIntro[0] : rawIntro
-
-        // lodgingInfoJson에서 실제 항목 추출 (있다면) -> introItem과 병합
-        let lodgingItem: any = null
-        if (lodgingInfoJson) {
-          const rawLodging = lodgingInfoJson.response?.body?.items?.item || null
-          lodgingItem = Array.isArray(rawLodging) ? rawLodging[0] : rawLodging
-        }
-        const mergedIntro = { ...(introItem || {}), ...(lodgingItem || {}) }
+        const item = normalizeToArray(commonJson.response?.body?.items?.item)[0]
+        const imageUrls = normalizeToArray(imageJson.response?.body?.items?.item)
+          .map((i) => i.originimgurl)
+          .filter(Boolean)
+        const introItem = normalizeToArray(introJson.response?.body?.items?.item)[0] || {}
 
         if (!item) {
           setError('상세 정보를 불러올 수 없습니다.')
+          setLoading(false)
           return
         }
 
-        const contentTypeId = Number(typeid!)
-        let tel = ''
-        let usetime = ''
-        let usefee = ''
+        let lodgingItem: LodgingInfoItem = {}
+        let finalCourseSpots: (CourseInfoItem & { detail: DetailCommonItem | null })[] = []
+
+        if (typeid === '32') {
+          // 숙박
+          const lodgingInfoUrl = `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
+          try {
+            const lodgingRes = await fetch(lodgingInfoUrl)
+            const lodgingInfoJson: TourAPIBaseResponse<LodgingInfoItem> = await lodgingRes.json()
+            lodgingItem = normalizeToArray(lodgingInfoJson.response?.body?.items?.item)[0] || {}
+          } catch (err) {
+            console.error('숙박 상세 info 불러오기 실패:', err)
+          }
+        } else if (typeid === '25') {
+          // 여행 코스
+          const infoUrl = `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
+          try {
+            const infoRes = await fetch(infoUrl)
+            const infoJson: TourAPIBaseResponse<CourseInfoItem> = await infoRes.json()
+            const courseInfoItems = normalizeToArray(infoJson.response?.body?.items?.item)
+
+            finalCourseSpots = await Promise.all(
+              courseInfoItems.map(async (spot) => {
+                if (!spot.subcontentid) return { ...spot, detail: null }
+                const spotUrl = `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${spot.subcontentid}`
+                try {
+                  const res = await fetch(spotUrl)
+                  const json: TourAPIBaseResponse<DetailCommonItem> = await res.json()
+                  const detailItem = normalizeToArray(json.response?.body?.items?.item)[0]
+                  return { ...spot, detail: detailItem || null }
+                } catch {
+                  return { ...spot, detail: null }
+                }
+              }),
+            )
+            setCourseSpots(finalCourseSpots.filter((spot): spot is CourseSpotItem => !!spot))
+          } catch (err) {
+            console.error('여행코스 상세 info 불러오기 실패:', err)
+          }
+        }
+
+        const mergedIntro: ExtraIntroData = { ...introItem, ...lodgingItem }
+        const contentTypeId = Number(typeid)
+        let tel = '',
+          usetime = '',
+          usefee = ''
+
         switch (contentTypeId) {
           case 12:
-            tel = introItem?.infocenter
-            usetime = introItem?.usetime
-            usefee = introItem?.usefee
+            tel = mergedIntro?.infocenter || ''
+            usetime = mergedIntro?.usetime || ''
+            usefee = mergedIntro?.usefee || ''
             break
           case 14:
-            tel = introItem?.infocenterculture
-            usetime = introItem?.usetimeculture
-            usefee = introItem?.usefee
+            tel = mergedIntro?.infocenterculture || ''
+            usetime = mergedIntro?.usetimeculture || ''
+            usefee = mergedIntro?.usefee || ''
             break
           case 15:
-            tel = introItem?.sponsor1tel
-            usetime = introItem?.playtime
-            usefee = introItem?.usetimefestival
+            tel = mergedIntro?.sponsor1tel || ''
+            usetime = mergedIntro?.playtime || ''
+            usefee = mergedIntro?.usetimefestival || ''
             break
           case 25:
-            tel = introItem?.infocentertourcourse
-            usetime = introItem?.taketime
+            tel = mergedIntro?.infocentertourcourse || ''
+            usetime = mergedIntro?.taketime || ''
             break
           case 28:
-            tel = introItem?.infocenterleports
-            usetime = introItem?.usetimeleports
+            tel = mergedIntro?.infocenterleports || ''
+            usetime = mergedIntro?.usetimeleports || ''
             break
           case 32:
-            // introItem 대신 mergedIntro 사용하여 detailInfo2에서 가져온 값 우선
             tel = mergedIntro?.infocenterlodging || ''
-            usetime = `체크인: ${mergedIntro?.checkintime || ''}, 체크아웃: ${mergedIntro?.checkouttime || ''}`
+            usetime = `체크인: ${mergedIntro?.checkintime || '정보 없음'}, 체크아웃: ${mergedIntro?.checkouttime || '정보 없음'}`
             break
           case 39:
-            tel = introItem?.infocenterfood
-            usetime = introItem?.opentimefood
+            tel = mergedIntro?.infocenterfood || ''
+            usetime = mergedIntro?.opentimefood || ''
             break
           default:
             tel = ''
@@ -512,7 +612,6 @@ const DetailPage: React.FC = () => {
             usefee = ''
         }
 
-        // 기존 tel/usetime/usefee 계산 후 마지막에 setData 호출 부분 변경
         setData({
           title: item.title,
           contentTypeId,
@@ -525,7 +624,7 @@ const DetailPage: React.FC = () => {
           images: imageUrls.length ? imageUrls : item.firstimage ? [item.firstimage] : [],
           mapx: item.mapx,
           mapy: item.mapy,
-          extraIntro: mergedIntro || introItem || {}, // detailIntro2 + detailInfo2(숙박) 병합
+          extraIntro: mergedIntro,
         })
       } catch (e) {
         console.error('데이터 로드 오류:', e)
@@ -541,71 +640,15 @@ const DetailPage: React.FC = () => {
     setExpandedSpots((prev) => ({ ...prev, [idx]: !prev[idx] }))
   }
 
-  // URL을 안전하게 변환: http -> https 시도, 안되면 프록시 경로로 폴백
-  const makeSecureUrl = (url?: string | null) => {
-    if (!url) return null
-    try {
-      const s = String(url).trim()
-      // 이미 https면 그대로, protocol-relative 처리
-      if (s.startsWith('https://')) return s
-      if (s.startsWith('//')) return window.location.protocol + s
-      // http이면 https로 바꿔서 먼저 시도
-      if (s.startsWith('http://')) return s.replace(/^http:\/\//i, 'https://')
-      // 기타 (파일명 등) 그대로 반환
-      return s
-    } catch {
-      return url
-    }
-  }
-
-  // HTML <img> 또는 plain URL에서 이미지 src 추출
-  const extractImgUrl = (htmlOrUrl?: string | null) => {
-    if (!htmlOrUrl) return null
-    const str = String(htmlOrUrl)
-    const imgMatch = str.match(/<img[^>]+src=["']([^"']+)["']/i)
-    if (imgMatch) return imgMatch[1]
-    const urlMatch = str.match(/https?:\/\/[^\s'"]+/i)
-    return urlMatch ? urlMatch[0] : null
-  }
-
-  // extraIntro에서 roomimg1..roomimg6 등 가능한 객실사진 키들을 찾아 배열 반환
-  const getRoomImageUrls = () => {
-    if (!data?.extraIntro) return []
-    const urls: string[] = []
-    // 숫자 붙은 키 우선 수집
-    for (let i = 1; i <= 6; i++) {
-      const key = `roomimg${i}`
-      const raw = (data.extraIntro as any)[key]
-      if (!raw) continue
-      const src = extractImgUrl(raw)
-      if (src) urls.push(makeSecureUrl(src) || src)
-    }
-    // 단일 roomimg 키 또는 roomimage 등 예외 키 보조 수집
-    const fallbackKeys = ['roomimg', 'roomimage', 'roomphoto']
-    for (const k of fallbackKeys) {
-      if ((data.extraIntro as any)[k]) {
-        const raw = (data.extraIntro as any)[k]
-        const src = extractImgUrl(raw)
-        if (src) urls.push(makeSecureUrl(src) || src)
-      }
-    }
-    return Array.from(new Set(urls)).filter(Boolean)
-  }
-
   if (loading) return <div className={styles.loading}>로딩 중...</div>
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
 
-  const raw = data.homepage || ''
-  if (typeof raw !== 'string') {
-    console.error('Invalid homepage data:', raw)
-    setError('홈페이지 데이터가 유효하지 않습니다.')
-    return null
-  }
-  const regex = new RegExp('href="([^"]+)"[^>]*>([^<]+)</a>')
-  const m = raw.match(regex)
-  const homepageUrl = m ? m[1] : raw
-  const homepageText = m ? m[2] : raw
+  const rawHomepage = data.homepage || ''
+  const regex = /href="([^"]+)"[^>]*>([^<]+)<\/a>/
+  const match = rawHomepage.match(regex)
+  const homepageUrl = match ? match[1] : rawHomepage
+  const homepageText = match ? match[2] : rawHomepage
 
   return (
     <div className={styles.wrapper}>
@@ -632,16 +675,14 @@ const DetailPage: React.FC = () => {
               <img
                 src={url}
                 alt={`이미지 ${i + 1}`}
-                className={styles.heroImage}
+                className={`${styles.heroImage} ${styles.heroImageZoom}`}
                 onClick={() => {
-                  // 모달에 대표 이미지 갤러리 세팅 (썸네일/이동 동작을 위해)
                   setGalleryImages(data.images)
                   setModalGallery('main')
                   setCurrentIndex(i)
                   setSelectedImage(url)
                   setIsModalOpen(true)
                 }}
-                style={{ cursor: 'zoom-in' }}
               />
             </SwiperSlide>
           ))}
@@ -678,7 +719,7 @@ const DetailPage: React.FC = () => {
               </p>
               <p>
                 <span className={styles.label}>객실크기</span>
-                <span className={styles.value}>{data.extraIntro?.roomsize1 + '평' || '정보 없음'}</span>
+                <span className={styles.value}>{data.extraIntro?.roomsize1 ? `${data.extraIntro.roomsize1}평` : '정보 없음'}</span>
               </p>
               <p>
                 <span className={styles.label}>객실수</span>
@@ -739,7 +780,7 @@ const DetailPage: React.FC = () => {
                     <div className={styles.menuRatingBox}>
                       <span className={styles.starRating}>
                         <span className={styles.starRatingBg}>★★★★★</span>
-                        <span className={styles.starRatingFg} style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}>
+                        <span className={styles.starRatingFg} style={{ width: `${(Number(rating) / 5) * 100}%` }}>
                           ★★★★★
                         </span>
                       </span>
@@ -782,7 +823,7 @@ const DetailPage: React.FC = () => {
           <ul className={styles.courseSpotsList}>
             {courseSpots.map((spot, idx) => {
               const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음').replace(/<[^>]+>/g, '')
-              const isExpanded = expandedSpots[idx]
+              const isExpanded = !!expandedSpots[idx]
               const isLong = desc.length > 200
               const shortDesc = desc.slice(0, 200)
               return (
@@ -793,12 +834,12 @@ const DetailPage: React.FC = () => {
                     </div>
                     <div className={styles.courseSpotInfo}>
                       <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
-                      <div style={{ whiteSpace: 'pre-line', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div className={styles.courseSpotDesc}>
                         {isExpanded || !isLong ? desc : shortDesc + '...'}
                         {isLong && (
                           <button
                             type="button"
-                            style={{ marginLeft: 8, color: '#007bff', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95em' }}
+                            className={styles.toggleBtn}
                             onClick={(e) => {
                               e.preventDefault()
                               handleToggleExpand(idx)
@@ -827,18 +868,21 @@ const DetailPage: React.FC = () => {
               ›
             </button>
             <div className={styles.thumbnailContainer}>
-              {galleryImages.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  alt={`썸네일 ${i + 1}`}
-                  className={`${styles.thumbnail} ${i === currentIndex ? styles.activeThumbnail : ''}`}
-                  onClick={() => {
-                    setCurrentIndex(i)
-                    setSelectedImage(img)
-                  }}
-                />
-              ))}
+              {(() => {
+                const currentGallery = galleryImages.length ? galleryImages : modalGallery === 'room' ? getRoomImageUrls() : data.images
+                return currentGallery.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`썸네일 ${i + 1}`}
+                    className={`${styles.thumbnail} ${i === currentIndex ? styles.activeThumbnail : ''}`}
+                    onClick={() => {
+                      setCurrentIndex(i)
+                      setSelectedImage(img)
+                    }}
+                  />
+                ))
+              })()}
             </div>
             <button className={styles.modalClose} onClick={closeModal}>
               ✕
@@ -848,7 +892,6 @@ const DetailPage: React.FC = () => {
       )}
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
 
-      {/* 숙박: 객실 사진 섹션 (주변 장소 섹션 위) */}
       {data.contentTypeId === 32 &&
         (() => {
           const roomImgs = getRoomImageUrls()
