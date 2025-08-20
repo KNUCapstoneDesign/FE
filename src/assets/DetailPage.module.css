@@ -69,6 +69,11 @@
   border-radius: 12px;
 }
 
+/* hero 이미지에 돋보기 커서 */
+.heroImageZoom {
+  cursor: zoom-in;
+}
+
 /* 기본 정보 & 위치 */
 .infoSection {
   display: flex;
@@ -718,4 +723,22 @@
     width: calc(50% - 8px);
     height: 110px;
   }
+}
+
+/* 코스 설명: 줄바꿈 유지 및 말줄임 */
+.courseSpotDesc {
+  white-space: pre-line;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 더보기/접기 버튼 */
+.toggleBtn {
+  margin-left: 8px;
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0;
 }
