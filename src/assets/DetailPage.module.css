@@ -72,8 +72,7 @@
 /* 기본 정보 & 위치 */
 .infoSection {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
   align-items: stretch;
 }
@@ -103,7 +102,7 @@
 .infoBox p {
   display: flex;
   align-items: center;
-  line-height: 1.6;
+  line-height: 1;
 }
 
 .label {
@@ -638,4 +637,85 @@
   text-align: right;
   color: black;
   margin-top: 0.3rem;
+}
+
+/* 숙박 전용 섹션 스타일 */
+.lodgingSection {
+  margin-top: 12px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #e6eef9;
+  box-shadow: 0 1px 6px rgba(37, 99, 235, 0.04);
+}
+.lodgingSection h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: #1f2937;
+  text-align: left;
+}
+.lodgingSection p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+.lodgingSection .label {
+  width: 100px;
+  font-weight: 700;
+  color: #374151;
+}
+.lodgingSection .value {
+  color: #374151;
+  flex: 1;
+}
+
+/* 객실 사진 섹션 */
+.roomPhotosSection {
+  margin: 1.2rem 0;
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.roomPhotosSection h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eef2ff;
+  padding-bottom: 8px;
+  text-align: left;
+}
+.roomPhotosGrid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.roomPhotoImg {
+  width: calc(25% - 10px);
+  min-width: 120px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.roomPhotoImg:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 900px) {
+  .roomPhotoImg {
+    width: calc(33.333% - 10px);
+    height: 120px;
+  }
+}
+@media (max-width: 480px) {
+  .roomPhotoImg {
+    width: calc(50% - 8px);
+    height: 110px;
+  }
 }
