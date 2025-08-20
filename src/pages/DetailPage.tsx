@@ -29,6 +29,7 @@ interface DetailItem {
   images: string[]
   mapx?: number
   mapy?: number
+  extraIntro?: Record<string, any> // 원본 intro 데이터 보관
 }
 
 interface ImageItem {
@@ -70,6 +71,8 @@ const DetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [galleryImages, setGalleryImages] = useState<string[]>([]) // 모달에서 보여줄 현재 갤러리
+  const [modalGallery, setModalGallery] = useState<'main' | 'room'>('main')
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
   const [menusLoading, setMenusLoading] = useState(false)
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
@@ -147,18 +150,18 @@ const DetailPage: React.FC = () => {
   }, [])
 
   const handlePrev = useCallback(() => {
-    if (!data) return
-    const prev = (currentIndex - 1 + data.images.length) % data.images.length
+    if (!galleryImages || galleryImages.length === 0) return
+    const prev = (currentIndex - 1 + galleryImages.length) % galleryImages.length
     setCurrentIndex(prev)
-    setSelectedImage(data.images[prev])
-  }, [currentIndex, data])
+    setSelectedImage(galleryImages[prev])
+  }, [currentIndex, galleryImages])
 
   const handleNext = useCallback(() => {
-    if (!data) return
-    const next = (currentIndex + 1) % data.images.length
+    if (!galleryImages || galleryImages.length === 0) return
+    const next = (currentIndex + 1) % galleryImages.length
     setCurrentIndex(next)
-    setSelectedImage(data.images[next])
-  }, [currentIndex, data])
+    setSelectedImage(galleryImages[next])
+  }, [currentIndex, galleryImages])
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -370,6 +373,7 @@ const DetailPage: React.FC = () => {
         ].join('&')
 
         let infoJson = null
+        let lodgingInfoJson: any = null
         let courseSpotsArr: any[] = []
         if (typeid === '25') {
           const infoUrl = [
@@ -413,6 +417,26 @@ const DetailPage: React.FC = () => {
           setCourseSpots(courseSpotsArr.filter(Boolean))
         }
 
+        // 숙박(contentTypeId === 32)인 경우 detailInfo2에서 추가 필드 가져오기
+        if (typeid === '32') {
+          try {
+            const lodgingInfoUrl = [
+              `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}`,
+              `MobileOS=ETC`,
+              `MobileApp=TestAPP`,
+              `_type=json`,
+              `contentId=${id}`,
+              `contentTypeId=${typeid}`,
+            ].join('&')
+            const lodgingRes = await fetch(lodgingInfoUrl)
+            lodgingInfoJson = await lodgingRes.json()
+            console.log('detailInfo2 (lodging):', lodgingInfoJson)
+          } catch (err) {
+            console.error('숙박 상세 info 불러오기 실패:', err)
+            lodgingInfoJson = null
+          }
+        }
+
         const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
         const commonJson = await commonRes.json()
         const imageJson = await imageRes.json()
@@ -431,6 +455,14 @@ const DetailPage: React.FC = () => {
 
         const rawIntro = introJson.response?.body?.items?.item
         const introItem = Array.isArray(rawIntro) ? rawIntro[0] : rawIntro
+
+        // lodgingInfoJson에서 실제 항목 추출 (있다면) -> introItem과 병합
+        let lodgingItem: any = null
+        if (lodgingInfoJson) {
+          const rawLodging = lodgingInfoJson.response?.body?.items?.item || null
+          lodgingItem = Array.isArray(rawLodging) ? rawLodging[0] : rawLodging
+        }
+        const mergedIntro = { ...(introItem || {}), ...(lodgingItem || {}) }
 
         if (!item) {
           setError('상세 정보를 불러올 수 없습니다.')
@@ -466,8 +498,9 @@ const DetailPage: React.FC = () => {
             usetime = introItem?.usetimeleports
             break
           case 32:
-            tel = introItem?.infocenterlodging
-            usetime = `체크인: ${introItem?.checkintime || ''}, 체크아웃: ${introItem?.checkouttime || ''}`
+            // introItem 대신 mergedIntro 사용하여 detailInfo2에서 가져온 값 우선
+            tel = mergedIntro?.infocenterlodging || ''
+            usetime = `체크인: ${mergedIntro?.checkintime || ''}, 체크아웃: ${mergedIntro?.checkouttime || ''}`
             break
           case 39:
             tel = introItem?.infocenterfood
@@ -479,6 +512,7 @@ const DetailPage: React.FC = () => {
             usefee = ''
         }
 
+        // 기존 tel/usetime/usefee 계산 후 마지막에 setData 호출 부분 변경
         setData({
           title: item.title,
           contentTypeId,
@@ -491,6 +525,7 @@ const DetailPage: React.FC = () => {
           images: imageUrls.length ? imageUrls : item.firstimage ? [item.firstimage] : [],
           mapx: item.mapx,
           mapy: item.mapy,
+          extraIntro: mergedIntro || introItem || {}, // detailIntro2 + detailInfo2(숙박) 병합
         })
       } catch (e) {
         console.error('데이터 로드 오류:', e)
@@ -504,6 +539,57 @@ const DetailPage: React.FC = () => {
 
   const handleToggleExpand = (idx: number) => {
     setExpandedSpots((prev) => ({ ...prev, [idx]: !prev[idx] }))
+  }
+
+  // URL을 안전하게 변환: http -> https 시도, 안되면 프록시 경로로 폴백
+  const makeSecureUrl = (url?: string | null) => {
+    if (!url) return null
+    try {
+      const s = String(url).trim()
+      // 이미 https면 그대로, protocol-relative 처리
+      if (s.startsWith('https://')) return s
+      if (s.startsWith('//')) return window.location.protocol + s
+      // http이면 https로 바꿔서 먼저 시도
+      if (s.startsWith('http://')) return s.replace(/^http:\/\//i, 'https://')
+      // 기타 (파일명 등) 그대로 반환
+      return s
+    } catch {
+      return url
+    }
+  }
+
+  // HTML <img> 또는 plain URL에서 이미지 src 추출
+  const extractImgUrl = (htmlOrUrl?: string | null) => {
+    if (!htmlOrUrl) return null
+    const str = String(htmlOrUrl)
+    const imgMatch = str.match(/<img[^>]+src=["']([^"']+)["']/i)
+    if (imgMatch) return imgMatch[1]
+    const urlMatch = str.match(/https?:\/\/[^\s'"]+/i)
+    return urlMatch ? urlMatch[0] : null
+  }
+
+  // extraIntro에서 roomimg1..roomimg6 등 가능한 객실사진 키들을 찾아 배열 반환
+  const getRoomImageUrls = () => {
+    if (!data?.extraIntro) return []
+    const urls: string[] = []
+    // 숫자 붙은 키 우선 수집
+    for (let i = 1; i <= 6; i++) {
+      const key = `roomimg${i}`
+      const raw = (data.extraIntro as any)[key]
+      if (!raw) continue
+      const src = extractImgUrl(raw)
+      if (src) urls.push(makeSecureUrl(src) || src)
+    }
+    // 단일 roomimg 키 또는 roomimage 등 예외 키 보조 수집
+    const fallbackKeys = ['roomimg', 'roomimage', 'roomphoto']
+    for (const k of fallbackKeys) {
+      if ((data.extraIntro as any)[k]) {
+        const raw = (data.extraIntro as any)[k]
+        const src = extractImgUrl(raw)
+        if (src) urls.push(makeSecureUrl(src) || src)
+      }
+    }
+    return Array.from(new Set(urls)).filter(Boolean)
   }
 
   if (loading) return <div className={styles.loading}>로딩 중...</div>
@@ -548,6 +634,9 @@ const DetailPage: React.FC = () => {
                 alt={`이미지 ${i + 1}`}
                 className={styles.heroImage}
                 onClick={() => {
+                  // 모달에 대표 이미지 갤러리 세팅 (썸네일/이동 동작을 위해)
+                  setGalleryImages(data.images)
+                  setModalGallery('main')
                   setCurrentIndex(i)
                   setSelectedImage(url)
                   setIsModalOpen(true)
@@ -564,66 +653,120 @@ const DetailPage: React.FC = () => {
       </div>
       <div className={styles.infoSection}>
         <div className={styles.infoBox}>
-          <h2>기본 정보</h2>
-          <p>
-            <span className={styles.label}>운영시간</span>
-            <span className={styles.value}>{data.usetime || '정보 없음'}</span>
-          </p>
-          <p>
-            <span className={styles.label}>입장료</span>
-            <span className={styles.value}>{data.usefee || '정보 없음'}</span>
-          </p>
-          <p>
-            <span className={styles.label}>주소</span>
-            <span className={styles.value}>{data.addr1 || '정보 없음'}</span>
-          </p>
-          <p>
-            <span className={styles.label}>연락처</span>
-            <span className={styles.value}>{data.tel || '정보 없음'}</span>
-          </p>
-          {homepageUrl && (
-            <p>
-              <span className={styles.label}>홈페이지</span>
-              <span className={styles.value}>
-                <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
-                  {homepageText}
-                </a>
-              </span>
-            </p>
-          )}
-          {data.contentTypeId === 39 && (
-            <div className={styles.menuSection}>
-              <h2>대표 메뉴</h2>
-              {rating && (
-                <div className={styles.menuRatingBox}>
-                  <span className={styles.starRating}>
-                    <span className={styles.starRatingBg}>★★★★★</span>
-                    <span className={styles.starRatingFg} style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}>
-                      ★★★★★
-                    </span>
+          {data.contentTypeId === 32 ? (
+            <>
+              <h2>숙박 정보</h2>
+              <p>
+                <span className={styles.label}>객실명칭</span>
+                <span className={styles.value}>{data.extraIntro?.roomtitle || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>체크인</span>
+                <span className={styles.value}>{data.extraIntro?.checkintime || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>체크아웃</span>
+                <span className={styles.value}>{data.extraIntro?.checkouttime || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>예약</span>
+                <span className={styles.value}>{data.extraIntro?.reservationlodging || data.extraIntro?.reservationurl || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>주차</span>
+                <span className={styles.value}>{data.extraIntro?.parkinglodging || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>객실크기</span>
+                <span className={styles.value}>{data.extraIntro?.roomsize1 + '평' || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>객실수</span>
+                <span className={styles.value}>{data.extraIntro?.roomcount || data.extraIntro?.roomtype || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>기준인원</span>
+                <span className={styles.value}>{data.extraIntro?.roombasecount || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>최대인원</span>
+                <span className={styles.value}>{data.extraIntro?.roommaxcount || '정보 없음'}</span>
+              </p>
+              {homepageUrl && (
+                <p className={styles.homepage}>
+                  <span className={styles.label}>홈페이지</span>
+                  <span className={styles.value}>
+                    <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
+                      {homepageText}
+                    </a>
                   </span>
-                  <span className={styles.ratingValue}>{rating}</span>
-                  <span className={styles.ratingLabel}>평점</span>
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <h2>기본 정보</h2>
+              <p>
+                <span className={styles.label}>운영시간</span>
+                <span className={styles.value}>{data.usetime || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>입장료</span>
+                <span className={styles.value}>{data.usefee || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>주소</span>
+                <span className={styles.value}>{data.addr1 || '정보 없음'}</span>
+              </p>
+              <p>
+                <span className={styles.label}>연락처</span>
+                <span className={styles.value}>{data.tel || '정보 없음'}</span>
+              </p>
+              {homepageUrl && (
+                <p>
+                  <span className={styles.label}>홈페이지</span>
+                  <span className={styles.value}>
+                    <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
+                      {homepageText}
+                    </a>
+                  </span>
+                </p>
+              )}
+              {data.contentTypeId === 39 && (
+                <div className={styles.menuSection}>
+                  <h2>대표 메뉴</h2>
+                  {rating && (
+                    <div className={styles.menuRatingBox}>
+                      <span className={styles.starRating}>
+                        <span className={styles.starRatingBg}>★★★★★</span>
+                        <span className={styles.starRatingFg} style={{ width: `${(Number(rating) / 5) * 100}%`, display: 'inline-block', position: 'absolute', top: 0, left: 0, overflow: 'hidden' }}>
+                          ★★★★★
+                        </span>
+                      </span>
+                      <span className={styles.ratingValue}>{rating}</span>
+                      <span className={styles.ratingLabel}>평점</span>
+                    </div>
+                  )}
+                  {menusLoading ? (
+                    <div className={styles.menuLoadingWrapper}>
+                      <div className={styles.menuSpinner}></div>
+                      <div>메뉴 탐색중...(3~40초 소요)</div>
+                    </div>
+                  ) : menus && menus.length > 0 ? (
+                    <ul>
+                      {menus.map((menu, i) => (
+                        <li key={i}>
+                          <span className={styles.menuName}>{menu.name}</span>
+                          <span className={styles.menuPrice}>{menu.price || '가격 정보 없음'}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className={styles.noMenu}>메뉴 정보 없음</div>
+                  )}
                 </div>
               )}
-              {menusLoading ? (
-                <div className={styles.menuLoadingWrapper}>
-                  <div className={styles.menuSpinner}></div>
-                  <div>메뉴 탐색중...(3~40초 소요)</div>
-                </div>
-              ) : menus && menus.length > 0 ? (
-                <ul>
-                  {menus.map((menu, i) => (
-                    <li key={i}>
-                      <span className={styles.menuName}>{menu.name}</span>
-                      <span className={styles.menuPrice}>{menu.price || '가격 정보 없음'}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className={styles.noMenu}>메뉴 정보 없음</div>
-              )}
-            </div>
+            </>
           )}
         </div>
         <div className={styles.mapBox}>
@@ -684,7 +827,7 @@ const DetailPage: React.FC = () => {
               ›
             </button>
             <div className={styles.thumbnailContainer}>
-              {data.images.map((img, i) => (
+              {galleryImages.map((img, i) => (
                 <img
                   key={i}
                   src={img}
@@ -704,6 +847,36 @@ const DetailPage: React.FC = () => {
         </div>
       )}
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
+
+      {/* 숙박: 객실 사진 섹션 (주변 장소 섹션 위) */}
+      {data.contentTypeId === 32 &&
+        (() => {
+          const roomImgs = getRoomImageUrls()
+          if (!roomImgs || roomImgs.length === 0) return null
+          return (
+            <div className={styles.roomPhotosSection}>
+              <h2>객실 사진</h2>
+              <div className={styles.roomPhotosGrid}>
+                {roomImgs.map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={`객실사진 ${idx + 1}`}
+                    className={styles.roomPhotoImg}
+                    onClick={() => {
+                      setGalleryImages(roomImgs)
+                      setModalGallery('room')
+                      setCurrentIndex(idx)
+                      setSelectedImage(url)
+                      setIsModalOpen(true)
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
       {nearbyPlaces.length > 0 && (
         <div className={styles.recommendSection}>
           <h2>주변 장소</h2>
