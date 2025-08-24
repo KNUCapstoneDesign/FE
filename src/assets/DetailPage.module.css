@@ -106,8 +106,9 @@
 /* 레이블/값 2컬럼 */
 .infoBox p {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* 값이 여러 줄일 때 label은 상단 고정, value만 줄바꿈 */
   line-height: 1;
+  gap: 8px;
 }
 
 .label {
@@ -115,15 +116,13 @@
   width: 100px;
   font-weight: bold;
   color: #333;
+  align-self: flex-start; /* 확실히 상단에 고정 */
 }
 
 .value {
   flex: 1;
   color: #555;
   text-align: left;
-}
-.value a {
-  margin-bottom: 0.75rem;
 }
 
 /* 위치 정보 placeholder */
@@ -741,4 +740,8 @@
   cursor: pointer;
   font-size: 0.95rem;
   padding: 0;
+}
+
+.aUrl {
+  margin-top: 0px;
 }
