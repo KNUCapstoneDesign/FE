@@ -80,7 +80,6 @@ const TestPage: React.FC = () => {
             <div key={course.contentid} className={styles.courseCard} onClick={() => navigate(`/detail/${course.contentid}/25`)} style={{ cursor: 'pointer' }}>
               <img src={course.firstimage || course1} alt={course.title} className={styles.courseImage} />
               <h3>{course.title}</h3>
-              <p>{course.addr1 || '주소 정보 없음'}</p>
               <button
                 className={styles.detailBtn}
                 onClick={(e) => {

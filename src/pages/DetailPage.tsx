@@ -276,6 +276,24 @@ const DetailPage: React.FC = () => {
     return urlMatch ? urlMatch[0] : null
   }
 
+  // HTML의 <br>을 실제 줄바꿈으로 바꾸고 나머지 태그는 제거, &nbsp; 등 간단 치환
+  const formatWithLineBreaks = (raw?: string | null | undefined) => {
+    if (!raw && raw !== '') return '정보 없음'
+    try {
+      let s = String(raw)
+      // <br> 계열을 줄바꿈으로 변경
+      s = s.replace(/<br\s*\/?>/gi, '\n')
+      // 나머지 HTML 태그 제거
+      s = s.replace(/<[^>]+>/g, '')
+      // HTML 엔티티 일부 치환 (필요 시 추가)
+      s = s.replace(/&nbsp;/gi, ' ')
+      s = s.trim()
+      return s === '' ? '정보 없음' : s
+    } catch {
+      return String(raw)
+    }
+  }
+
   const getRoomImageUrls = useCallback(() => {
     if (!data?.extraIntro) return []
     const urls: string[] = []
@@ -690,7 +708,7 @@ const DetailPage: React.FC = () => {
       </div>
       <div className={styles.detailDescription}>
         <h2>상세 설명</h2>
-        <p>{data.overview ? data.overview.replace(/<[^>]+>/g, '') : '설명 정보 없음'}</p>
+        <p style={{ whiteSpace: 'pre-line' }}>{data.overview ? formatWithLineBreaks(data.overview) : '설명 정보 없음'}</p>
       </div>
       <div className={styles.infoSection}>
         <div className={styles.infoBox}>
@@ -699,39 +717,57 @@ const DetailPage: React.FC = () => {
               <h2>숙박 정보</h2>
               <p>
                 <span className={styles.label}>객실명칭</span>
-                <span className={styles.value}>{data.extraIntro?.roomtitle || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.roomtitle)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>체크인</span>
-                <span className={styles.value}>{data.extraIntro?.checkintime || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.checkintime)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>체크아웃</span>
-                <span className={styles.value}>{data.extraIntro?.checkouttime || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.checkouttime)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>예약</span>
-                <span className={styles.value}>{data.extraIntro?.reservationlodging || data.extraIntro?.reservationurl || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.reservationlodging || data.extraIntro?.reservationurl)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>주차</span>
-                <span className={styles.value}>{data.extraIntro?.parkinglodging || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.parkinglodging)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>객실크기</span>
-                <span className={styles.value}>{data.extraIntro?.roomsize1 ? `${data.extraIntro.roomsize1}평` : '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.roomsize1 ? `${data.extraIntro.roomsize1}평` : undefined)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>객실수</span>
-                <span className={styles.value}>{data.extraIntro?.roomcount || data.extraIntro?.roomtype || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.roomcount || data.extraIntro?.roomtype)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>기준인원</span>
-                <span className={styles.value}>{data.extraIntro?.roombasecount || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.roombasecount)}
+                </span>
               </p>
               <p>
                 <span className={styles.label}>최대인원</span>
-                <span className={styles.value}>{data.extraIntro?.roommaxcount || '정보 없음'}</span>
+                <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                  {formatWithLineBreaks(data.extraIntro?.roommaxcount)}
+                </span>
               </p>
               {homepageUrl && (
                 <p className={styles.homepage}>
@@ -746,33 +782,471 @@ const DetailPage: React.FC = () => {
             </>
           ) : (
             <>
-              <h2>기본 정보</h2>
-              <p>
-                <span className={styles.label}>운영시간</span>
-                <span className={styles.value}>{data.usetime || '정보 없음'}</span>
-              </p>
-              <p>
-                <span className={styles.label}>입장료</span>
-                <span className={styles.value}>{data.usefee || '정보 없음'}</span>
-              </p>
-              <p>
-                <span className={styles.label}>주소</span>
-                <span className={styles.value}>{data.addr1 || '정보 없음'}</span>
-              </p>
-              <p>
-                <span className={styles.label}>연락처</span>
-                <span className={styles.value}>{data.tel || '정보 없음'}</span>
-              </p>
+              {data.contentTypeId === 12 && (
+                <>
+                  <h2>관광지 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>이용시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usetime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>쉬는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.restdate)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주차시설</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.parking)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문화유산유무</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.heritage1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>자연유산유무</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.heritage2)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>기록유산유무</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.heritage3)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      애완동물<br></br>동반여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.chkpet)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      신용카드<br></br>가능여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.heritage1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocenter)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 14 && (
+                <>
+                  <h2>문화시설 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>이용시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usetimeculture)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>쉬는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.restdateculture)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>관람소요시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.spendtime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주차요금</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.parkingfee)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      애완동물<br></br>동반여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.chkpetculture)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>이용요금</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usefee)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의전화</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocenterculture)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 15 && (
+                <>
+                  <h2>행사/공연/축제 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>행사시작일</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.eventstartdate)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>행사종료일</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.eventenddate)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>공연시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.playtime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>이용요금</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usetimefestival)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>행사장소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.eventplace)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주최자문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.sponsor1tel)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주관사문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.sponsor2tel)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 25 && (
+                <>
+                  <h2>여행코스 정보</h2>
+                  <p>
+                    <span className={styles.label}>코스총거리</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.distance)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>코스일정</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.schedule)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>코스총소요시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.taketime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>코스테마</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.theme)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocentertourcourse)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 28 && (
+                <>
+                  <h2>레포츠 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>개장기간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.openperiod)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>이용시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usetimeleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>체험가능연령</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.expagerangeleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주차시설</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.parkingleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주차요금</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.parkingfeeleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>쉬는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.restdateleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>입장료</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.usefeeleports)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocenterleports)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 38 && (
+                <>
+                  <h2>쇼핑 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>장서는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.fairday)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>영업시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.opentime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>쉬는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.restdateshopping)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>판매품목</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.saleitem)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>품목별가격</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.saleitemcost)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      신용카드<br></br>가능여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.chkcreditcardshopping)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      애완동물<br></br>동반여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.chkpetshopping)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>매장안내</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.shopguide)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocentershopping)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {data.contentTypeId === 39 && (
+                <>
+                  <h2>식당 정보</h2>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>영업시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.opentimefood)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>쉬는날</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.restdatefood)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>대표메뉴</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.firstmenu)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>취급메뉴</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.treatmenu)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>포장가능여부</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.packing)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주차시설</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.parkingfood)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>
+                      신용카드<br></br>가능여부
+                    </span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.chkcreditcardfood)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>예약안내</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.reservationfood)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>문의</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.extraIntro?.infocenterfood)}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {/* 기본/공통 정보 (위치, 연락처, 홈페이지 등) */}
+              {!(
+                data.contentTypeId === 12 ||
+                data.contentTypeId === 14 ||
+                data.contentTypeId === 15 ||
+                data.contentTypeId === 25 ||
+                data.contentTypeId === 28 ||
+                data.contentTypeId === 38 ||
+                data.contentTypeId === 39
+              ) && (
+                <>
+                  <h2>기본 정보</h2>
+                  <p>
+                    <span className={styles.label}>운영시간</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.usetime)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>입장료</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.usefee)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>주소</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.addr1)}
+                    </span>
+                  </p>
+                  <p>
+                    <span className={styles.label}>연락처</span>
+                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
+                      {formatWithLineBreaks(data.tel)}
+                    </span>
+                  </p>
+                </>
+              )}
+
               {homepageUrl && (
-                <p>
+                <p className={styles.homepageUrl}>
                   <span className={styles.label}>홈페이지</span>
                   <span className={styles.value}>
-                    <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={homepageUrl} className={styles.aUrl} target="_blank" rel="noopener noreferrer">
                       {homepageText}
                     </a>
                   </span>
                 </p>
               )}
+
+              {/* 음식점(39)일 경우 메뉴 섹션은 그대로 유지 */}
               {data.contentTypeId === 39 && (
                 <div className={styles.menuSection}>
                   <h2>대표 메뉴</h2>
