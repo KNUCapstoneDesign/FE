@@ -76,11 +76,6 @@ const Nav = () => {
 
         {/* 기존 메뉴 */}
         <li className={styles.navItem}>
-          <Link to="/travelcourse" className={styles.navLink} onClick={scrollToTop}>
-            지역별 여행 코스
-          </Link>
-        </li>
-        <li className={styles.navItem}>
           <Link to="/aisearch" className={styles.navLink} onClick={scrollToTop}>
             AI 검색
           </Link>

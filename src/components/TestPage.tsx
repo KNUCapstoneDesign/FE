@@ -35,8 +35,7 @@ const TestPage: React.FC = () => {
               `&MobileOS=ETC` +
               `&MobileApp=TestApp` +
               `&_type=json` +
-              `&contentTypeId=25` +
-              `&areaCode=1`,
+              `&contentTypeId=25`,
           )
           if (!res.ok) throw new Error('API 호출 실패')
           const json = await res.json()

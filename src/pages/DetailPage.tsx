@@ -188,7 +188,6 @@ const DetailPage: React.FC = () => {
   const [popularPlaces, setPopularPlaces] = useState<NearbyPlace[]>([])
   const [courseSpots, setCourseSpots] = useState<CourseSpotItem[]>([])
 
-  const [expandedSpots, setExpandedSpots] = useState<Record<number, boolean>>({})
   const [distance, setDistance] = useState<number | null>(null)
 
   useEffect(() => {
@@ -654,10 +653,6 @@ const DetailPage: React.FC = () => {
     fetchDetail()
   }, [id, typeid, API_KEY])
 
-  const handleToggleExpand = (idx: number) => {
-    setExpandedSpots((prev) => ({ ...prev, [idx]: !prev[idx] }))
-  }
-
   if (loading) return <div className={styles.loading}>로딩 중...</div>
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
@@ -964,37 +959,23 @@ const DetailPage: React.FC = () => {
 
               {data.contentTypeId === 25 && (
                 <>
-                  <h2>여행코스 정보</h2>
-                  <p>
-                    <span className={styles.label}>코스총거리</span>
-                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
-                      {formatWithLineBreaks(data.extraIntro?.distance)}
-                    </span>
-                  </p>
-                  <p>
-                    <span className={styles.label}>코스일정</span>
-                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
-                      {formatWithLineBreaks(data.extraIntro?.schedule)}
-                    </span>
-                  </p>
-                  <p>
-                    <span className={styles.label}>코스총소요시간</span>
-                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
-                      {formatWithLineBreaks(data.extraIntro?.taketime)}
-                    </span>
-                  </p>
-                  <p>
-                    <span className={styles.label}>코스테마</span>
-                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
-                      {formatWithLineBreaks(data.extraIntro?.theme)}
-                    </span>
-                  </p>
-                  <p>
-                    <span className={styles.label}>문의</span>
-                    <span className={styles.value} style={{ whiteSpace: 'pre-line' }}>
-                      {formatWithLineBreaks(data.extraIntro?.infocentertourcourse)}
-                    </span>
-                  </p>
+                  <h2>코스별 주요 장소</h2>
+                  <ul className={styles.courseSpotsList}>
+                    {courseSpots.map((spot, idx) => {
+                      return (
+                        <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
+                          <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
+                            <div className={styles.courseSpotImgWrap}>
+                              <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                            </div>
+                            <div className={styles.courseSpotInfo}>
+                              <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
+                            </div>
+                          </Link>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </>
               )}
 
@@ -1290,46 +1271,6 @@ const DetailPage: React.FC = () => {
           {distance !== null && <div className={styles.distanceInfo}> - 현재 위치와의 직선 거리: {(distance / 1000).toFixed(2)}km</div>}
         </div>
       </div>
-
-      {data.contentTypeId === 25 && courseSpots.length > 0 && (
-        <div className={styles.courseSpotsSection}>
-          <h2>코스별 주요 장소</h2>
-          <ul className={styles.courseSpotsList}>
-            {courseSpots.map((spot, idx) => {
-              const desc = (spot.subdetailoverview || spot.detail?.overview || '설명 없음').replace(/<[^>]+>/g, '')
-              const isExpanded = !!expandedSpots[idx]
-              const isLong = desc.length > 200
-              const shortDesc = desc.slice(0, 200)
-              return (
-                <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
-                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
-                    <div className={styles.courseSpotImgWrap}>
-                      <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
-                    </div>
-                    <div className={styles.courseSpotInfo}>
-                      <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
-                      <div className={styles.courseSpotDesc}>
-                        {isExpanded || !isLong ? desc : shortDesc + '...'}
-                        {isLong && (
-                          <button
-                            type="button"
-                            className={styles.toggleBtn}
-                            onClick={(e) => {
-                              e.preventDefault()
-                              handleToggleExpand(idx)
-                            }}>
-                            {isExpanded ? '접기' : '더보기'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
 
       {isModalOpen && selectedImage && (
         <div className={styles.modalOverlay} onClick={closeModal}>

@@ -26,12 +26,15 @@ const AiSearchPage: React.FC = () => {
   const [naverReady, setNaverReady] = useState(false)
 
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
+  const [distance, setDistance] = useState<number | null>(null)
+
+  const distanceLabelMarker = useRef<naver.maps.Marker | null>(null)
 
   const itemsPerPage = 5
   const PAGE_BLOCK = 10
   const { tab, imageUrl, labels, selectedLabel, results, setTab, setImageUrl, setLabels, setSelectedLabel, setResults, reset } = useAiSearchStore()
-  const navigate = useNavigate();
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const navigate = useNavigate()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
   useEffect(() => {
     reset()
@@ -62,14 +65,107 @@ const AiSearchPage: React.FC = () => {
   useEffect(() => {
     if (!naverReady || !selectedLocation || !mapRef.current) return
     const { mapx, mapy } = selectedLocation
-    const position = new window.naver.maps.LatLng(mapy, mapx)
-    if (!mapInstance.current) {
-      mapInstance.current = new window.naver.maps.Map(mapRef.current, { center: position, zoom: 14 })
-    } else {
-      mapInstance.current.setCenter(position)
+    const placeLocation = new window.naver.maps.LatLng(mapy, mapx)
+
+    const initializeMap = (myLocation?: naver.maps.LatLng) => {
+      const bounds = new window.naver.maps.LatLngBounds()
+      bounds.extend(placeLocation)
+      if (myLocation) {
+        bounds.extend(myLocation)
+      }
+
+      const map = new window.naver.maps.Map(mapRef.current!, {
+        center: myLocation ? bounds.getCenter() : placeLocation,
+        zoom: 10,
+      })
+      mapInstance.current = map
+
+      new window.naver.maps.Marker({ position: placeLocation, map, title: '장소 위치' })
+
+      if (myLocation) {
+        new window.naver.maps.Marker({ position: myLocation, map, title: '내 위치' })
+        new window.naver.maps.Polyline({
+          map: map,
+          path: [placeLocation, myLocation],
+          strokeColor: '#5347AA',
+          strokeOpacity: 0.8,
+          strokeWeight: 4,
+          zIndex: 10,
+        })
+
+        window.naver.maps.Event.once(map, 'idle', () => {
+          map.fitBounds(bounds, { padding: 50 })
+        })
+
+        const projection = map.getProjection()
+        const calculatedDistance = projection.getDistance(placeLocation, myLocation)
+        setDistance(calculatedDistance)
+
+        const midPoint = new window.naver.maps.LatLng((placeLocation.y + myLocation.y) / 2, (placeLocation.x + myLocation.x) / 2)
+        const distanceText = `${(calculatedDistance / 1000).toFixed(2)}km`
+
+        distanceLabelMarker.current = new window.naver.maps.Marker({
+          position: midPoint,
+          map: map,
+          icon: {
+            content: `
+              <div style="
+                position: relative;
+                transform: translate(-50%, -100%);
+                padding: 2px 8px;
+                background-color: white;
+                border: 1px solid #5347AA;
+                border-radius: 10px;
+                color: #5347AA;
+                font-size: 14px;
+                font-weight: bold;
+                white-space: nowrap;
+              ">
+                ${distanceText}
+              </div>
+            `,
+          },
+        })
+      } else {
+        setDistance(null)
+        map.setCenter(placeLocation)
+        map.setZoom(14)
+      }
     }
-    if (markerInstance.current) markerInstance.current.setMap(null)
-    markerInstance.current = new window.naver.maps.Marker({ position, map: mapInstance.current })
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const myLocation = new window.naver.maps.LatLng(position.coords.latitude, position.coords.longitude)
+          initializeMap(myLocation)
+        },
+        () => {
+          console.error('Error getting current location: Geolocation failed.')
+          initializeMap()
+        },
+      )
+    } else {
+      console.log('Geolocation is not supported by this browser.')
+      initializeMap()
+    }
+
+    const handleResize = () => (mapInstance.current as any)?.relayout?.()
+    window.addEventListener('resize', handleResize)
+
+    const observer = new window.MutationObserver(() => {
+      ;(mapInstance.current as any)?.relayout?.()
+    })
+    if (mapRef.current) {
+      observer.observe(mapRef.current, { attributes: true, childList: true, subtree: true })
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      observer.disconnect()
+      if (distanceLabelMarker.current) {
+        distanceLabelMarker.current.setMap(null)
+      }
+    }
   }, [selectedLocation, naverReady])
 
   const handleImageUpload = async (file: File) => {
@@ -177,7 +273,7 @@ const AiSearchPage: React.FC = () => {
         )}
         {imageUrl && (
           <div className={styles.previewImageWrapper}>
-          <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />
+            <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />
           </div>
         )}
 
@@ -276,6 +372,7 @@ const AiSearchPage: React.FC = () => {
               <h2 className={styles.maptitle}>위치 정보</h2>
               <div className={styles.mapBoxWrapper}>
                 <div ref={mapRef} className={styles.mapBox} />
+                {distance !== null && <div className={styles.distanceInfo}> - 현재 위치와의 직선 거리: {(distance / 1000).toFixed(2)}km</div>}
               </div>
             </div>
           </div>
