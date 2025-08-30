@@ -15,7 +15,7 @@ const TestPage: React.FC = () => {
   const [data, setData] = useState<TourItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showCount, setShowCount] = useState(9)
+  const [showCount, setShowCount] = useState(8)
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
 
@@ -80,21 +80,13 @@ const TestPage: React.FC = () => {
             <div key={course.contentid} className={styles.courseCard} onClick={() => navigate(`/detail/${course.contentid}/25`)} style={{ cursor: 'pointer' }}>
               <img src={course.firstimage || course1} alt={course.title} className={styles.courseImage} />
               <h3>{course.title}</h3>
-              <button
-                className={styles.detailBtn}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  navigate(`/detail/${course.contentid}/25`)
-                }}>
-                자세히 보기
-              </button>
             </div>
           ))}
         </div>
         {shuffledData.length > showCount && (
           <button
             style={{ margin: '24px auto 0', display: 'block', padding: '12px 32px', fontSize: '1rem', borderRadius: '8px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
-            onClick={() => setShowCount((c) => c + 3)}>
+            onClick={() => setShowCount((c) => c + 8)}>
             더보기
           </button>
         )}
