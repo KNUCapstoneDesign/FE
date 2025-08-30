@@ -24,18 +24,21 @@ const SessionChecker = () => {
   useEffect(() => {
     if (!isAuthenticated) return
 
-    // 1분마다 토큰 만료 여부를 체크하는 인터벌 설정
-    const interval = setInterval(() => {
-      // 👇 로그인 시간으로부터 1시간(3600 * 1000 밀리초)이 지났는지 확인합니다.
-      if (loginTimestamp) {
-        const oneHour = 60 * 60 * 1000
+    const checkSession = () => {
+      const oneHour = 60 * 60 * 1000
+      if(loginTimestamp) {
         if (Date.now() > loginTimestamp + oneHour) {
           alert('세션이 만료되었습니다. 다시 로그인해주세요.')
           logout()
           navigate('/login')
         }
       }
-    }, 60000) // 1분마다 체크
+    }
+      // 👇 페이지 로드 시 즉시 한번 실행합니다.
+      checkSession()
+
+      // 👇 그 후, 1분마다 주기적으로 실행합니다.
+      const interval = setInterval(checkSession, 60000)
 
     // 컴포넌트가 언마운트될 때 인터벌 정리
     return () => clearInterval(interval)
