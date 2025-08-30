@@ -33,7 +33,7 @@ export default function IntroPage() {
       ></div>
 
       <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1, textAlign: 'center' }}>
-        <h1 style={{ color: 'rgb(255,250,250)', fontSize: '3rem', fontWeight: 700, fontFamily: 'SeoulNamsan', marginBottom: '2rem', textShadow: '0 2px 16px rgba(0,0,0,0.3)' }}>
+        <h1 style={{ color: 'rgb(255,250,250)', fontSize: '4vw', fontWeight: 700, fontFamily: 'SeoulNamsan', marginBottom: '2rem', textShadow: '0 2px 16px rgba(0,0,0,0.3)' }}>
           여행을 떠나볼까요?
         </h1>
         <div style={{ display: 'inline-block', width: '70%' , marginTop: '20px'}}>
