@@ -1,7 +1,8 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&family=Seoul+Namsan&display=swap');
 
 :root {
-  font-family: Pretendard, system-ui;
+  font-family: '08SeoulNamsanB_0', system-ui;
   max-width: 100%;
   margin: 0;
 }
@@ -29,6 +30,9 @@ body {
 
 body {
   padding-top: 100px;
+}
+body.no-padding-top {
+  padding-top: 0 !important;
 }
 
 main {

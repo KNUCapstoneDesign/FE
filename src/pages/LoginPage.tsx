@@ -26,7 +26,7 @@ const LoginPage = () => {
       // 상태 저장
       login({ userId: user_id, name, token, email, phone })
       // 로그인 성공 후 마이페이지로 이동
-      navigate('/')
+      navigate('/main')
     } catch (err) {
       console.error('로그인 실패:', err)
       setError('이메일 또는 비밀번호가 올바르지 않습니다.')

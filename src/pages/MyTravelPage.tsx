@@ -113,7 +113,7 @@ const MyTravelPage: React.FC = () => {
   return (
     <div className={styles.page}>
       <div className={styles.breadcrumb}>
-        <span className={styles.breadcrumbHome} onClick={() => navigate('/')}>
+        <span className={styles.breadcrumbHome} onClick={() => navigate('/main')}>
           <IoHome size={18} style={{ verticalAlign: 'middle' }} />
         </span>
         <span className={styles.breadcrumbDivider}>{'>'}</span>

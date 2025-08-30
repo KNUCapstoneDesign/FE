@@ -19,7 +19,7 @@ const Nav = () => {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate('/main')
   }
 
   const handleSearchToggle = () => {
@@ -41,7 +41,7 @@ const Nav = () => {
   return (
     <nav className={styles.navcontainer}>
       <div className="logocontainer">
-        <Link to="/" className={styles.logoLink} onClick={scrollToTop}>
+        <Link to="/main" className={styles.logoLink} onClick={scrollToTop}>
           <img src={logo} alt="메인페이지로 이동" className={styles.logo} />
         </Link>
       </div>

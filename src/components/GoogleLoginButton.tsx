@@ -32,7 +32,7 @@ const GoogleLoginButton = () => {
       localStorage.setItem('token', token);
 
       if (isExistingMember) {
-        navigate('/');
+        navigate('/main');
       } else {
         navigate('/signup');
       }
