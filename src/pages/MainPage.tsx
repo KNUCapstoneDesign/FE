@@ -1,6 +1,6 @@
 import styles from '../assets/MainPage.module.css'
 import Hero from '../components/Hero'
-import mainpic from '/mainpic.jpg'
+import mainpic from '/mainpic.jpeg'
 import HotCourses from '../components/TestPage.tsx'
 import { useAuthStore } from '../store/useAuthStore.ts'
 import { useNavigate } from 'react-router-dom'

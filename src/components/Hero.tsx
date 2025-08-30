@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Hero.module.css'
 import AreaSelectModal from './AreaSelectModal' // 모달 컴포넌트 import
+import TrueFocus from './TrueFocus.tsx'
 
 const AREA_LIST = [
   { code: '', name: '전체 지역' },
@@ -55,13 +56,31 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
       className={styles.hero}
       style={{
         backgroundImage: `url(${mainpic})`,
-        backgroundSize: 'cover',
         backgroundPosition: 'center',
+        height: '80vh', // 높이 조정
+        backgroundSize: 'cover'
       }}>
       <h1 className={styles.heading}>어디로 떠나시나요?</h1>
 
+      <TrueFocus
+        text="서울 인천 대전 대구 광주 부산 울산 세종 경기도 강원도 | 충청북도 충청남도 경상북도 경상남도 전라북도 전라남도 제주"
+        manualMode={false} // 자동으로 애니메이션 실행
+        blurAmount={4}
+        randomOrder={true}
+        borderColor="white"
+        glowColor="rgba(255, 255, 255, 0.6)"
+        animationDuration={0.7}
+        pauseBetweenAnimations={1.2}
+        textColor="#FFFFFF"
+        font={{
+          fontSize: "42px",
+          fontWeight: "700",
+          textShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",
+        }}
+      />
+
       <form onSubmit={handleSubmit} className={styles.searchBar}>
-        <input type="text" placeholder="여행지를 입력하세요" className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <input type="text" placeholder="장소를 입력하세요" className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 
         <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setModalOpen(true)}>
           {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
