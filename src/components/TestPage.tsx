@@ -11,6 +11,36 @@ interface TourItem {
   firstimage?: string
 }
 
+const AREA_LIST = [
+  { code: '1', name: '서울' },
+  { code: '2', name: '인천' },
+  { code: '3', name: '대전' },
+  { code: '4', name: '대구' },
+  { code: '5', name: '광주' },
+  { code: '6', name: '부산' },
+  { code: '7', name: '울산' },
+  { code: '8', name: '세종' },
+  { code: '31', name: '경기' },
+  { code: '32', name: '강원' },
+  { code: '33', name: '충북' },
+  { code: '34', name: '충남' },
+  { code: '35', name: '경북' },
+  { code: '36', name: '경남' },
+  { code: '37', name: '전북' },
+  { code: '38', name: '전남' },
+  { code: '39', name: '제주' },
+]
+
+/* 균등 셔플 (Fisher–Yates) */
+function shuffle<T>(arr: T[]) {
+  const a = arr.slice()
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 const TestPage: React.FC = () => {
   const [data, setData] = useState<TourItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -22,29 +52,27 @@ const TestPage: React.FC = () => {
   useEffect(() => {
     const fetchTourData = async () => {
       try {
+        // 랜덤으로 3개 지역 선택
+        const shuffledAreas = shuffle(AREA_LIST).slice(0, 3)
         let all: TourItem[] = []
-        let page = 1
-        let totalCount = 0
-        const numOfRows = 100
-        do {
+        for (const area of shuffledAreas) {
           const res = await fetch(
             `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?` +
               `serviceKey=${API_KEY}` +
-              `&numOfRows=${numOfRows}` +
-              `&pageNo=${page}` +
+              `&numOfRows=20` + // 각 지역당 20개로 줄임
+              `&pageNo=1` +
               `&MobileOS=ETC` +
               `&MobileApp=TestApp` +
               `&_type=json` +
-              `&contentTypeId=25`,
+              `&contentTypeId=25` +
+              `&areaCode=${area.code}`,
           )
           if (!res.ok) throw new Error('API 호출 실패')
           const json = await res.json()
           const items = json.response.body.items.item as TourItem | TourItem[] | undefined
           const arr = items ? (Array.isArray(items) ? items : [items]) : []
           all = all.concat(arr)
-          totalCount = json.response.body.totalCount
-          page++
-        } while (all.length < totalCount && page <= Math.ceil(totalCount / numOfRows))
+        }
         setData(all)
       } catch (e) {
         console.error(e)
