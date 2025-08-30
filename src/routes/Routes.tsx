@@ -1,6 +1,6 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import MainPage from '../pages/MainPage'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
@@ -15,6 +15,34 @@ import AiSearchPage from '../pages/AiSearchPage.tsx'
 import MyTravelPage from '../pages/MyTravelPage.tsx'
 import MyTravelDetailPage from '../pages/MyTravelDetailPage.tsx'
 import IntroPage from '../pages/IntroPage.tsx'
+import { useAuthStore } from '../store/useAuthStore.ts'
+
+const SessionChecker = () => {
+  const { isAuthenticated, loginTimestamp, logout } = useAuthStore()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    // 1분마다 토큰 만료 여부를 체크하는 인터벌 설정
+    const interval = setInterval(() => {
+      // 👇 로그인 시간으로부터 1시간(3600 * 1000 밀리초)이 지났는지 확인합니다.
+      if (loginTimestamp) {
+        const oneHour = 60 * 60 * 1000
+        if (Date.now() > loginTimestamp + oneHour) {
+          alert('세션이 만료되었습니다. 다시 로그인해주세요.')
+          logout()
+          navigate('/login')
+        }
+      }
+    }, 60000) // 1분마다 체크
+
+    // 컴포넌트가 언마운트될 때 인터벌 정리
+    return () => clearInterval(interval)
+  }, [isAuthenticated, loginTimestamp, logout, navigate])
+
+  return null // 이 컴포넌트는 UI를 렌더링하지 않습니다.
+}
 
 const InnerRouter = () => {
   const location = useLocation();
@@ -34,6 +62,7 @@ const InnerRouter = () => {
   return (
     <div className="pages-container" style={{ minHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
       {location.pathname !== '/' && <Nav />}
+      <SessionChecker />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route path="/" element={<IntroPage />} />
