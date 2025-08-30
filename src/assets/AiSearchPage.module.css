@@ -486,3 +486,10 @@
     transform: translateY(-10px);
   }
 }
+
+.distanceInfo {
+  font-size: 0.9rem;
+  text-align: right;
+  color: black;
+  margin-top: 0.3rem;
+}
