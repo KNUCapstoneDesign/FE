@@ -773,7 +773,7 @@ const DetailPage: React.FC = () => {
                 <p className={styles.homepage}>
                   <span className={styles.label}>홈페이지</span>
                   <span className={styles.value}>
-                    <a href={homepageUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={homepageUrl} className={styles.aUrl2} target="_blank" rel="noopener noreferrer">
                       {homepageText}
                     </a>
                   </span>
