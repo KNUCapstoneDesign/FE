@@ -3,11 +3,6 @@ import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import styles from '../assets/DetailPage.module.css'
 import {Carousel} from '../components/Carousel.tsx'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay, Navigation, Pagination } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
 import {
@@ -693,6 +688,18 @@ const DetailPage: React.FC = () => {
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
 
+  // 캐러셀에 전달할 데이터 형식으로 변환
+  const carouselSlides = data.images.map((url, i) => ({
+    src: url,
+  }));
+
+  const handleImageClickForModal = (index: number) => {
+    setGalleryImages(data.images);
+    setCurrentIndex(index);
+    setSelectedImage(data.images[index]);
+    setIsModalOpen(true);
+  };
+
   const rawHomepage = data.homepage || ''
   const regex = /href="([^"]+)"[^>]*>([^<]+)<\/a>/
   const match = rawHomepage.match(regex)
@@ -851,11 +858,40 @@ const DetailPage: React.FC = () => {
   };
 
 
+  // 카테고리 라벨 반환 함수
+  function getCategoryLabel(typeId: number) {
+    switch (typeId) {
+      case 12: return '관광지';
+      case 14: return '문화시설';
+      case 15: return '행사/공연';
+      case 25: return '여행코스';
+      case 28: return '레포츠';
+      case 32: return '숙박';
+      case 38: return '쇼핑';
+      case 39: return '음식점';
+      default: return '기타';
+    }
+  }
+
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <div className={styles.titleGroup}>
-          <h1 className={styles.title}>{data.title}</h1>
+          <h1 className={styles.title}>
+            {data.title}
+            <span style={{
+              fontSize: '1.1rem',
+              fontWeight: 500,
+              color: '#007fff',
+              marginLeft: '16px',
+              background: '#f0f7ff',
+              borderRadius: '8px',
+              padding: '4px 12px',
+              verticalAlign: 'middle',
+            }}>
+              {getCategoryLabel(data.contentTypeId)}
+            </span>
+          </h1>
           <p className={styles.address}>{data.addr1 || '주소 정보 없음'}</p>
         </div>
         <div className={styles.headerActions}>
@@ -866,24 +902,11 @@ const DetailPage: React.FC = () => {
       </header>
 
       <div className={styles.heroImageWrapper}>
-        <Swiper
-          modules={[Autoplay, Navigation, Pagination]}
-          spaceBetween={10}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 4000, disableOnInteraction: false }}
-          loop>
-          {data.images.map((url, i) => (
-            <SwiperSlide key={i}>
-              <img
-                src={url}
-                alt={`이미지 ${i + 1}`}
-                className={styles.heroImage}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {carouselSlides.length > 0 ? (
+          <Carousel slides={carouselSlides} onImageClick={handleImageClickForModal} />
+        ) : (
+          <img src="/noimage.jpg" alt="이미지 없음" className={styles.heroImage} />
+        )}
       </div>
 
       <div className={styles.mainGrid}>
