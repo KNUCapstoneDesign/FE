@@ -1,5 +1,259 @@
 /* src/assets/LoginPage.module.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  width: 800px;
+  max-width: 90vw;
+  min-height: 480px;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  animation: fadeInScale 0.8s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    width: 1000px;
+    min-height: 600px;
+  }
+}
+
+/* 나머지 스타일은 기존과 동일 */
+.container p {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.3px;
+  margin: 20px 0;
+}
+
+.container span {
+  font-size: 12px;
+}
+
+.container a {
+  color: #333;
+  font-size: 13px;
+  text-decoration: none;
+  margin: 15px 0 10px;
+}
+
+.container button:not(.socialButton) {
+  background-color: #2da0a8;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.container button.hidden {
+  background-color: transparent;
+  border-color: #fff;
+}
+
+.container form {
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  height: 100%;
+}
+
+.container input {
+  background-color: #eee;
+  border: none;
+  margin: 8px 0;
+  padding: 10px 15px;
+  font-size: 13px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+.sign-in {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+.container.active .sign-in {
+  transform: translateX(100%);
+}
+
+.sign-up {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+.container.active .sign-up {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: move 0.6s;
+}
+
+@keyframes move {
+  0%,
+  49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  50%,
+  100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+.social-icons {
+  display: inline-flex; /* 블록 폭 → 내용 폭 */
+  flex: none; /* flex 계산에서 늘어나지 않도록 */
+  width: auto;
+  padding: 0;
+  margin: 6px 0 12px; /* 좌우 margin 제거 */
+  gap: 8px;
+  align-self: center; /* 부모(column) 가운데 */
+}
+
+.socialButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 20%;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s;
+}
+
+.socialButton img {
+  display: block;
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+.socialButton:hover {
+  border-color: #2da0a8;
+  box-shadow: 0 0 0 2px rgba(45, 160, 168, 0.15);
+  background: #f5fafa;
+}
+
+.toggle-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+  border-radius: 150px 0 0 100px;
+  z-index: 1000;
+}
+
+.container.active .toggle-container {
+  transform: translateX(-100%);
+  border-radius: 0 150px 100px 0;
+}
+
+.toggle {
+  background-color: #2da0a8;
+  height: 100%;
+  background: linear-gradient(to right, #5c6bc0, #2da0a8);
+  color: #fff;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+
+.container.active .toggle {
+  transform: translateX(50%);
+}
+
+.toggle-panel {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 30px;
+  text-align: center;
+  top: 0;
+  transform: translateX(0);
+  transition: all 0.6s ease-in-out;
+}
+
+.toggle-left {
+  transform: translateX(-200%);
+}
+
+.container.active .toggle-left {
+  transform: translateX(0);
+}
+
+.toggle-right {
+  right: 0;
+  transform: translateX(0);
+}
+
+.container.active .toggle-right {
+  transform: translateX(200%);
+}
+
+/* 기존 스타일 유지 (충돌 방지) */
 .loginContainer {
   max-width: 400px;
   margin: 100px auto;
@@ -16,8 +270,8 @@
   color: #333;
 }
 
-input[type="email"],
-input[type="password"] {
+input[type='email'],
+input[type='password'] {
   width: 100%;
   padding: 12px;
   margin-bottom: 16px;
@@ -27,12 +281,15 @@ input[type="password"] {
   transition: border-color 0.3s;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus {
+input[type='email']:focus,
+input[type='password']:focus {
   border-color: #007bff;
   outline: none;
 }
 
+.loginbutton:hover {
+  background-color: black;
+}
 .submitButton {
   width: 100%;
   padding: 12px;
@@ -64,35 +321,3 @@ a:hover {
   color: red;
   margin-top: 10px;
 }
-
-.googleLoginButton {
-  width: 100%;
-  padding: 12px;
-  background: #fff;
-  color: #444;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  box-shadow: 0 2px 4px rgba(60, 64, 67, 0.08);
-  font-weight: 500;
-  margin-top: 10px;
-}
-
-.googleLoginButton:hover {
-  border-color: #4285f4;
-  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
-  background: #f7faff;
-}
-
-.googleLoginButton img {
-  margin-right: 8px;
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
-}
-
