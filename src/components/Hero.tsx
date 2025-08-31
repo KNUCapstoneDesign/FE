@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Hero.module.css'
 import AreaSelectModal from './AreaSelectModal' // 모달 컴포넌트 import
-import TrueFocus from './TrueFocus.tsx'
+import FlickerText from './FlickerText.tsx'
 
 const AREA_LIST = [
   { code: '', name: '전체 지역' },
@@ -58,25 +58,29 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
         backgroundImage: `url(${mainpic})`,
         backgroundPosition: 'center',
         height: '80vh', // 높이 조정
-        backgroundSize: 'cover'
+        backgroundSize: 'cover',
       }}>
-      <h1 className={styles.heading}>어디로 떠나시나요?</h1>
-
-      <TrueFocus
-        text="서울 인천 대전 대구 광주 부산 울산 세종 경기도 강원도 | 충청북도 충청남도 경상북도 경상남도 전라북도 전라남도 제주"
-        manualMode={false} // 자동으로 애니메이션 실행
-        blurAmount={4}
-        randomOrder={true}
-        borderColor="white"
-        glowColor="rgba(255, 255, 255, 0.6)"
-        animationDuration={0.7}
-        pauseBetweenAnimations={1.2}
-        textColor="#FFFFFF"
+      <FlickerText
+        text="어디로 떠나시나요?"
+        textColor="#fffcfa"
+        glowColor="#d8e1f2"
+        //#ede7ca
+        //#d8e1f2
+        showBackground={false}
         font={{
-          fontSize: "42px",
-          fontWeight: "700",
-          textShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",
+          fontSize: "3.5rem",
+          fontWeight: "bold",
+          letterSpacing: "0.1em",
+          fontFamily:
+            "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
         }}
+        animationSpeed={1.2}
+        animationPattern="random"
+        animationStyle="neon"
+        strokeWidth={1}
+        glowIntensity={12}
+        // 💡 [중요] 이 속성을 'once'로 설정하여 한 번만 재생하고 멈추도록 합니다.
+        repeatBehavior="loop"
       />
 
       <form onSubmit={handleSubmit} className={styles.searchBar}>
@@ -90,6 +94,23 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
           검색
         </button>
       </form>
+
+      {/*<TrueFocus*/}
+      {/*  text="서울 인천 대전 대구 광주 부산 울산 세종 경기도 강원도 | 충청북도 충청남도 경상북도 경상남도 전라북도 전라남도 제주"*/}
+      {/*  manualMode={false} // 자동으로 애니메이션 실행*/}
+      {/*  blurAmount={4}*/}
+      {/*  randomOrder={true}*/}
+      {/*  borderColor="white"*/}
+      {/*  glowColor="rgba(255, 255, 255, 0.6)"*/}
+      {/*  animationDuration={0.7}*/}
+      {/*  pauseBetweenAnimations={1.2}*/}
+      {/*  textColor="#FFFFFF"*/}
+      {/*  font={{*/}
+      {/*    fontSize: "42px",*/}
+      {/*    fontWeight: "700",*/}
+      {/*    textShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",*/}
+      {/*  }}*/}
+      {/*/>*/}
 
       <AreaSelectModal
         open={modalOpen}

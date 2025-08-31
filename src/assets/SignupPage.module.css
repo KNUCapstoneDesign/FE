@@ -21,13 +21,6 @@ form div {
   margin-bottom: 18px;
 }
 
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #555;
-}
-
 .inputField {
   width: 100%;
   padding: 12px;
@@ -56,12 +49,6 @@ label {
 
 .submitButton:hover {
   background-color: #0056b3;
-}
-
-p {
-  margin-top: 10px;
-  font-size: 14px;
-  text-align: center;
 }
 
 p[style*='color: red'] {
@@ -207,6 +194,8 @@ form button:hover {
 
 .welcome {
   margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
 }
 
 .welcomeback {

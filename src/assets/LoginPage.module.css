@@ -310,15 +310,14 @@ input[type='password']:focus {
   background-color: #0056b3;
 }
 
-a {
+.forgotpw {
   color: #007bff;
   text-decoration: none;
   display: inline-block;
   margin-top: 15px;
 }
-
-a:hover {
-  text-decoration: underline;
+.forgotpw:hover{
+    text-decoration: underline;
 }
 
 .error {

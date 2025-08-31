@@ -42,7 +42,7 @@ const LoginPage = () => {
           <span>또는 이메일로 로그인</span>
           <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <a href="#">비밀번호를 잊어버렸나요?</a>
+          <a className={styles.forgotpw} href="#">비밀번호를 잊어버렸나요?</a>
           <button type="submit">로그인</button>
           {error && <p className={styles.error}>{error}</p>}
         </form>

@@ -1,13 +1,27 @@
 .hero {
-  width: 100%;
-  height: 80vh;
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  color: #fff;
-  text-align: center;
-  padding-bottom: 130px;
+  align-items: center;
+  gap: 2rem;
+  height: 80vh;
+  background-size: cover;
+  background-position: center;
+  padding: 1rem;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0; /* 부모 요소 전체를 덮도록 설정 */
+  background-color: rgba(0, 0, 0, 0.3); /* 검은색 40% 투명도 오버레이 */
+  z-index: 1; /* 콘텐츠(z-index: 2)보다 아래에 위치 */
+}
+
+.hero > * {
+  position: relative;
+  z-index: 2;
 }
 
 .heading {
