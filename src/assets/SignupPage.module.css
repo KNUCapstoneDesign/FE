@@ -1,73 +1,256 @@
 /* src/assets/SignupPage.module.css */
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 .signupContainer {
-    max-width: 450px;
-    width: 100%; /* flex 컨테이너 영향 방지 */
-    margin: 100px auto;
-    padding: 35px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%; /* flex 컨테이너 영향 방지 */
+  margin: 100px auto;
+  padding: 35px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .signupContainer h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 26px;
-    color: #333;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 26px;
+  color: #333;
 }
 
 form div {
-    margin-bottom: 18px;
+  margin-bottom: 18px;
 }
 
 label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #555;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #555;
 }
 
 .inputField {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.3s;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s;
 }
 
 .inputField:focus {
-    border-color: #007bff;
-    outline: none;
+  border-color: #007bff;
+  outline: none;
 }
 
 .submitButton {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .submitButton:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 p {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: center;
 }
 
-p[style*="color: red"] {
-    color: red;
+p[style*='color: red'] {
+  color: red;
 }
 
-p[style*="color: green"] {
-    color: green;
+p[style*='color: green'] {
+  color: green;
+}
+* {
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 800px;
+  max-width: 90vw;
+  min-height: 480px;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+}
+
+.sign-up {
+  left: 50%; /* 오른쪽 절반으로 이동 */
+  width: 50%;
+}
+
+.signupform {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form h1 {
+  margin-bottom: 10px;
+  font-size: 32px;
+}
+
+form span {
+  font-size: 12px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+form input {
+  background-color: #eee !important;
+  border: none !important;
+  margin: 8px 0 !important;
+  padding: 10px 15px !important;
+  font-size: 13px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+
+form button {
+  background-color: #2da0a8;
+  color: #fff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background-color: #268c93;
+}
+
+/* 토글을 왼쪽, 폼을 오른쪽으로 재배치 */
+.toggle-container {
+  position: absolute;
+  top: 0;
+  left: 0; /* 왼쪽 붙이기 */
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+  border-radius: 0 150px 100px 0; /* 반대 방향 */
+  z-index: 1000;
+}
+
+.toggle {
+  background: linear-gradient(to right, #5c6bc0, #2da0a8);
+  color: #fff;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 이전 translate / left 제거 */
+}
+
+.toggle-panel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 0 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.toggle-left {
+  left: 0;
+}
+
+.welcome {
+  margin-top: 20px;
+}
+/* 토글 영역 로그인 버튼 스타일 (LoginPage와 동일 컨셉) */
+.hidden {
+  margin-top: 20px;
+  background: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  font-size: 12px;
+  padding: 10px 45px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    box-shadow 0.3s;
+}
+
+.hidden:hover {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.error {
+  color: #d93025;
+  margin-top: 6px;
+  font-size: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+.success {
+  color: #0f8a3b;
+  margin-top: 6px;
+  font-size: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+@media (min-width: 1980px) {
+  .container {
+    width: 1000px;
+    min-height: 600px;
+  }
 }
