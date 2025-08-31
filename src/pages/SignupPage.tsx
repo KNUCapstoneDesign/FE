@@ -115,7 +115,7 @@ const SignupPage = () => {
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-        <button type="submit">가입하기</button>
+        <button type="submit" className={styles.submitButton}>가입하기</button>
       </form>
     </div>
   )

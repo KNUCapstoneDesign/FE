@@ -44,7 +44,7 @@ export default function IntroPage() {
             radius={15}
             paddingX={32}
             paddingY={15}
-            font={{ fontSize: "22px", fontWeight: 600, letterSpacing: "0.4px", textAlign: "center", fontFamily: 'SeoulNamsan,Pretendard, sans-serif' }}
+            font={{ fontSize: "1.25vw", fontWeight: 600, letterSpacing: "0.4px", textAlign: "center", fontFamily: 'SeoulNamsan,Pretendard, sans-serif' }}
             align="center"
             showBorder={false}
             direction="alternate"

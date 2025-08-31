@@ -24,7 +24,7 @@ const Nav = () => {
 
   const handleSearchToggle = () => {
     if (showSearch && searchTerm.trim()) {
-      navigate(`/searchtest?q=${encodeURIComponent(searchTerm.trim())}`)
+      navigate(`/searchresult?q=${encodeURIComponent(searchTerm.trim())}`)
       setSearchTerm('')
     }
     setShowSearch((prev) => !prev)
@@ -32,7 +32,7 @@ const Nav = () => {
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTerm.trim()) {
-      navigate(`/searchtest?q=${encodeURIComponent(searchTerm.trim())}`)
+      navigate(`/searchresult?q=${encodeURIComponent(searchTerm.trim())}`)
       setSearchTerm('')
       setShowSearch(false)
     }

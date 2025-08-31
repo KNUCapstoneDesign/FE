@@ -47,7 +47,7 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
     if (district) params.append('district', district)
     if (districtName) params.append('districtName', districtName)
 
-    navigate(`/searchtest?${params.toString()}`)
+    navigate(`/searchresult?${params.toString()}`)
     window.scrollTo({ top: 0 })
   }
 

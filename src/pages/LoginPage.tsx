@@ -54,7 +54,7 @@ const LoginPage = () => {
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit" className={styles.submitButton}>Login</button>
 
         {error && <p className={styles.error}>{error}</p>}
 

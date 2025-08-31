@@ -1,0 +1,93 @@
+/* src/assets/HotCourses.module.css */
+
+/* 전체 섹션 스타일 */
+.hotCourses {
+  padding: 50px 30px; /* 상하 패딩 증가 */
+  width: 100%; /* 너비를 100%로 설정 */
+  margin: 0 auto;
+  background-color: #f9fafb; /* 부드러운 배경색 추가 */
+}
+
+/* "이런 여행 코스는 어떠세요?" 제목 */
+.courseh1 {
+  text-align: left;
+  margin-left: 10px;
+  margin-bottom: 24px; /* 제목과 카드 사이 간격 추가 */
+  font-size: 2rem; /* 폰트 크기 증가 */
+  font-weight: 700;
+  color: #111827; /* 더 진한 검정색 */
+}
+
+/* 카드 그리드 */
+.courseList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px; /* 카드 간격 조정 */
+}
+
+/* 개별 카드 */
+.courseCard {
+  background-color: #ffffff;
+  border-radius: 16px; /* 더 둥근 모서리 */
+  overflow: hidden;
+  cursor: pointer;
+  position: relative; /* 자식 요소(제목) 위치 조정을 위해 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* 애니메이션 효과 */
+}
+
+.courseCard:hover {
+  transform: translateY(-8px); /* hover 시 위로 살짝 이동 */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 카드 이미지 */
+.courseImage {
+  width: 100%;
+  height: 250px; /* 이미지 높이 증가 */
+  object-fit: cover;
+  display: block; /* 이미지 아래 불필요한 공백 제거 */
+}
+
+/* 카드 제목 (이미지 위로 이동) */
+.courseCard h3 {
+  position: absolute; /* 이미지 위에 위치 */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  margin: 0;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: left;
+  z-index: 2; /* 오버레이 위에 위치 */
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6); /* 텍스트 그림자 */
+}
+
+/* 이미지 위 어두운 그라데이션 오버레이 */
+.courseCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%);
+  z-index: 1;
+  pointer-events: none; /* 오버레이가 클릭을 방해하지 않도록 설정 */
+}
+
+
+/* 반응형 디자인 */
+@media screen and (max-width: 1024px) {
+  .courseList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 699px) {
+  .courseList {
+    grid-template-columns: 1fr;
+  }
+}

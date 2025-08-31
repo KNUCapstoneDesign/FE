@@ -1,7 +1,7 @@
 import styles from '../assets/MainPage.module.css'
 import Hero from '../components/Hero'
 import mainpic from '/mainpic.jpeg'
-import HotCourses from '../components/TestPage.tsx'
+import Course from '../components/Course.tsx'
 import { useAuthStore } from '../store/useAuthStore.ts'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -45,7 +45,7 @@ const MainPage = () => {
     <div>
       <div className={styles.mainPage}>
         <Hero mainpic={mainpic} />
-        <HotCourses />
+        <Course />
         <br />
       </div>
       <div className={styles.HotCourseContainer}></div>

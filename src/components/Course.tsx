@@ -1,8 +1,9 @@
-// src/pages/TestPage.tsx
+// src/pages/Course.tsx
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import styles from '../assets/HotCourses.module.css'
-import course1 from '/course1.jpg' // 더미 이미지 (fallback용)
+import styles from '../assets/Course.module.css'
+import course1 from '/course1.jpg'
+import SeeMoreButton from './SeeMoreButton.tsx' // 더미 이미지 (fallback용)
 
 interface TourItem {
   contentid: string
@@ -41,7 +42,7 @@ function shuffle<T>(arr: T[]) {
   return a
 }
 
-const TestPage: React.FC = () => {
+const Course: React.FC = () => {
   const [data, setData] = useState<TourItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -99,8 +100,8 @@ const TestPage: React.FC = () => {
   if (error) return <p>에러 발생: {error}</p>
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1 className={styles.courseh1}>🌟 이런 여행 코스는 어떠세요?</h1>
+    <div style={{ padding: 40 , backgroundColor: '#f9fafb' }}>
+      <h1 className={styles.courseh1}>떠오르는 여행 코스</h1>
       <div className={styles.hotCourses}>
         <div className={styles.courseList}>
           {shuffledData.slice(0, showCount).map((course) => (
@@ -111,15 +112,11 @@ const TestPage: React.FC = () => {
           ))}
         </div>
         {shuffledData.length > showCount && (
-          <button
-            style={{ margin: '24px auto 0', display: 'block', padding: '12px 32px', fontSize: '1rem', borderRadius: '8px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
-            onClick={() => setShowCount((c) => c + 8)}>
-            더보기
-          </button>
+          <SeeMoreButton onClick={() => setShowCount((prev) => prev + 8)} />
         )}
       </div>
     </div>
   )
 }
 
-export default TestPage
+export default Course

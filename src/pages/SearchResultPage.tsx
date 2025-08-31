@@ -1,12 +1,13 @@
-// src/pages/SearchTest.tsx
+
 import React, { useState, useEffect, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import styles from '../assets/SearchTest.module.css'
+import styles from '../assets/SearchResultPage.module.css'
 import noimage from '/noimage.jpg'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
 import AreaSelectModal from '../components/AreaSelectModal'
 
+// ... (인터페이스, 상수 목록은 그대로)
 interface TourItem {
   contentid: number
   firstimage?: string
@@ -62,7 +63,9 @@ const AREA_LIST = [
   { code: '39', name: '제주' },
 ]
 
-const SearchTest: React.FC = () => {
+
+const SearchResultPage: React.FC = () => {
+  // ... (상태 및 함수 로직은 그대로)
   const [searchTerm, setSearchTerm] = useState('')
   const [, setSubmittedTerm] = useState('')
   const [areaCode, setAreaCode] = useState('')
@@ -76,7 +79,7 @@ const SearchTest: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [districtName, setDistrictName] = useState<string>('')
 
-  const pageSize = 10
+  const pageSize = 12 // 한 페이지에 더 많이 표시 (4열 기준)
   const location = useLocation()
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
@@ -96,7 +99,6 @@ const SearchTest: React.FC = () => {
     setCurrentPage(1)
   }, [location.search])
 
-  // fetchResults: 파라미터를 명시적으로 받아서 항상 최신값 사용
   const fetchResults = useCallback(
     async (term: string, areaParam: string = areaCode, districtParam: string = district) => {
       setLoading(true)
@@ -155,7 +157,6 @@ const SearchTest: React.FC = () => {
     [API_KEY],
   )
 
-  // Hero에서 넘어올 때 쿼리가 있으면 0.3초 뒤에 검색결과를 보여줌 (필터 적용)
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const q = params.get('q') || ''
@@ -168,7 +169,7 @@ const SearchTest: React.FC = () => {
     setDistrict(dist)
     setDistrictName(distName)
     setCurrentPage(1)
-    // 쿼리가 있으면 0.3초 뒤에 검색 (필터 적용)
+
     if (q.trim() || area || dist) {
       const timer = setTimeout(() => {
         fetchResults(q, area, dist)
@@ -179,16 +180,15 @@ const SearchTest: React.FC = () => {
     }
   }, [location.search, fetchResults])
 
-  // 지역(시/군/구) 필터가 변경될 때마다 자동으로 검색 실행
+
   useEffect(() => {
-    // 검색어 입력 중에는 자동 검색 방지, 검색어가 그대로거나 비어있을 때만 동작
+
     if (areaCode || district) {
       fetchResults(searchTerm, areaCode, district)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [areaCode, district, districtName])
 
-  // 검색 버튼을 눌렀을 때만 검색 실행
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setCurrentPage(1)
@@ -197,8 +197,8 @@ const SearchTest: React.FC = () => {
     if (areaCode) params.append('areaCode', areaCode)
     if (district) params.append('district', district)
     if (districtName) params.append('districtName', districtName)
-    navigate(`/searchtest?${params.toString()}`)
-    // 검색 버튼을 눌렀을 때만 fetchResults
+    navigate(`/searchresult?${params.toString()}`)
+
     fetchResults(searchTerm, areaCode, district)
   }
 
@@ -207,7 +207,6 @@ const SearchTest: React.FC = () => {
     const { typeIds } = categoryList.find((c) => c.id === activeCategory)!
     return results.filter((item) => typeIds.includes(item.contenttypeid))
   }, [results, activeCategory])
-
   const renderPagination = () => {
     const totalPages = Math.ceil(filtered.length / pageSize)
     const blockSize = 10
@@ -221,7 +220,7 @@ const SearchTest: React.FC = () => {
         <button className={styles.pageButton} onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
           {'<<'}
         </button>
-        <button className={styles.pageButton} onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
+        <button className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`} onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
           {'<'}
         </button>
         {pages.map((p) => (
@@ -229,7 +228,7 @@ const SearchTest: React.FC = () => {
             {p}
           </button>
         ))}
-        <button className={styles.pageButton} onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
+        <button className={`${styles.pageButton} ${currentPage === totalPages ? styles.disabled : ''}`} onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
           {'>'}
         </button>
         <button className={styles.pageButton} onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
@@ -243,74 +242,53 @@ const SearchTest: React.FC = () => {
     <div className={styles.appContainer}>
       <header className={styles.appHeader}>
         <form onSubmit={handleSubmit} className={styles.searchBar}>
-          <input type="text" className={styles.searchInput} placeholder="검색어를 입력하세요" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input type="text" className={styles.searchInput} placeholder="어디로 떠나고 싶으신가요?" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setAreaModalOpen(true)}>
-            {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
+            {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '지역 선택'}
           </button>
-
-          <button type="submit" className={styles.searchBtn1}>
-            검색
-          </button>
+          <button type="submit" className={styles.searchBtn1}>검색</button>
         </form>
-        <AreaSelectModal
-          open={areaModalOpen}
-          onClose={() => setAreaModalOpen(false)}
-          onSelect={(code, dist, distName) => {
-            setAreaCode(code)
-            setDistrict(dist || '')
-            setDistrictName(distName || '')
-            if (!searchTerm.trim()) {
-              setSubmittedTerm('')
-            }
-          }}
-          selectedAreaCode={areaCode}
-          selectedDistrict={district}
-        />
         <div className={styles.categoryTabs}>
           {categoryList.map((c) => (
-            <button
-              key={c.id}
-              className={`${styles.categoryButton} ${activeCategory === c.id ? styles.active : ''}`}
-              onClick={() => {
-                setActiveCategory(c.id)
-                setCurrentPage(1)
-              }}>
+            <button key={c.id} className={`${styles.categoryButton} ${activeCategory === c.id ? styles.active : ''}`} onClick={() => { setActiveCategory(c.id); setCurrentPage(1); }}>
               {c.label}
             </button>
           ))}
         </div>
       </header>
 
-      <div className={styles.resultsContainer}>
+      <AreaSelectModal
+        open={areaModalOpen}
+        onClose={() => setAreaModalOpen(false)}
+        onSelect={(code, dist, distName) => {
+          setAreaCode(code)
+          setDistrict(dist || '')
+          setDistrictName(distName || '')
+          if (!searchTerm.trim()) {
+            setSubmittedTerm('')
+          }
+        }}
+        selectedAreaCode={areaCode}
+        selectedDistrict={district}
+      />
+
+      <main className={styles.resultsContainer}>
         {loading ? (
-          <div className={styles.loadingIndicator}>
-            <div className={styles.spinner} />
-          </div>
+          <div className={styles.loadingIndicator}><div className={styles.spinner} /></div>
         ) : error ? (
-          <div className={styles.noResults}>
-            <h3>{error}</h3>
-          </div>
+          <div className={styles.noResults}><h3>{error}</h3></div>
         ) : filtered.length > 0 ? (
           <>
-            <p className={styles.resultsCount}>{filtered.length}개의 검색결과</p>
+            <p className={styles.resultsCount}>{filtered.length}개의 검색결과를 찾았어요!</p>
             <div className={styles.resultsGrid}>
               {filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((item) => (
                 <div key={item.contentid} className={styles.resultCard} onClick={() => navigate(`/detail/${item.contentid}/${item.contenttypeid}`)}>
                   <div className={styles.resultImageWrapper}>
                     <img src={item.firstimage || noimage} alt={item.title} className={styles.resultImage} />
-                    <span className={styles.categoryLabel}>
-                      {{
-                        12: '관광지',
-                        14: '문화시설',
-                        15: '행사/공연/축제',
-                        25: '여행코스',
-                        28: '레포츠',
-                        32: '숙박',
-                        38: '쇼핑',
-                        39: '음식점',
-                      }[item.contenttypeid] || '기타'}
-                    </span>
                   </div>
+                  <span className={styles.categoryLabel}>
+                    {{ 12: '관광지', 14: '문화시설', 15: '행사/공연/축제', 25: '여행코스', 28: '레포츠', 32: '숙박', 38: '쇼핑', 39: '음식점' }[item.contenttypeid] || '기타'}
+                  </span>
                   <div className={styles.resultContent}>
                     <h3 className={styles.resultTitle}>{item.title}</h3>
                     <p className={styles.resultDescription}>{item.addr1 || '주소 정보 없음'}</p>
@@ -337,15 +315,13 @@ const SearchTest: React.FC = () => {
             {renderPagination()}
           </>
         ) : (
-          <div className={styles.noResults}>
-            <h3>검색 결과가 없습니다</h3>
-          </div>
+          <div className={styles.noResults}><h3>검색 결과가 없습니다.</h3></div>
         )}
-      </div>
+      </main>
 
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
     </div>
   )
 }
 
-export default SearchTest
+export default SearchResultPage
