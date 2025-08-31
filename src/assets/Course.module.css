@@ -11,8 +11,7 @@
 /* "이런 여행 코스는 어떠세요?" 제목 */
 .courseh1 {
   text-align: left;
-  margin-left: 10px;
-  margin-bottom: 24px; /* 제목과 카드 사이 간격 추가 */
+  margin: 10px 0 10px 30px;
   font-size: 2rem; /* 폰트 크기 증가 */
   font-weight: 700;
   color: #111827; /* 더 진한 검정색 */
