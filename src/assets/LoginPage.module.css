@@ -253,6 +253,10 @@
   transform: translateX(200%);
 }
 
+.welcome1 {
+  font-size: 35px;
+}
+
 /* 기존 스타일 유지 (충돌 방지) */
 .loginContainer {
   max-width: 400px;
@@ -287,9 +291,10 @@ input[type='password']:focus {
   outline: none;
 }
 
-.loginbutton:hover {
-  background-color: black;
+.loginbutton {
+  background-color: #268c93;
 }
+
 .submitButton {
   width: 100%;
   padding: 12px;

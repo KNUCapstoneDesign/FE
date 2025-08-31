@@ -208,6 +208,11 @@ form button:hover {
 .welcome {
   margin-top: 20px;
 }
+
+.welcomeback {
+  font-size: 35px;
+}
+
 /* 토글 영역 로그인 버튼 스타일 (LoginPage와 동일 컨셉) */
 .hidden {
   margin-top: 20px;

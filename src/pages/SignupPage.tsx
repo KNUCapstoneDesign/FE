@@ -52,7 +52,7 @@ const SignupPage = () => {
       <div className={styles['toggle-container']}>
         <div className={styles.toggle}>
           <div className={`${styles['toggle-panel']} ${styles['toggle-left']}`}>
-            <h1>Welcome Back!</h1>
+            <h1 className={styles.welcomeback}>Welcome Back!</h1>
             <p className={styles.welcome}>이미 계정이 있다면 로그인으로 이동하세요!</p>
             <button className={styles.hidden} onClick={goLogin}>
               로그인
