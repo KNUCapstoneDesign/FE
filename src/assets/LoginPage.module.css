@@ -18,7 +18,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   overflow: hidden;
-  width: 800px;
+  width: 850px;
   max-width: 90vw;
   min-height: 480px;
   opacity: 0;
@@ -152,7 +152,7 @@
   flex: none; /* flex 계산에서 늘어나지 않도록 */
   width: auto;
   padding: 0;
-  margin: 6px 0 12px; /* 좌우 margin 제거 */
+  margin: -10px 0 12px; /* 좌우 margin 제거 */
   gap: 8px;
   align-self: center; /* 부모(column) 가운데 */
 }
@@ -254,9 +254,8 @@
 }
 
 .welcome1 {
-  font-size: 35px;
+  font-size: 45px;
 }
-
 /* 기존 스타일 유지 (충돌 방지) */
 .loginContainer {
   max-width: 400px;

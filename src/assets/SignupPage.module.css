@@ -84,7 +84,7 @@ p[style*='color: green'] {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.9);
-  width: 800px;
+  width: 850px;
   max-width: 90vw;
   min-height: 480px;
   overflow: hidden;
@@ -210,7 +210,7 @@ form button:hover {
 }
 
 .welcomeback {
-  font-size: 35px;
+  font-size: 45px;
 }
 
 /* 토글 영역 로그인 버튼 스타일 (LoginPage와 동일 컨셉) */

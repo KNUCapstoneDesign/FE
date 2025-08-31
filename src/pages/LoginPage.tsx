@@ -58,9 +58,9 @@ const LoginPage = () => {
           </div>
           <div className={`${styles['toggle-panel']} ${styles['toggle-right']}`}>
             <h1 className={styles.welcome1}>Welcome!</h1>
-            <p>사이트의 모든 기능을 이용하려면 회원가입을 진행해주세요!</p>
+            <p className={styles.welcomep}>사이트의 모든 기능을 이용하려면 회원가입을 진행해주세요!</p>
             <button className={styles.hidden} onClick={goSignup}>
-              Sign Up
+              회원가입
             </button>
           </div>
         </div>
