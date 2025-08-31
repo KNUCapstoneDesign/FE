@@ -94,9 +94,9 @@ const Nav = () => {
               </Link>
             </li>
             <li className={styles.navItem}>
-              <div style={{ height: '32.6px', paddingTop: '14px' }} className={styles.navLink} onClick={handleLogout}>
+              <a className={styles.navLink} onClick={handleLogout}>
                 로그아웃
-              </div>
+              </a>
             </li>
           </>
         ) : (
