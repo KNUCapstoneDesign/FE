@@ -207,9 +207,8 @@ const DetailPage: React.FC = () => {
   const [isMapScriptLoaded, setIsMapScriptLoaded] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [, setSelectedImage] = useState<string | null>(null)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
-  const [, setModalGallery] = useState<'main' | 'room'>('main')
 
   const [menus, setMenus] = useState<{ name: string; price: string }[] | null>(null)
   const [menusLoading, setMenusLoading] = useState(false)
@@ -689,7 +688,7 @@ const DetailPage: React.FC = () => {
   if (!data) return null
 
   // 캐러셀에 전달할 데이터 형식으로 변환
-  const carouselSlides = data.images.map((url, i) => ({
+  const carouselSlides = data.images.map((url) => ({
     src: url,
   }));
 

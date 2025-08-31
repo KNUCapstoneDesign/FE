@@ -3,8 +3,6 @@ import { FaArrowRight } from "react-icons/fa";
 import { useState, useRef, useId, useEffect } from "react";
 
 interface SlideData {
-  title: string;
-  button: string;
   src: string;
 }
 
@@ -53,7 +51,7 @@ const Slide = ({ slide, index, current, handleSlideClick, onImageClick }: SlideP
     yRef.current = 0;
   };
 
-  const { src, title } = slide;
+  const { src } = slide;
 
   // 💡 [수정됨] 이미지 클릭 로직 통합
   const handleImageClick = () => {
@@ -96,7 +94,7 @@ const Slide = ({ slide, index, current, handleSlideClick, onImageClick }: SlideP
             style={{
               opacity: current === index ? 1 : 0.5,
             }}
-            alt={title}
+            alt=""
             src={src}
             loading="eager"
             decoding="sync"
