@@ -100,7 +100,7 @@ const Course: React.FC = () => {
   if (error) return <p>에러 발생: {error}</p>
 
   return (
-    <div style={{ padding: 40 , backgroundColor: '#dadfe3' }}>
+    <div style={{ padding: 40 , backgroundColor: '#ffffff' }}>
       <h1 className={styles.courseh1}>떠오르는 여행 코스</h1>
       <div className={styles.hotCourses}>
         <div className={styles.courseList}>
