@@ -1,12 +1,9 @@
 /* src/assets/LoginPage.module.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .container {
@@ -44,7 +41,6 @@
   }
 }
 
-/* 나머지 스타일은 기존과 동일 */
 .container p {
   font-size: 14px;
   line-height: 20px;
@@ -63,8 +59,11 @@
   margin: 15px 0 10px;
 }
 
+.signintitle {
+  font-family: 'Paperozi';
+}
 .container button:not(.socialButton) {
-  background-color: #2da0a8;
+  background: #333;
   color: #fff;
   font-size: 12px;
   padding: 10px 45px;
@@ -78,10 +77,13 @@
 }
 
 .container button.hidden {
-  background-color: transparent;
-  border-color: #fff;
+  background-color: #fff;
+  padding: 7px 30px;
+  color: #333;
 }
-
+.container button.hidden:hover {
+  background: #f5f5f5;
+}
 .container form {
   background-color: #fff;
   display: flex;
@@ -207,7 +209,7 @@
 .toggle {
   background-color: #2da0a8;
   height: 100%;
-  background: linear-gradient(to right, #5c6bc0, #2da0a8);
+  background: #333;
   color: #fff;
   position: relative;
   left: -100%;
@@ -255,6 +257,12 @@
 
 .welcome1 {
   font-size: 45px;
+  margin-bottom: -20px;
+  font-family: 'Paperozi';
+}
+
+.welcomep {
+  margin-bottom: 5px !important;
 }
 /* 기존 스타일 유지 (충돌 방지) */
 .loginContainer {
@@ -290,24 +298,8 @@ input[type='password']:focus {
   outline: none;
 }
 
-.loginbutton {
-  background-color: #268c93;
-}
-
-.submitButton {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.submitButton:hover {
-  background-color: #0056b3;
+.container .loginbtn:hover {
+  background-color: #444;
 }
 
 .forgotpw {
@@ -316,8 +308,8 @@ input[type='password']:focus {
   display: inline-block;
   margin-top: 15px;
 }
-.forgotpw:hover{
-    text-decoration: underline;
+.forgotpw:hover {
+  text-decoration: underline;
 }
 
 .error {

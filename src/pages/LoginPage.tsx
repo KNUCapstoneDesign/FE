@@ -35,15 +35,19 @@ const LoginPage = () => {
       {/* 로그인 폼 */}
       <div className={`${styles['form-container']} ${styles['sign-in']}`}>
         <form onSubmit={handleSignIn}>
-          <h1>Sign In</h1>
+          <h1 className={styles.signintitle}>Sign In</h1>
           <div className={styles['social-icons']}>
             <GoogleLoginButton />
           </div>
           <span>또는 이메일로 로그인</span>
           <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <a className={styles.forgotpw} href="#">비밀번호를 잊어버렸나요?</a>
-          <button type="submit">로그인</button>
+          <a className={styles.forgotpw} href="#">
+            비밀번호를 잊어버렸나요?
+          </a>
+          <button type="submit" className={styles.loginbtn}>
+            로그인
+          </button>
           {error && <p className={styles.error}>{error}</p>}
         </form>
       </div>
@@ -58,7 +62,7 @@ const LoginPage = () => {
           </div>
           <div className={`${styles['toggle-panel']} ${styles['toggle-right']}`}>
             <h1 className={styles.welcome1}>Welcome!</h1>
-            <p className={styles.welcomep}>사이트의 모든 기능을 이용하려면 회원가입을 진행해주세요!</p>
+            <p className={styles.welcomep}>사이트의 모든 기능을 이용하려면 회원가입을 진행해주세요</p>
             <button className={styles.hidden} onClick={goSignup}>
               회원가입
             </button>

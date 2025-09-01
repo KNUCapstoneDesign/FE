@@ -53,7 +53,7 @@ const SignupPage = () => {
         <div className={styles.toggle}>
           <div className={`${styles['toggle-panel']} ${styles['toggle-left']}`}>
             <h1 className={styles.welcomeback}>Welcome Back!</h1>
-            <p className={styles.welcome}>이미 계정이 있다면 로그인으로 이동하세요!</p>
+            <p className={styles.welcome}>이미 계정이 있다면 로그인으로 이동하세요</p>
             <button className={styles.hidden} onClick={goLogin}>
               로그인
             </button>
@@ -64,7 +64,7 @@ const SignupPage = () => {
       {/* 회원가입 폼 (오른쪽) */}
       <div className={`${styles['form-container']} ${styles['sign-up']}`}>
         <form onSubmit={handleSubmit} className={styles.signupform}>
-          <h1>계정 생성</h1>
+          <h1 className={styles.signuptitle}>계정 생성</h1>
           <span>당신의 이메일로 가입해주세요!</span>
           <input type="text" name="name" placeholder="성명" value={formData.name} onChange={handleChange} required />
           <input type="email" name="email" placeholder="이메일" autoComplete="email" value={formData.email} onChange={handleChange} required />
@@ -73,7 +73,9 @@ const SignupPage = () => {
           <input type="password" name="confirmPassword" placeholder="비밀번호 확인" autoComplete="new-password" value={formData.confirmPassword} onChange={handleChange} required />
           {error && <p className={styles.error}>{error}</p>}
           {successMessage && <p className={styles.success}>{successMessage}</p>}
-          <button type="submit">회원가입</button>
+          <button type="submit" className={styles.signupsubmit}>
+            회원가입
+          </button>
         </form>
       </div>
     </div>
