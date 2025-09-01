@@ -1,67 +1,4 @@
 /* src/assets/SignupPage.module.css */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-.signupContainer {
-  max-width: 450px;
-  width: 100%; /* flex 컨테이너 영향 방지 */
-  margin: 100px auto;
-  padding: 35px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.signupContainer h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 26px;
-  color: #333;
-}
-
-form div {
-  margin-bottom: 18px;
-}
-
-.inputField {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-.inputField:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-.submitButton {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.submitButton:hover {
-  background-color: #0056b3;
-}
-
-p[style*='color: red'] {
-  color: red;
-}
-
-p[style*='color: green'] {
-  color: green;
-}
-* {
-  box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
-}
 
 .container {
   background-color: #fff;
@@ -75,13 +12,23 @@ p[style*='color: green'] {
   max-width: 90vw;
   min-height: 480px;
   overflow: hidden;
-  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  animation: fadeInScale 0.8s ease-out forwards;
 }
 
-@keyframes fadeIn {
-  to {
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+to {
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .form-container {
@@ -101,6 +48,10 @@ p[style*='color: green'] {
   width: 50%;
 }
 
+.signuptitle {
+  margin-bottom: -1px;
+  font-family: 'Paperozi';
+}
 .signupform {
   width: 100%;
   display: flex;
@@ -163,7 +114,7 @@ form button:hover {
 }
 
 .toggle {
-  background: linear-gradient(to right, #5c6bc0, #2da0a8);
+  background: #333;
   color: #fff;
   position: relative;
   width: 100%;
@@ -194,22 +145,26 @@ form button:hover {
 
 .welcome {
   margin-top: 20px;
+  margin-bottom: -1px;
   font-size: 14px;
   text-align: center;
 }
 
 .welcomeback {
-  font-size: 45px;
+  font-size: 40px;
+  margin-bottom: -20px;
+  font-family: 'Paperozi';
 }
 
 /* 토글 영역 로그인 버튼 스타일 (LoginPage와 동일 컨셉) */
 .hidden {
-  margin-top: 20px;
+  margin-top: 15px;
   background: transparent;
   border: 1px solid #ffffff;
-  color: #ffffff;
+  background: #fff;
+  color: #333;
   font-size: 12px;
-  padding: 10px 45px;
+  padding: 7px 30px;
   border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -222,7 +177,7 @@ form button:hover {
 }
 
 .hidden:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: #f5f5f5;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
 }
 
@@ -242,6 +197,15 @@ form button:hover {
   text-align: left;
 }
 
+.signupsubmit {
+  background: #333;
+  color: #fff;
+  padding: 7px 25px;
+}
+
+.signupsubmit:hover {
+  background: #444;
+}
 @media (min-width: 1980px) {
   .container {
     width: 1000px;
