@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import styles from '../assets/DetailPage.module.css'
-import {Carousel} from '../components/Carousel.tsx'
+import { Carousel } from '../components/Carousel.tsx'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
 import {
@@ -28,6 +28,7 @@ import {
   FaGift,
   FaBaby,
 } from 'react-icons/fa'
+import Progressify from '../components/Progressify.tsx'
 
 // #region --- 타입 정의 (Interfaces) ---
 
@@ -137,6 +138,7 @@ interface LodgingInfoItem {
   roomtype?: string
   roombasecount?: string
   roommaxcount?: string
+
   // 객실 이미지는 roomimg1, roomimg2... 형태
   [key: string]: string | undefined
 }
@@ -193,6 +195,7 @@ function normalizeToArray<T>(item: T | T[] | undefined): T[] {
   if (!item) return []
   return Array.isArray(item) ? item : [item]
 }
+
 const DetailPage: React.FC = () => {
   const { id, typeid } = useParams<{ id: string; typeid: string }>()
   const [data, setData] = useState<DetailItem | null>(null)
@@ -690,14 +693,14 @@ const DetailPage: React.FC = () => {
   // 캐러셀에 전달할 데이터 형식으로 변환
   const carouselSlides = data.images.map((url) => ({
     src: url,
-  }));
+  }))
 
   const handleImageClickForModal = (index: number) => {
-    setGalleryImages(data.images);
-    setCurrentIndex(index);
-    setSelectedImage(data.images[index]);
-    setIsModalOpen(true);
-  };
+    setGalleryImages(data.images)
+    setCurrentIndex(index)
+    setSelectedImage(data.images[index])
+    setIsModalOpen(true)
+  }
 
   const rawHomepage = data.homepage || ''
   const regex = /href="([^"]+)"[^>]*>([^<]+)<\/a>/
@@ -712,168 +715,255 @@ const DetailPage: React.FC = () => {
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaTree /> 관광 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.usetime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdate)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parking)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpet)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcard)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.usetime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdate)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parking)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpet)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcard)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
             </div>
           </div>
-        );
+        )
       case 14: // 문화시설
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaBuilding /> 문화시설 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usetimeculture)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateculture)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaTicketAlt /> 관람소요시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.spendtime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차요금</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfee)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpetculture)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 이용요금</span><span className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
-              {homepageUrl && <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span className={styles.infoValue}><a href={homepageUrl} target="_blank" rel="noopener noreferrer">{homepageText}</a></span></div>}
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usetimeculture)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateculture)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaTicketAlt /> 관람소요시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.spendtime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차요금</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfee)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpetculture)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 이용요금</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              {homepageUrl &&
+                <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span
+                  className={styles.infoValue}><a href={homepageUrl} target="_blank"
+                                                  rel="noopener noreferrer">{homepageText}</a></span></div>}
             </div>
           </div>
-        );
+        )
       case 15: // 행사/공연
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaFilm /> 행사 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 행사기간</span><span className={styles.infoValue}>{`${formatWithLineBreaks(data.extraIntro.eventstartdate)} ~ ${formatWithLineBreaks(data.extraIntro.eventenddate)}`}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 공연시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.playtime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 이용요금</span><span className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMapMarkedAlt /> 행사장소</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.eventplace)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 주최자문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.sponsor1tel)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 주관사문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.sponsor2tel)}</span></div>
-              {homepageUrl && <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span className={styles.infoValue}><a href={homepageUrl} target="_blank" rel="noopener noreferrer">{homepageText}</a></span></div>}
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 행사기간</span><span
+                className={styles.infoValue}>{`${formatWithLineBreaks(data.extraIntro.eventstartdate)} ~ ${formatWithLineBreaks(data.extraIntro.eventenddate)}`}</span>
+              </div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 공연시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.playtime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 이용요금</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMapMarkedAlt /> 행사장소</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.eventplace)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 주최자문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.sponsor1tel)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 주관사문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.sponsor2tel)}</span></div>
+              {homepageUrl &&
+                <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span
+                  className={styles.infoValue}><a href={homepageUrl} target="_blank"
+                                                  rel="noopener noreferrer">{homepageText}</a></span></div>}
             </div>
           </div>
-        );
+        )
       case 28: // 레포츠
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaTicketAlt /> 레포츠 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 개장기간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.openperiod)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usetimeleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaBaby /> 체험가능연령</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.expagerangeleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차시설</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 주차요금</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfeeleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 입장료</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usefeeleports)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
-              {homepageUrl && <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span className={styles.infoValue}><a href={homepageUrl} target="_blank" rel="noopener noreferrer">{homepageText}</a></span></div>}
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 개장기간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.openperiod)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 이용시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usetimeleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaBaby /> 체험가능연령</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.expagerangeleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차시설</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 주차요금</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfeeleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 입장료</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.usefeeleports)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              {homepageUrl &&
+                <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span
+                  className={styles.infoValue}><a href={homepageUrl} target="_blank"
+                                                  rel="noopener noreferrer">{homepageText}</a></span></div>}
             </div>
           </div>
-        );
+        )
       case 32: // 숙박
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaBed /> 숙박 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>객실명칭</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro?.roomtitle)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>체크인</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.checkintime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>체크아웃</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.checkouttime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>예약</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.reservationlodging)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkinglodging)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>객실크기</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roomsize1 ? `${data.extraIntro.roomsize1}평` : undefined)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>객실수</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roomcount)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>기준인원</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roombasecount)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>최대인원</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roommaxcount)}</span></div>
-              {homepageUrl && <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span className={styles.infoValue}><a href={homepageUrl} target="_blank" rel="noopener noreferrer">{homepageText}</a></span></div>}
+              <div className={styles.infoItem}><span className={styles.infoLabel}>객실명칭</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro?.roomtitle)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>체크인</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.checkintime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>체크아웃</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.checkouttime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>예약</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.reservationlodging)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkinglodging)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>객실크기</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roomsize1 ? `${data.extraIntro.roomsize1}평` : undefined)}</span>
+              </div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>객실수</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roomcount)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>기준인원</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roombasecount)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>최대인원</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.roommaxcount)}</span></div>
+              {homepageUrl &&
+                <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span
+                  className={styles.infoValue}><a href={homepageUrl} target="_blank"
+                                                  rel="noopener noreferrer">{homepageText}</a></span></div>}
             </div>
           </div>
-        );
+        )
       case 38: // 쇼핑
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaShoppingBag /> 쇼핑 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 장서는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.fairday)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 영업시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.opentime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateshopping)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaGift /> 판매품목</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.saleitem)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 품목별가격</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.saleitemcost)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcardshopping)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpetshopping)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaInfoCircle /> 매장안내</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.shopguide)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 장서는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.fairday)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 영업시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.opentime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdateshopping)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaGift /> 판매품목</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.saleitem)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 품목별가격</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.saleitemcost)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcardshopping)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaDog /> 애완동물</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkpetshopping)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaInfoCircle /> 매장안내</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.shopguide)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
             </div>
           </div>
-        );
+        )
       case 39: // 음식점
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaUtensils /> 식당 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 영업시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.opentimefood)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdatefood)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>대표메뉴</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.firstmenu)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>취급메뉴</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.treatmenu)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>포장</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.packing)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfood)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcardfood)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}>예약</span><span className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.reservationfood)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 영업시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.opentimefood)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCalendarAlt /> 쉬는날</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.restdatefood)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>대표메뉴</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.firstmenu)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>취급메뉴</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.treatmenu)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>포장</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.packing)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaParking /> 주차</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.parkingfood)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaCreditCard /> 신용카드</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.chkcreditcardfood)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}>예약</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.extraIntro.reservationfood)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 문의</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
             </div>
           </div>
-        );
+        )
       case 25: // 여행코스
         return (
           <div className={styles.card}>
-            <h2 className={styles.cardTitle}><FaRoute/> 코스별 주요 장소</h2>
+            <h2 className={styles.cardTitle}><FaRoute /> 코스별 주요 장소</h2>
             <ul className={styles.courseSpotsList}>
               {courseSpots.map((spot, idx) => (
                 <li key={spot.subcontentid || idx} className={styles.courseSpotItem}>
-                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`} className={styles.courseSpotLink}>
-                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'} alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
+                  <Link to={`/detail/${spot.subcontentid}/${spot.detail?.contenttypeid || ''}`}
+                        className={styles.courseSpotLink}>
+                    <img src={spot.detail?.firstimage || spot.subdetailimg || '/noimage.jpg'}
+                         alt={spot.subname || spot.detail?.title || ''} className={styles.courseSpotImg} />
                     <div className={styles.courseSpotInfo}>
                       <strong>{spot.subname || spot.detail?.title || '장소명 없음'}</strong>
-                      <p className={styles.courseSpotDesc}>{formatWithLineBreaks(spot.subdetailoverview).substring(0, 100)}</p>
+                      <p
+                        className={styles.courseSpotDesc}>{formatWithLineBreaks(spot.subdetailoverview).substring(0, 100)}</p>
                     </div>
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
-        );
+        )
       // ... 다른 케이스들 추가
       default:
         return (
           <div className={styles.card}>
             <h2 className={styles.cardTitle}><FaInfoCircle /> 기본 정보</h2>
             <div className={styles.infoList}>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 운영시간</span><span className={styles.infoValue}>{formatWithLineBreaks(data.usetime)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 입장료</span><span className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
-              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 연락처</span><span className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
-              {homepageUrl && <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span className={styles.infoValue}><a href={homepageUrl} target="_blank" rel="noopener noreferrer">{homepageText}</a></span></div>}
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaRegClock /> 운영시간</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.usetime)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaMoneyBillWave /> 입장료</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.usefee)}</span></div>
+              <div className={styles.infoItem}><span className={styles.infoLabel}><FaPhone /> 연락처</span><span
+                className={styles.infoValue}>{formatWithLineBreaks(data.tel)}</span></div>
+              {homepageUrl &&
+                <div className={styles.infoItem}><span className={styles.infoLabel}><FaHome /> 홈페이지</span><span
+                  className={styles.infoValue}><a href={homepageUrl} target="_blank"
+                                                  rel="noopener noreferrer">{homepageText}</a></span></div>}
             </div>
           </div>
-        );
+        )
     }
-  };
+  }
 
 
   // 카테고리 라벨 반환 함수
   function getCategoryLabel(typeId: number) {
     switch (typeId) {
-      case 12: return '관광지';
-      case 14: return '문화시설';
-      case 15: return '행사/공연';
-      case 25: return '여행코스';
-      case 28: return '레포츠';
-      case 32: return '숙박';
-      case 38: return '쇼핑';
-      case 39: return '음식점';
-      default: return '기타';
+      case 12:
+        return '관광지'
+      case 14:
+        return '문화시설'
+      case 15:
+        return '행사/공연'
+      case 25:
+        return '여행코스'
+      case 28:
+        return '레포츠'
+      case 32:
+        return '숙박'
+      case 38:
+        return '쇼핑'
+      case 39:
+        return '음식점'
+      default:
+        return '기타'
     }
   }
 
   return (
     <div className={styles.wrapper}>
+      <Progressify />
       <header className={styles.header}>
         <div className={styles.titleGroup}>
           <h1 className={styles.title}>
@@ -914,7 +1004,8 @@ const DetailPage: React.FC = () => {
             <h2 className={styles.cardTitle}>
               <FaInfoCircle /> 상세 설명
             </h2>
-            <div className={styles.overviewContent}>{data.overview ? formatWithLineBreaks(data.overview) : '설명 정보 없음'}</div>
+            <div
+              className={styles.overviewContent}>{data.overview ? formatWithLineBreaks(data.overview) : '설명 정보 없음'}</div>
           </div>
 
           {renderInfoCard()}
@@ -924,7 +1015,8 @@ const DetailPage: React.FC = () => {
               <h2 className={styles.cardTitle}>주변 추천 장소</h2>
               <div className={styles.recommendList}>
                 {nearbyPlaces.slice(0, 4).map((place) => (
-                  <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+                  <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
+                        className={styles.recommendCard}>
                     <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                     <div className={styles.recommendTitle}>{place.title}</div>
                   </Link>
@@ -941,7 +1033,8 @@ const DetailPage: React.FC = () => {
               <FaMapMarkedAlt /> 위치 정보
             </h2>
             <div ref={mapRef} className={styles.mapBox}></div>
-            {distance !== null && <div className={styles.distanceInfo}>현재 위치와의 직선 거리: {(distance / 1000).toFixed(2)}km</div>}
+            {distance !== null &&
+              <div className={styles.distanceInfo}>현재 위치와의 직선 거리: {(distance / 1000).toFixed(2)}km</div>}
           </div>
 
           {data.contentTypeId === 39 && (
@@ -974,9 +1067,10 @@ const DetailPage: React.FC = () => {
           {popularPlaces.length > 0 && (
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>🔥 이 지역 인기 장소</h2>
-              <div className={styles.recommendList} style={{gridTemplateColumns: '1fr'}}>
+              <div className={styles.recommendList} style={{ gridTemplateColumns: '1fr' }}>
                 {popularPlaces.slice(0, 3).map((place) => (
-                  <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`} className={styles.recommendCard}>
+                  <Link key={place.contentid} to={`/detail/${place.contentid}/${place.contenttypeid}`}
+                        className={styles.recommendCard}>
                     <img src={place.firstimage || '/noimage.jpg'} alt={place.title} className={styles.recommendImage} />
                     <div className={styles.recommendTitle}>{place.title}</div>
                   </Link>

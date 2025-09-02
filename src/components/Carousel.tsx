@@ -12,9 +12,10 @@ interface SlideProps {
   current: number;
   handleSlideClick: (index: number) => void;
   onImageClick: (index: number) => void;
+  slideLength: number; // 추가된 props
 }
 
-const Slide = ({ slide, index, current, handleSlideClick, onImageClick }: SlideProps) => {
+const Slide = ({ slide, index, current, handleSlideClick, onImageClick, slideLength }: SlideProps) => {
   const slideRef = useRef<HTMLLIElement>(null);
 
   const xRef = useRef(0);
@@ -64,18 +65,38 @@ const Slide = ({ slide, index, current, handleSlideClick, onImageClick }: SlideP
     }
   };
 
+  const getZIndex = (current: number, index: number, length: number) => {
+    if (current === index) return 30;
+    // 오른쪽(left-to-right) 기준으로 current보다 작은 인덱스(왼쪽)는 더 낮은 zIndex, 큰 인덱스(오른쪽)는 더 높은 zIndex
+    // 캐러셀 순환 고려
+    const diff = (index - current + length) % length;
+    if (diff === 0) return 30;
+    if (diff <= Math.floor(length / 2)) {
+      // 오른쪽(다음) 사진들: current보다 크면 zIndex 20, 그 외 15, 10 등
+      return 20 - diff * 5;
+    } else {
+      // 왼쪽(이전) 사진들: current보다 작으면 zIndex 10, 그 외 5, 0 등
+      return 10 - (length - diff) * 5;
+    }
+  };
+
   return (
-    <div className="[perspective:1200px] [transform-style:preserve-3d]">
+    <div className="[perspective:1200px] [transform-style:preserve-3d]"
+      style={{
+        position: 'relative', // zIndex 적용을 위해 명시적으로 추가
+        zIndex: getZIndex(current, index, slideLength),
+      }}
+    >
       <li
         ref={slideRef}
-        className="flex flex-1 flex-col items-center justify-center relative text-center text-white opacity-100 transition-all duration-300 ease-in-out w-[60vmin] h-[60vmin] mx-[2vmin] z-10"
+        className="flex flex-1 flex-col items-center justify-center text-center text-white opacity-100 transition-all duration-300 ease-in-out w-[70vmin] h-[40vmin] mx-[-6vmin]"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
           transform:
             current !== index
               ? "scale(0.85) rotateX(8deg)"
-              : "scale(1) rotateX(0deg)",
+              : "scale(1.1) rotateX(0deg)",
           transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
           transformOrigin: "bottom",
         }}
@@ -135,8 +156,8 @@ interface CarouselProps {
 }
 
 export function Carousel({ slides, onImageClick }: CarouselProps) {
-  // 두 번째 사진(인덱스 1)에서 시작하도록 초기값 변경
-  const [current, setCurrent] = useState(1);
+  // 첫 번째 사진(인덱스 0)에서 시작하도록 초기값 변경
+  const [current, setCurrent] = useState(0);
 
   const handlePreviousClick = () => {
     const previous = current - 1;
@@ -163,7 +184,7 @@ export function Carousel({ slides, onImageClick }: CarouselProps) {
       aria-labelledby={`carousel-heading-${id}`}
     >
       {/* 슬라이드 영역 */}
-      <div className="relative w-[60vmin] h-[60vmin]">
+      <div className="relative w-[54vmin] h-[40vmin]">
         <ul
           className="absolute flex mx-[-2vmin] transition-transform duration-1000 ease-in-out"
           style={{
@@ -178,6 +199,7 @@ export function Carousel({ slides, onImageClick }: CarouselProps) {
               current={current}
               handleSlideClick={handleSlideClick}
               onImageClick={onImageClick}
+              slideLength={slides.length} // 추가된 props 전달
             />
           ))}
         </ul>
