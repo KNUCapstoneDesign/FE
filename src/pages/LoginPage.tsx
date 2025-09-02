@@ -35,7 +35,7 @@ const LoginPage = () => {
       {/* 로그인 폼 */}
       <div className={`${styles['form-container']} ${styles['sign-in']}`}>
         <form onSubmit={handleSignIn}>
-          <h1 className={styles.signintitle}>Sign In</h1>
+          <h1 className={styles.signintitle}>로그인</h1>
           <div className={styles['social-icons']}>
             <GoogleLoginButton />
           </div>
