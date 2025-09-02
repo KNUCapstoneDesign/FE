@@ -4,6 +4,7 @@ import { useMyTravelStore } from '../store/useMyTravelStore'
 import styles from '../assets/MyTravelDetailPage.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
+import Progressify from '../components/Progressify.tsx'
 
 const MyTravelDetailPage: React.FC = () => {
   const navigate = useNavigate()
@@ -96,6 +97,7 @@ const MyTravelDetailPage: React.FC = () => {
 
   return (
     <div className={styles.outerContainer}>
+      <Progressify />
       <main className={styles.mainBox}>
         <div className={styles.titleSection}>
           <h2 className={styles.mainTitle}>{course.title}</h2>
@@ -103,7 +105,8 @@ const MyTravelDetailPage: React.FC = () => {
         </div>
         <div className={styles.dayTabWrapper}>
           {tabKeys.map((dayKey) => (
-            <button key={dayKey} className={`${styles.dayTabBtn} ${selectedDay === dayKey ? styles.activeDayTab : ''}`} onClick={() => setSelectedDay(dayKey)} type="button">
+            <button key={dayKey} className={`${styles.dayTabBtn} ${selectedDay === dayKey ? styles.activeDayTab : ''}`}
+                    onClick={() => setSelectedDay(dayKey)} type="button">
               {dayKey === allKey ? 'All' : dayKey}
             </button>
           ))}
@@ -123,15 +126,18 @@ const MyTravelDetailPage: React.FC = () => {
                         .map((place) => (
                           <div className={styles.placeCard} key={place.contentid}>
                             <div className={styles.placeCardImageWrap}>
-                              <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
+                              <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title}
+                                   className={styles.placeCardImage} />
                             </div>
                             <div className={styles.placeCardContent}>
                               <div className={styles.placeTitleRow}>
                                 <div>
-                                  <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
+                                  <strong
+                                    className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
                                   {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
                                 </div>
-                                <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
+                                <button className={styles.detailBtn}
+                                        onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
                                   상세 정보 {'>'}
                                 </button>
                               </div>
@@ -151,15 +157,18 @@ const MyTravelDetailPage: React.FC = () => {
                       .map((place) => (
                         <div className={styles.placeCard} key={place.contentid}>
                           <div className={styles.placeCardImageWrap}>
-                            <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title} className={styles.placeCardImage} />
+                            <img src={placeInfoMap[place.contentid]?.firstimage || '/noimage.jpg'} alt={place.title}
+                                 className={styles.placeCardImage} />
                           </div>
                           <div className={styles.placeCardContent}>
                             <div className={styles.placeTitleRow}>
                               <div>
-                                <strong className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
+                                <strong
+                                  className={styles.placeTitle}>{placeInfoMap[place.contentid]?.title || place.title}</strong>
                                 {place.groupName && <span className={styles.placeGroup}>{place.groupName}</span>}
                               </div>
-                              <button className={styles.detailBtn} onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
+                              <button className={styles.detailBtn}
+                                      onClick={() => navigate(`/detail/${place.contentid}/${place.contenttypeid}`)}>
                                 상세 정보 {'>'}
                               </button>
                             </div>

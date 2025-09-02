@@ -78,13 +78,15 @@
 
 /* === 이미지 갤러리 (Carousel) === */
 .heroImageWrapper {
-  margin-bottom: 60px; /* 컨트롤 버튼 공간 확보를 위해 margin 증가 */
+  margin-top: 100px;
+  margin-bottom: 50px; /* 컨트롤 버튼 공간 확보를 위해 margin 증가 */
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 65vmin;
+  min-height: 40vmin;
   width: 1300px;
+  height: 400px;
   /* Carousel 높이에 맞게 최소 높이 설정 */
 }
 
