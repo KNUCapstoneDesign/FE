@@ -30,6 +30,16 @@ const LoginPage = () => {
     navigate('/signup')
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const form = e.currentTarget.form
+      if (form) {
+        form.requestSubmit()
+      }
+    }
+  }
+
   return (
     <div className={styles.container}>
       {/* 로그인 폼 */}
@@ -40,8 +50,8 @@ const LoginPage = () => {
             <GoogleLoginButton />
           </div>
           <span>또는 이메일로 로그인</span>
-          <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} required />
+          <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} required />
           <a className={styles.forgotpw} href="#">
             비밀번호를 잊어버렸나요?
           </a>
@@ -52,7 +62,7 @@ const LoginPage = () => {
         </form>
       </div>
 
-      {/* 토글 패널 - Sign Up 버튼만 사용 */}
+      {/* 토글 패널 */}
       <div className={styles['toggle-container']}>
         <div className={styles.toggle}>
           <div className={`${styles['toggle-panel']} ${styles['toggle-left']}`}>
