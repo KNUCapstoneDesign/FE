@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function Progressify({
-                                      barColor = '#93bbff',
+                                      barColor = '#277aff',
                                       containerColor = '#F2F2F2',
                                     }: Props) {
   const [progress, setProgress] = useState(0);
