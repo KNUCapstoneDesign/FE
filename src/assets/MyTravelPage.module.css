@@ -98,9 +98,8 @@
   flex-shrink: 0; /* 버튼 크기 고정 */
 }
 
-.addFormExpanded .addButton {
-  border-radius: 50%; /* 확장 시에도 동그란 모양 유지 */
-  transform: rotate(45deg); /* + 아이콘을 x 모양으로 회전 */
+.addFormExpanded .addButton svg {
+  font-size: 20px;
 }
 
 

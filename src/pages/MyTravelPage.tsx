@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useMyTravelStore } from '../store/useMyTravelStore';
 import styles from '../assets/MyTravelPage.module.css';
 import { useNavigate } from 'react-router-dom';
-import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa'; // FaEdit 아이콘 추가
-import { IoHome } from 'react-icons/io5';
+import { FaPlus, FaTrashAlt, FaEdit } from 'react-icons/fa';
+import { IoHome } from 'react-icons/io5'; // IoSave 아이콘 추가
+import { IoIosSave } from 'react-icons/io';
 import { useAuthStore } from '../store/useAuthStore';
 
 const MyTravelPage: React.FC = () => {
@@ -142,11 +143,17 @@ const MyTravelPage: React.FC = () => {
             </div>
             <button
               className={styles.addButton}
-              onClick={() => setIsFormOpen((prev) => !prev)}
+              onClick={() => {
+                if (!isFormOpen) {
+                  setIsFormOpen(true);
+                } else {
+                  handleAddCourse();
+                }
+              }}
               tabIndex={0}
-              aria-label={isFormOpen ? '닫기' : '일정 추가'}
+              aria-label={'일정 추가'}
             >
-              <FaPlus />
+              {isFormOpen ? <IoIosSave /> : <FaPlus />}
             </button>
           </div>
         </div>
