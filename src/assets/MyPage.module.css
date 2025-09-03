@@ -1,77 +1,399 @@
 .container {
-    min-width: 500px;
-    padding: 30px;
-    margin: 100px auto;
-    background-color: #fefefe;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Pretendard', sans-serif;
+  min-width: 500px;
+  padding: 30px;
+  margin: 100px auto;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Pretendard', sans-serif;
 }
 
 h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 p {
-    margin: 10px 0;
-    font-size: 16px;
+  margin: 10px 0;
+  font-size: 16px;
 }
 
 .passwordSection {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 .passwordSection h3 {
-    margin-bottom: 10px;
-    color: #444;
+  margin-bottom: 10px;
+  color: #444;
 }
 
 .passwordSection input {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
 }
 
 .passwordSection button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4a90e2;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  width: 100%;
+  padding: 10px;
+  background-color: #4a90e2;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .passwordSection button:hover {
-    background-color: #357bd8;
+  background-color: #357bd8;
 }
 
 .logoutBtn {
-    margin-top: 30px;
-    width: 100%;
-    padding: 10px;
-    background-color: #e94e4e;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  margin-top: 30px;
+  width: 100%;
+  padding: 10px;
+  background-color: #e94e4e;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .logoutBtn:hover {
-    background-color: #cc3c3c;
+  background-color: #cc3c3c;
 }
 
 p.message {
-    margin-top: 10px;
-    font-weight: bold;
+  margin-top: 10px;
+  font-weight: bold;
 }
+
+/* ================= 공통 레이아웃 ================= */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f7f8fa 0%, #f2f3f5 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 56px 16px 20px; /* 상단 살짝 줄여 실사용 영역 확보 */
+  font-family: 'Pretendard', sans-serif;
+  color: #222;
+  box-sizing: border-box;
+}
+
+.loading {
+  padding: 80px 24px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* ================= 카드 ================= */
+.card {
+  width: 100%;
+  max-width: 720px; /* 기본 폭 약간 확대 */
+  background: #fff;
+  border: 1px solid #f0f1f3;
+  border-radius: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+  padding: 48px 40px 40px; /* 내부 공간 확대 */
+  position: relative;
+  overflow: hidden;
+
+  /* 높이: viewport 활용 (최대 높이 더 확보) */
+  min-height: 640px; /* 560 -> 640 */
+  max-height: calc(100vh - 32px); /* 40px -> 32px */
+  overflow-y: auto;
+  scrollbar-width: thin;
+
+  /* 스케일 변수(높을수록 1~1.15 사이로 확대) */
+  --vh-scale: clamp(1, (100vh - 600px) / 600 + 1, 1.15);
+  --fs-base: calc(14px * var(--vh-scale));
+  --fs-sm: calc(12px * var(--vh-scale));
+  --fs-lg: calc(17px * var(--vh-scale));
+}
+
+.card::-webkit-scrollbar {
+  width: 8px;
+}
+.card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.card::-webkit-scrollbar-thumb {
+  background: #d3d3d3;
+  border-radius: 4px;
+}
+.card::-webkit-scrollbar-thumb:hover {
+  background: #bdbdbd;
+}
+
+/* ================= 헤더 ================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e6e6e6;
+}
+.headerSingle {
+  justify-content: center;
+}
+
+.title {
+  font-size: clamp(26px, 2.4vw, 34px); /* 이전 clamp(34px,3vw,44px) -> 더 작게 */
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0;
+  color: #111;
+}
+
+/* ================= 섹션 ================= */
+.section {
+  margin-top: 32px;
+}
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.sectionTitle {
+  font-size: calc(18px * var(--vh-scale)); /* 17 -> 가변 */
+  font-weight: 600;
+  margin: 0 0 18px;
+  color: #222;
+  letter-spacing: -0.3px;
+}
+
+/* ================= 정보 그리드 ================= */
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 20px;
+  background: #fafafa;
+  border: 1px solid #ededed;
+  border-radius: 14px;
+  white-space: nowrap; /* 한 줄 표시 */
+  overflow: hidden;
+}
+.infoRow:hover {
+  background: #f2f2f2;
+}
+
+.fieldLabel {
+  flex: 0 0 90px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #181818;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 너무 길면 말줄임 */
+}
+
+/* ================= 폼 ================= */
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.inputLabel {
+  display: block;
+  font-size: calc(13px * var(--vh-scale));
+  font-weight: 600;
+  margin-bottom: 7px;
+  letter-spacing: 0.25px;
+  color: #444;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px; /* 10 12 -> 확대 */
+  font-size: var(--fs-base);
+  border: 1px solid #d2d2d2;
+  border-radius: 12px;
+  background: #f9f9f9;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    box-shadow 0.25s;
+}
+.input:focus {
+  outline: none;
+  border-color: #222;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.12);
+}
+.input::placeholder {
+  color: #aaa;
+}
+
+/* ================= 버튼 ================= */
+.primaryBtn {
+  width: 100%;
+  padding: 16px 20px; /* 12 16 -> 확대 */
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: calc(15px * var(--vh-scale));
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    transform 0.15s;
+  margin-top: 4px;
+}
+.primaryBtn:hover:not(:disabled) {
+  background: #161616;
+}
+.primaryBtn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.primaryBtn:disabled {
+  background: #555;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ================= 메시지 ================= */
+.message {
+  margin-top: 14px;
+  font-size: calc(14px * var(--vh-scale));
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 10px 14px;
+  border-radius: 12px;
+  animation: fadeIn 0.35s ease;
+  letter-spacing: 0.2px;
+}
+.success {
+  background: #e8f7ec;
+  color: #1e6b35;
+  border: 1px solid #cbeeda;
+}
+.error {
+  background: #fbecec;
+  color: #b32626;
+  border: 1px solid #f3d2d2;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= 반응형 (모바일) ================= */
+@media (max-width: 640px) {
+  .page {
+    padding: 40px 14px 20px;
+  }
+  .card {
+    max-width: 100%;
+    padding: 36px 26px 32px;
+    border-radius: 20px;
+    max-height: calc(100vh - 36px);
+    min-height: 580px;
+    --vh-scale: 1; /* 모바일 과도 확대 방지 */
+  }
+  .title {
+    font-size: 24px;
+  }
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .section {
+    margin-top: 28px;
+  }
+}
+
+/* ================= 높이/해상도에 따른 추가 확대 ================= */
+@media (min-height: 900px) {
+  .card {
+    min-height: 700px;
+  }
+}
+@media (min-height: 1000px) {
+  .card {
+    min-height: 760px;
+  }
+}
+
+/* === FHD 이상 (1920px~) 카드 확장 : 기존 1920px 미디어쿼리 교체 === */
+@media (min-width: 1920px) and (min-height: 900px) {
+  .card {
+    max-width: 840px; /* 760 -> 840 */
+    min-height: 800px; /* 더 높은 기본 높이 */
+    max-height: calc(100vh - 40px);
+    padding: 56px 48px 48px; /* 내부 여백 증가 */
+    --vh-scale: 1.12; /* 폰트/컴포넌트 비례 확대 */
+  }
+  .title {
+    font-size: clamp(30px, 2.1vw, 40px);
+  }
+  .fieldLabel {
+    font-size: 17px;
+  }
+  .fieldValue {
+    font-size: 16px;
+  }
+  .primaryBtn {
+    font-size: calc(16px * var(--vh-scale));
+    padding: 18px 22px;
+  }
+}
+
+/* === QHD 이상 (2560px~) 추가 확대 === */
+@media (min-width: 2560px) and (min-height: 1200px) {
+  .card {
+    max-width: 900px;
+    min-height: 880px;
+    max-height: calc(100vh - 48px);
+    padding: 64px 56px 56px;
+    --vh-scale: 1.16;
+  }
+  .title {
+    font-size: clamp(34px, 2vw, 44px);
+  }
+}
+
+/* === 울트라와이드 / 4K (선택) === */
+@media (min-width: 3200px) and (min-height: 1400px) {
+  .card {
+    max-width: 980px;
+    min-height: 940px;
+    --vh-scale: 1.2;
+  }
+}
+
+/* 필요 시 더 키우고 싶다면:
+   - max-width 값을 +40~60px씩 증가
+   - min-height 값을 +40px 단위로 증가
+   - --vh-scale 상한 1.2 -> 1.25 로 조정 */
