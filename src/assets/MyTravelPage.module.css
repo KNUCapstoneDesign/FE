@@ -1,327 +1,283 @@
+/* src/assets/MyTravelPage.module.css */
 .page {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 40px 8vw 60px 8vw;
-  background: linear-gradient(135deg, #f9fafb 60%, #e0e7ff 100%);
-  min-height: 100vh;
+  padding: 40px 24px;
+  background-color: #ffffff;
 }
 
 .titleFormRow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 24px;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 0 8px;
 }
 
 .title {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  color: #2d3748;
-  margin-bottom: 0;
-  letter-spacing: -1px;
+  color: #1a202c;
 }
 
-.cardGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
+.addFormContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 75px;
 }
 
 .addForm {
   display: flex;
-  gap: 12px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  padding: 12px 18px;
   align-items: center;
+  justify-content: flex-end; /* 내용을 오른쪽으로 정렬 */
+  gap: 8px;
+  padding-right: 6.85px;
+  background-color: #ffffff;
+  border-radius: 50px; /* 평소에는 원형 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 통통 튀는 효과 추가 */
+  width: 56px; /* 버튼 크기와 동일하게 */
+  height: 56px;
+  overflow: hidden; /* 내부 요소 숨기기 */
+}
+
+.addFormExpanded {
+  width: 580px; /* 확장될 너비 */
+  height: 70px;
+  border-radius: 12px; /* 확장 시 사각형 모양 */
+}
+
+/* 폼 입력 필드를 감싸는 div에 대한 스타일 */
+.formInputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out 0.2s, width 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 지연 시간 추가 */
+  overflow: hidden;
+  white-space: nowrap; /* 입력 필드들이 한 줄로 나열되도록 */
+  height: 60px;
+  padding-left: 5px;
+}
+
+.addFormExpanded .formInputs {
+  width: 100%; /* 확장 시 너비 채우기 */
+  opacity: 1;
 }
 
 .addForm input[type='text'],
 .addForm input[type='date'] {
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: none;
+  background-color: #f1f5f9;
+  padding: 10px 14px;
+  border-radius: 8px;
   font-size: 15px;
-  background: #f3f4f6;
-  transition: border 0.2s;
+  width: 160px; /* 입력 필드 너비 고정 */
 }
+
 .addForm input:focus {
-  border: 1.5px solid #6366f1;
-  outline: none;
+  outline: 2px solid #3b82f6;
 }
 
 .addButton {
-  padding: 8px 12px;
-  background-color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 50%; /* 원형 유지 */
   cursor: pointer;
-  font-weight: 600;
-  font-size: 15px;
-  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.addButton:hover {
-  background: linear-gradient(90deg, #4338ca 60%, #2563eb 100%);
-  box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+  font-size: 16px;
+  transition: all 0.3s ease;
+  flex-shrink: 0; /* 버튼 크기 고정 */
 }
 
-/* 카드 전체 */
+.addFormExpanded .addButton {
+  border-radius: 50%; /* 확장 시에도 동그란 모양 유지 */
+  transform: rotate(45deg); /* + 아이콘을 x 모양으로 회전 */
+}
+
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+}
+
 .card {
-  background: #fff;
-  border: 1.5px solid #e0e7ff;
-  border-radius: 14px;
-  padding: 28px 24px 20px 24px;
-  min-height: 220px;
-  box-shadow: 0 4px 16px rgba(99,102,241,0.07);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: transform 0.18s, box-shadow 0.18s;
   position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 400px;
 }
+
 .card:hover {
-  transform: translateY(-4px) scale(1.025);
-  box-shadow: 0 8px 32px rgba(99,102,241,0.13);
-  border-color: #6366f1;
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* 카드 헤더 */
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  font-size: 17px;
-  margin-bottom: 10px;
+.cardImage {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease;
 }
 
-/* 제목+수정버튼을 한 줄로 붙이기 위한 flex */
-.titleEditBox {
-  display: flex;
-  align-items: center;
-  gap: 6px; /* 수정버튼과 제목 사이 살짝 여백 */
+.card:hover .cardImage {
+  transform: scale(1.1);
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 50%);
+}
+
+.cardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px;
+  color: white;
+  z-index: 2;
 }
 
 .cardTitle {
-  margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.6rem;
   font-weight: 700;
+  margin: 0 0 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.date {
-  font-size: 14px;
-  color: #64748b;
+.cardDate {
+  font-size: 1rem;
+  margin: 0 0 12px;
+  opacity: 0.9;
+}
+
+.cardInfo {
+  font-size: 0.9rem;
   font-weight: 500;
+  padding: 4px 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  display: inline-block;
 }
 
-.courseInfo {
+.cardActions {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  gap: 2px;
+  gap: 8px;
+  z-index: 2;
 }
 
-.location {
-  margin-top: 3px;
-}
-
-.usetime, .location {
-  font-size: 14px;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cardActionRow {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-}
-
-.viewButton {
-  padding: 8px 12px;
-  background-color: #111827;
+.removeButton, .editButton {
+  background-color: rgba(0, 0, 0, 0.4);
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
-}
-.viewButton:hover {
-  background: linear-gradient(90deg, #4338ca 60%, #2563eb 100%);
-  box-shadow: 0 4px 16px rgba(99,102,241,0.15);
-}
-
-.removeButton {
-  padding: 7px 14px;
-  background: linear-gradient(90deg, #ef4444 60%, #f87171 100%);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(239,68,68,0.08);
-}
-.removeButton:hover {
-  background: linear-gradient(90deg, #b91c1c 60%, #ef4444 100%);
-  box-shadow: 0 4px 16px rgba(239,68,68,0.15);
-}
-
-/* 제목 수정용 입력 필드 */
-.editInput {
-  padding: 6px 8px;
-  font-size: 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  flex: 1;
-  margin-right: 6px;
-  background: #f3f4f6;
-  transition: border 0.2s;
-}
-.editInput:focus {
-  border: 1.5px solid #6366f1;
-  outline: none;
-}
-
-/* 저장 버튼 */
-.saveButton {
-  padding: 6px 10px;
-  font-size: 13px;
-  background: linear-gradient(90deg, #10b981 60%, #34d399 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(16,185,129,0.08);
-}
-.saveButton:hover {
-  background: linear-gradient(90deg, #059669 60%, #10b981 100%);
-  box-shadow: 0 4px 16px rgba(16,185,129,0.15);
-}
-
-/* 수정 버튼 */
-.editButton {
-  margin-left: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: #6366f1;
-  transition: color 0.2s;
-}
-.editButton:hover {
-  color: #3730a3;
-}
-
-/* 🔽 페이지네이션 */
-.pagination {
-  margin-top: 24px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 6px;
+  font-size: 16px;
+  transition: background-color 0.2s;
 }
 
-.pagination button {
-  padding: 6px 10px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #374151;
-  transition: background-color 0.2s, color 0.2s;
-  font-weight: 500;
+.removeButton:hover {
+  background-color: #ef4444;
 }
 
-.pagination button:hover:not(:disabled) {
-  background-color: #6366f1;
-  color: #fff;
+.editButton:hover {
+  background-color: #3b82f6;
 }
 
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: default;
+.titleEditContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.activePage {
-  background: linear-gradient(90deg, #6366f1 60%, #60a5fa 100%);
+.editInput {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.5);
   color: white;
-  font-weight: bold;
-  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  width: 100%;
 }
 
+.saveButton {
+  background-color: #22c55e;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Breadcrumb and Pagination Styles */
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 16px;
   color: #6b7280;
-  margin-bottom: 16px;
-  font-weight: 500;
+  margin-bottom: 24px;
 }
 
 .breadcrumbHome {
-  display: flex;
-  align-items: center;
   cursor: pointer;
-  color: #6366f1;
-  transition: color 0.15s;
+  color: #3b82f6;
 }
-.breadcrumbHome:hover {
-  color: #3730a3;
-}
-
-.breadcrumbDivider {
-  margin: 0 2px;
-}
-
 .breadcrumbCurrent {
+  font-weight: 500;
+  color: #1a202c;
+}
+.breadcrumbDivider {
+  color: #9ca3af;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  margin: 0 4px;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  color: #374151;
+  border-radius: 6px;
   cursor: pointer;
-  color: #6b7280;
-}
-.breadcrumbCurrent:hover {
-  text-decoration: underline;
-  color: #3730a3;
 }
 
-@media screen and (max-width: 1024px) {
-  .page {
-    padding: 32px 2vw 40px 2vw;
-  }
-  .cardGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
-@media screen and (max-width: 640px) {
-  .page {
-    padding: 16px 2vw 24px 2vw;
-  }
-  .cardGrid {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  .titleFormRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-  .addForm {
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px 8px;
-  }
+.pagination .activePage {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
 }
