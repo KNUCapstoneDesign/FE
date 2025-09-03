@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import ChatBot from '../components/ChatBot.tsx'
+import { IoIosChatboxes } from "react-icons/io";
+
 
 const MainPage = () => {
   const navigate = useNavigate()
@@ -50,7 +52,7 @@ const MainPage = () => {
       </div>
       <div className={styles.HotCourseContainer}></div>
       <button className={styles.chatbotButton} title="챗봇" onClick={() => setShowChatBot(true)}>
-        💬
+        <IoIosChatboxes />
       </button>
       {showChatBot && <ChatBot onClose={() => setShowChatBot(false)} />}
     </div>

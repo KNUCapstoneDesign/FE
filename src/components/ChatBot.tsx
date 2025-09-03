@@ -36,7 +36,11 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
     try {
       // system 메시지 + 이전 대화 모두 포함
       const apiMessages = [
-        { role: 'system', content: '' },
+        {
+          role: 'system',
+          content:
+            '너는 여행지 추천 챗봇이야. 사용자가 여행지 추천을 요청하면 반드시 국내(대한민국) 여행지만 추천해야 해. 해외 여행지는 절대 추천하지 마. 답변은 친절하고 구체적으로 해줘.',
+        },
         ...messages.map(m => ({
           role: m.role === 'user' ? 'user' : 'assistant',
           content: m.content,
