@@ -42,7 +42,6 @@
 .searchBtn1,
 .areaSelect {
   height: 48px;
-  width: 150px;
   padding: 0 24px;
   border-radius: 8px;
   font-size: 16px;
@@ -51,6 +50,23 @@
   border: none;
   transition: background-color 0.2s;
   white-space: nowrap;
+}
+
+.searchBtn1 {
+  width: 150px;
+  flex-shrink: 0; /* 검색 버튼도 줄어들지 않도록 (선택) */
+}
+
+/* 글자 길이에 따라 확장 + 수축 방지 */
+.areaSelect {
+  width: auto;
+  min-width: 110px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  flex: 0 0 auto;   /* 핵심: shrink 방지 */
+  flex-shrink: 0;   /* 명시적 */
 }
 
 .searchBtn1 {
