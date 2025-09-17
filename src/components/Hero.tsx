@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Hero.module.css'
 import AreaSelectModal from './AreaSelectModal' // 모달 컴포넌트 import
 import FlickerText from './FlickerText.tsx'
+import CategorySelectModal from './CategorySelectModal'
 
 const AREA_LIST = [
   { code: '', name: '전체 지역' },
@@ -36,17 +37,36 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
   const [districtName, setDistrictName] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
 
+  // 카테고리 선택 상태 (추가)
+  const [catModalOpen, setCatModalOpen] = useState(false)
+  const [cat1, setCat1] = useState('')
+  const [cat2, setCat2] = useState('')
+  const [cat3, setCat3] = useState('')
+  const [catLabel, setCatLabel] = useState('')
+  const API_KEY = import.meta.env.VITE_API_KEY1
+
   const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
     const params = new URLSearchParams()
     if (searchTerm.trim()) params.append('q', searchTerm.trim())
     if (areaCode) params.append('areaCode', areaCode)
     if (district) params.append('district', district)
     if (districtName) params.append('districtName', districtName)
-
+    if (cat1) {
+      params.append('lclsSystm1', cat1)
+      params.append('cat1', cat1)
+    }
+    if (cat2) {
+      params.append('lclsSystm2', cat2)
+      params.append('cat2', cat2)
+    }
+    if (cat3) {
+      params.append('lclsSystm3', cat3)
+      params.append('cat3', cat3)
+    }
+    if (catLabel) params.append('catLabel', catLabel) // ★ 추가
     navigate(`/searchresult?${params.toString()}`)
     window.scrollTo({ top: 0 })
   }
@@ -57,7 +77,7 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
       style={{
         backgroundImage: `url(${mainpic})`,
         backgroundPosition: 'center',
-        height: '80vh', // 높이 조정
+        height: '80vh',
         backgroundSize: 'cover',
       }}>
       <FlickerText
@@ -68,9 +88,9 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
         //#d8e1f2
         showBackground={false}
         font={{
-          fontSize: "3.5rem",
-          fontWeight: "bold",
-          letterSpacing: "0.1em",
+          fontSize: '3.5rem',
+          fontWeight: 'bold',
+          letterSpacing: '0.1em',
           fontFamily:
             "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
         }}
@@ -88,6 +108,11 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
 
         <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setModalOpen(true)}>
           {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
+        </button>
+
+        {/* 카테고리 버튼 (추가) */}
+        <button type="button" className={`${styles.areaSelect} ${cat1 ? styles.active : ''}`} onClick={() => setCatModalOpen(true)}>
+          {catLabel || '전체 카테고리'}
         </button>
 
         <button type="submit" className={styles.searchBtn}>
@@ -122,6 +147,23 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
         }}
         selectedAreaCode={areaCode}
         selectedDistrict={district}
+      />
+
+      {/* 카테고리 모달 (추가) */}
+      <CategorySelectModal
+        open={catModalOpen}
+        onClose={() => setCatModalOpen(false)}
+        apiKey={API_KEY}
+        selectedCat1={cat1}
+        selectedCat2={cat2}
+        selectedCat3={cat3}
+        onSelect={(c1, c2, c3, label) => {
+          setCat1(c1)
+          setCat2(c2)
+          setCat3(c3)
+          setCatLabel(label)
+          setCatModalOpen(false)
+        }}
       />
     </div>
   )
