@@ -35,7 +35,7 @@ export default function Progressify({
         width: '100%',
         height: 6,
         backgroundColor: containerColor,
-        zIndex: 9999,
+        zIndex: 999, // 모달 오버레이 아래로
         pointerEvents: 'none',
       }}
     >
