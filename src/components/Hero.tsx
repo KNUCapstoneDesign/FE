@@ -107,12 +107,12 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
         <input type="text" placeholder="장소를 입력하세요" className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 
         <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setModalOpen(true)}>
-          {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '전체 지역'}
+          {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '지역 선택'}
         </button>
 
         {/* 카테고리 버튼 (추가) */}
         <button type="button" className={`${styles.areaSelect} ${cat1 ? styles.active : ''}`} onClick={() => setCatModalOpen(true)}>
-          {catLabel || '전체 카테고리'}
+          {catLabel || '카테고리'}
         </button>
 
         <button type="submit" className={styles.searchBtn}>
