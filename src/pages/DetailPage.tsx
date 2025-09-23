@@ -27,8 +27,6 @@ import {
   FaCreditCard,
   FaGift,
   FaBaby,
-  FaTimes,
-  FaWindowClose,
 } from 'react-icons/fa'
 import { IoMdImages } from 'react-icons/io'
 import { IoCloseSharp } from 'react-icons/io5'
