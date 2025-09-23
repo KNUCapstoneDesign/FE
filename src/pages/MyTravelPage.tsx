@@ -162,7 +162,7 @@ const MyTravelPage: React.FC = () => {
       <div className={styles.cardGrid}>
         {paginatedCourses.map((course) => (
           <div key={course.id} className={styles.card} onClick={() => navigate(`/mytravel/${course.id}`)}>
-            <div className={styles.cardImage} style={{ backgroundImage: `url('/course1.jpg')` }}></div>
+            <div className={styles.cardImage} style={{ backgroundImage: `url('/course2.jpg')` }}></div>
             <div className={styles.cardOverlay}></div>
             <div className={styles.cardContent}>
               {editingId === course.id ? (
