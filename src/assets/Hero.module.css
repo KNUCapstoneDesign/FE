@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 2rem;
   height: 80vh;
   background-size: cover;
@@ -15,29 +15,61 @@
   content: '';
   position: absolute;
   inset: 0; /* 부모 요소 전체를 덮도록 설정 */
-  background-color: rgba(0, 0, 0, 0.3); /* 검은색 40% 투명도 오버레이 */
+  background-color: rgba(0, 0, 0, 0.1); /* 검은색 40% 투명도 오버레이 */
   z-index: 1; /* 콘텐츠(z-index: 2)보다 아래에 위치 */
 }
 
-.hero > * {
-  position: relative;
+.hero > :not(.heroVideo) {
   z-index: 2;
 }
 
+.heroContent {
+  width: 100%;
+  max-width: 1200px;
+  padding-left: 2rem;
+  display: flex; /* make children flex items */
+  flex-direction: column; /* stack vertically */
+  align-self: center;
+}
+
 .heading {
+  text-align: left;
+  margin-left: -280px;
   font-size: 60px;
   font-weight: bold;
   margin-bottom: 60px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  font-family: SeoulNamsanM;
   color: #ffffff;
+}
+
+.subheading {
+  margin-top: -60px; /* 제목과 더 가깝게 */
+  margin-bottom: 10px;
+  margin-left: -269px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.6;
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Background hero video behind the dark overlay */
+.heroVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 65vh;
+  object-fit: cover;
+  z-index: 0; /* below overlay (1) and content (2) */
 }
 
 .searchBar {
   display: flex;
   gap: 10px;
-  margin-top: 70px;
+  margin-left: -883px;
   margin-bottom: 30px;
+  align-self: center; /* 중앙 정렬 */
+  justify-content: center;
 }
 
 .searchInput {
@@ -72,9 +104,17 @@ button.searchBtn {
     height: 400px;
     margin-top: 70px;
   }
+  .heading {
+    font-size: 36px;
+    margin-bottom: 24px;
+  }
+  .subheading {
+    font-size: 15px;
+    margin-top: -6px;
+  }
 
   .searchInput {
-    width: 250px;
+    width: 200px;
     height: 36px;
     padding: 8px;
     font-size: 14px;

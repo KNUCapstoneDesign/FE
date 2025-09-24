@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Hero.module.css'
+import video1 from '/video1.mp4'
 import AreaSelectModal from './AreaSelectModal' // 모달 컴포넌트 import
-import FlickerText from './FlickerText.tsx'
 import CategorySelectModal from './CategorySelectModal'
 
 const AREA_LIST = [
@@ -75,67 +75,36 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
     <div
       className={styles.hero}
       style={{
-        backgroundImage: `url(${mainpic})`,
         backgroundPosition: 'center',
-        height: '80vh',
+        height: '65vh',
         backgroundSize: 'cover',
       }}>
-      <FlickerText
-        text="어디로 떠나시나요?"
-        textColor="#fffcfa"
-        glowColor="#d8e1f2"
-        //#ede7ca
-        //#d8e1f2
-        showBackground={false}
-        font={{
-          fontSize: '3.5rem',
-          fontWeight: 'bold',
-          letterSpacing: '0.1em',
-          fontFamily:
-            "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
-        }}
-        animationSpeed={1.2}
-        animationPattern="random"
-        animationStyle="neon"
-        strokeWidth={1}
-        glowIntensity={12}
-        // 💡 [중요] 이 속성을 'once'로 설정하여 한 번만 재생하고 멈추도록 합니다.
-        repeatBehavior="loop"
-      />
+      <video className={styles.heroVideo} src={video1} autoPlay muted loop playsInline poster={mainpic} />
+      <div className={styles.heroContent}>
+        <h1 className={styles.heading}>나만의 맞춤 국내여행</h1>
+        <p className={styles.subheading}>
+          취향에 맞춘 카테고리와 지역을 선택해, 나만의 국내 여행 계획을 세워보세요.
+          <br />
+          일정에 장소를 담아 계획을 세우고, 오늘 바로 떠날 준비를 시작해볼까요?
+        </p>
 
-      <form onSubmit={handleSubmit} className={styles.searchBar}>
-        <input type="text" placeholder="장소를 입력하세요" className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <form onSubmit={handleSubmit} className={styles.searchBar}>
+          <input type="text" placeholder="장소를 입력하세요" className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 
-        <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setModalOpen(true)}>
-          {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '지역 선택'}
-        </button>
+          <button type="button" className={`${styles.areaSelect} ${areaCode || district ? styles.active : ''}`} onClick={() => setModalOpen(true)}>
+            {areaCode ? `${AREA_LIST.find((a) => a.code === areaCode)?.name}${districtName ? ' ' + districtName : ''}` : '지역 선택'}
+          </button>
 
-        {/* 카테고리 버튼 (추가) */}
-        <button type="button" className={`${styles.areaSelect} ${cat1 ? styles.active : ''}`} onClick={() => setCatModalOpen(true)}>
-          {catLabel || '카테고리'}
-        </button>
+          {/* 카테고리 버튼 (추가) */}
+          <button type="button" className={`${styles.areaSelect} ${cat1 ? styles.active : ''}`} onClick={() => setCatModalOpen(true)}>
+            {catLabel || '카테고리'}
+          </button>
 
-        <button type="submit" className={styles.searchBtn}>
-          검색
-        </button>
-      </form>
-
-      {/*<TrueFocus*/}
-      {/*  text="서울 인천 대전 대구 광주 부산 울산 세종 경기도 강원도 | 충청북도 충청남도 경상북도 경상남도 전라북도 전라남도 제주"*/}
-      {/*  manualMode={false} // 자동으로 애니메이션 실행*/}
-      {/*  blurAmount={4}*/}
-      {/*  randomOrder={true}*/}
-      {/*  borderColor="white"*/}
-      {/*  glowColor="rgba(255, 255, 255, 0.6)"*/}
-      {/*  animationDuration={0.7}*/}
-      {/*  pauseBetweenAnimations={1.2}*/}
-      {/*  textColor="#FFFFFF"*/}
-      {/*  font={{*/}
-      {/*    fontSize: "42px",*/}
-      {/*    fontWeight: "700",*/}
-      {/*    textShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",*/}
-      {/*  }}*/}
-      {/*/>*/}
+          <button type="submit" className={styles.searchBtn}>
+            검색
+          </button>
+        </form>
+      </div>
 
       <AreaSelectModal
         open={modalOpen}
