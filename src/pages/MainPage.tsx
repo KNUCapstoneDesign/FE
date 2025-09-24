@@ -1,14 +1,13 @@
 import styles from '../assets/MainPage.module.css'
 import Hero from '../components/Hero'
-import mainpic from '/mainpic.jpeg'
+import mainpic1 from '/mainpic1.jpg'
 import Course from '../components/Course.tsx'
 import { useAuthStore } from '../store/useAuthStore.ts'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import ChatBot from '../components/ChatBot.tsx'
-import { IoIosChatboxes } from "react-icons/io";
-
+import { IoIosChatboxes } from 'react-icons/io'
 
 const MainPage = () => {
   const navigate = useNavigate()
@@ -26,7 +25,7 @@ const MainPage = () => {
         const { token, name, email, phone, isExistingMember, user_id } = res.data
 
         // AuthStore에 로그인 정보 저장
-        login({ token, name, email, phone, userId: user_id})
+        login({ token, name, email, phone, userId: user_id })
 
         localStorage.setItem('token', token)
 
@@ -46,7 +45,7 @@ const MainPage = () => {
   return (
     <div>
       <div className={styles.mainPage}>
-        <Hero mainpic={mainpic} />
+        <Hero mainpic={mainpic1} />
         <Course />
         <br />
       </div>
