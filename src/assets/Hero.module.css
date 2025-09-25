@@ -24,9 +24,10 @@
 }
 
 .heroContent {
+  position: absolute;
+  left : 25%;
   width: 100%;
   max-width: 1200px;
-  padding-left: 2rem;
   display: flex; /* make children flex items */
   flex-direction: column; /* stack vertically */
   align-self: center;
