@@ -14,22 +14,27 @@
 .hero::before {
   content: '';
   position: absolute;
-  inset: 0; /* 부모 요소 전체를 덮도록 설정 */
-  background-color: rgba(0, 0, 0, 0.1); /* 검은색 40% 투명도 오버레이 */
-  z-index: 1; /* 콘텐츠(z-index: 2)보다 아래에 위치 */
+  inset: 0;
+  /* 부모 요소 전체를 덮도록 설정 */
+  background-color: rgba(0, 0, 0, 0.1);
+  /* 검은색 40% 투명도 오버레이 */
+  z-index: 1;
+  /* 콘텐츠(z-index: 2)보다 아래에 위치 */
 }
 
-.hero > :not(.heroVideo) {
+.hero> :not(.heroVideo) {
   z-index: 2;
 }
 
 .heroContent {
   position: absolute;
-  left : 25%;
+  left: 25%;
   width: 100%;
   max-width: 1200px;
-  display: flex; /* make children flex items */
-  flex-direction: column; /* stack vertically */
+  display: flex;
+  /* make children flex items */
+  flex-direction: column;
+  /* stack vertically */
   align-self: center;
 }
 
@@ -44,11 +49,13 @@
 }
 
 .subheading {
-  margin-top: -60px; /* 제목과 더 가깝게 */
+  margin-top: -60px;
+  /* 제목과 더 가깝게 */
   margin-bottom: 10px;
   margin-left: -269px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
+  /* 18px */
   line-height: 1.6;
   text-align: left;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -61,7 +68,8 @@
   width: 100%;
   height: 65vh;
   object-fit: cover;
-  z-index: 0; /* below overlay (1) and content (2) */
+  z-index: 0;
+  /* below overlay (1) and content (2) */
 }
 
 .searchBar {
@@ -69,7 +77,8 @@
   gap: 10px;
   margin-left: -883px;
   margin-bottom: 30px;
-  align-self: center; /* 중앙 정렬 */
+  align-self: center;
+  /* 중앙 정렬 */
   justify-content: center;
 }
 
@@ -105,10 +114,12 @@ button.searchBtn {
     height: 400px;
     margin-top: 70px;
   }
+
   .heading {
     font-size: 36px;
     margin-bottom: 24px;
   }
+
   .subheading {
     font-size: 15px;
     margin-top: -6px;
@@ -129,10 +140,13 @@ button.searchBtn {
     line-height: 20px;
   }
 }
+
 .areaSelect {
   margin-left: 10px;
-  color: #4b5563; /* 기본 글자색 */
-  background-color: #f3f4f6; /* 기본 배경색 */
+  color: #4b5563;
+  /* 기본 글자색 */
+  background-color: #f3f4f6;
+  /* 기본 배경색 */
   border: none;
   padding: 10px 20px;
   height: 44px;
@@ -147,10 +161,13 @@ button.searchBtn {
 }
 
 .areaSelect:hover {
-  background-color: #e5e7eb; /* hover 시 밝은 회색 */
+  background-color: #e5e7eb;
+  /* hover 시 밝은 회색 */
 }
 
 .areaSelect.active {
-  background-color: #3b82f6; /* 활성화 시 파란 배경 */
-  color: #ffffff; /* 활성화 시 흰 글자 */
+  background-color: #3b82f6;
+  /* 활성화 시 파란 배경 */
+  color: #ffffff;
+  /* 활성화 시 흰 글자 */
 }
