@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const MobileBlocker: React.FC = () => {
+  useEffect(() => {
+    document.body.style.padding = '0';
+    return () => {
+      document.body.style.padding = '';
+    };
+  }, []);
+
   return (
     <div style={{
       height: '100vh',
@@ -27,4 +34,3 @@ const MobileBlocker: React.FC = () => {
 };
 
 export default MobileBlocker;
-
