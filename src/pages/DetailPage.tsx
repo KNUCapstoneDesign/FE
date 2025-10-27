@@ -201,6 +201,7 @@ function normalizeToArray<T>(item: T | T[] | undefined): T[] {
 }
 
 const DetailPage: React.FC = () => {
+  const TOUR_BASE = '/api/tour'; // 프록시 사용
   const { id, typeid } = useParams<{ id: string; typeid: string }>()
   const [data, setData] = useState<DetailItem | null>(null)
   const [loading, setLoading] = useState(true)
@@ -242,7 +243,7 @@ const DetailPage: React.FC = () => {
 
     const fetchNearby = async () => {
       const locationUrl =
-        `https://apis.data.go.kr/B551011/KorService2/locationBasedList2?serviceKey=${API_KEY}` +
+        `${TOUR_BASE}/locationBasedList2?serviceKey=${API_KEY}` +
         `&MobileOS=ETC&MobileApp=TestApp&_type=json` +
         `&mapX=${data.mapx}&mapY=${data.mapy}&radius=3000&arrange=E&numOfRows=20`
 
@@ -266,7 +267,7 @@ const DetailPage: React.FC = () => {
     const sigungu = data.addr1.split(' ')[1] || ''
     const fetchPopular = async () => {
       const areaUrl =
-        `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?serviceKey=${API_KEY}` +
+        `${TOUR_BASE}/areaBasedList2?serviceKey=${API_KEY}` +
         `&MobileOS=ETC&MobileApp=TestApp&_type=json` +
         `&arrange=B&numOfRows=5&keyword=${encodeURIComponent(`${sido} ${sigungu}`)}`
 
@@ -618,9 +619,9 @@ const DetailPage: React.FC = () => {
       try {
         setLoading(true)
 
-        const commonUrl = `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}`
-        const imageUrl = `https://apis.data.go.kr/B551011/KorService2/detailImage2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&imageYN=Y&numOfRows=100`
-        const introUrl = `https://apis.data.go.kr/B551011/KorService2/detailIntro2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
+        const commonUrl = `${TOUR_BASE}/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}`
+        const imageUrl = `${TOUR_BASE}/detailImage2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&imageYN=Y&numOfRows=100`
+        const introUrl = `${TOUR_BASE}/detailIntro2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
 
         const [commonRes, imageRes, introRes] = await Promise.all([fetch(commonUrl), fetch(imageUrl), fetch(introUrl)])
 
@@ -645,7 +646,7 @@ const DetailPage: React.FC = () => {
 
         if (typeid === '32') {
           // 숙박
-          const lodgingInfoUrl = `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
+          const lodgingInfoUrl = `${TOUR_BASE}/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
           try {
             const lodgingRes = await fetch(lodgingInfoUrl)
             const lodgingInfoJson: TourAPIBaseResponse<LodgingInfoItem> = await lodgingRes.json()
@@ -655,7 +656,7 @@ const DetailPage: React.FC = () => {
           }
         } else if (typeid === '25') {
           // 여행 코스
-          const infoUrl = `https://apis.data.go.kr/B551011/KorService2/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
+          const infoUrl = `${TOUR_BASE}/detailInfo2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${id}&contentTypeId=${typeid}`
           try {
             const infoRes = await fetch(infoUrl)
             const infoJson: TourAPIBaseResponse<CourseInfoItem> = await infoRes.json()
@@ -664,7 +665,7 @@ const DetailPage: React.FC = () => {
             finalCourseSpots = await Promise.all(
               courseInfoItems.map(async (spot) => {
                 if (!spot.subcontentid) return { ...spot, detail: null }
-                const spotUrl = `https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${spot.subcontentid}`
+                const spotUrl = `${TOUR_BASE}/detailCommon2?serviceKey=${API_KEY}&MobileOS=ETC&MobileApp=TestAPP&_type=json&contentId=${spot.subcontentid}`
                 try {
                   const res = await fetch(spotUrl)
                   const json: TourAPIBaseResponse<DetailCommonItem> = await res.json()

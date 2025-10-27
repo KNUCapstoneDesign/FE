@@ -7,9 +7,9 @@ const SERVICE_KEY = import.meta.env.VITE_API_KEY1
 export const getPlaceDetail = async (contentid: number): Promise<Partial<Place>> => {
   try {
     const encodedKey = encodeURIComponent(SERVICE_KEY)
-
+    const TOUR_BASE = '/api/tour'; // 프록시 사용
     const res = await fetch(
-      `https://apis.data.go.kr/B551011/KorService2/detailCommon2?ServiceKey=${encodedKey}&MobileOS=ETC&MobileApp=Test&_type=json&contentId=${contentid}&defaultYN=Y&overviewYN=Y&addrinfoYN=Y`,
+      `${TOUR_BASE}/detailCommon2?ServiceKey=${encodedKey}&MobileOS=ETC&MobileApp=Test&_type=json&contentId=${contentid}&defaultYN=Y&overviewYN=Y&addrinfoYN=Y`,
     )
 
     if (!res.ok) {

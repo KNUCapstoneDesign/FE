@@ -65,6 +65,7 @@ const SearchResultPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('전체')
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [districtName, setDistrictName] = useState<string>('')
+  const TOUR_BASE = '/api/tour'; // 프록시 사용
 
   // 카테고리 선택 상태
   const [cat1, setCat1] = useState('')
@@ -147,12 +148,12 @@ const SearchResultPage: React.FC = () => {
         let postFilterKeyword = ''
 
         if (term.trim() && (l1 || l2 || l3)) {
-          url = `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?${baseParams}`
+          url = `${TOUR_BASE}/areaBasedList2?${baseParams}`
           postFilterKeyword = term.trim()
         } else if (term.trim()) {
-          url = `https://apis.data.go.kr/B551011/KorService2/searchKeyword2?${baseParams}&keyword=${encodeURIComponent(term.trim())}`
+          url = `${TOUR_BASE}/searchKeyword2?${baseParams}&keyword=${encodeURIComponent(term.trim())}`
         } else {
-          url = `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?${baseParams}`
+          url = `${TOUR_BASE}/areaBasedList2?${baseParams}`
         }
 
         const res = await fetch(url, { signal: controller.signal })
