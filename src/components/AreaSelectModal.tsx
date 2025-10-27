@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from '../assets/AreaSelectModal.module.css'
 
 const API_KEY = import.meta.env.VITE_API_KEY1
+// 프록시 베이스
 
 interface AreaSelectModalProps {
   open: boolean
@@ -31,7 +32,7 @@ const AreaSelectModal: React.FC<AreaSelectModalProps> = ({ open, onClose, onSele
   const [sigunguCode, setSigunguCode] = useState<string | undefined>(selectedDistrict)
   const [areaList, setAreaList] = useState<AreaItem[]>([])
   const [districtList, setDistrictList] = useState<SigunguItem[]>([])
-
+  const TOUR_BASE = '/api/tour'; // 프록시 사용
   useEffect(() => {
     setAreaCode(selectedAreaCode)
     setSigunguCode(selectedDistrict)
@@ -40,7 +41,9 @@ const AreaSelectModal: React.FC<AreaSelectModalProps> = ({ open, onClose, onSele
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/areaCode2?serviceKey=${API_KEY}&numOfRows=17&MobileOS=ETC&MobileApp=AppTest&_type=json`)
+        const res = await fetch(
+          `${TOUR_BASE}/areaCode2?serviceKey=${API_KEY}&numOfRows=17&MobileOS=ETC&MobileApp=AppTest&_type=json`
+        )
         const json = await res.json()
         const items = json.response?.body?.items?.item || []
         const result: TourAPIItem[] = Array.isArray(items) ? items : [items]
@@ -60,7 +63,9 @@ const AreaSelectModal: React.FC<AreaSelectModalProps> = ({ open, onClose, onSele
         return
       }
       try {
-        const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/areaCode2?serviceKey=${API_KEY}&numOfRows=50&areaCode=${areaCode}&MobileOS=ETC&MobileApp=AppTest&_type=json`)
+        const res = await fetch(
+          `${TOUR_BASE}/areaCode2?serviceKey=${API_KEY}&numOfRows=50&areaCode=${areaCode}&MobileOS=ETC&MobileApp=AppTest&_type=json`
+        )
         const json = await res.json()
         const items = json.response?.body?.items?.item || []
         const result: TourAPIItem[] = Array.isArray(items) ? items : [items]

@@ -16,7 +16,7 @@ interface CatItem {
 }
 
 const buildKey = (raw: string) => (raw || '').trim()
-
+const TOUR_BASE = '/api/tour'; // 프록시 사용
 // 공통 쿼리 (numOfRows 크게 해서 전부 수집)
 const baseParams = (key: string) => `serviceKey=${buildKey(key)}&MobileOS=ETC&MobileApp=PlanIt&_type=json&pageNo=1&numOfRows=999&lclsSystmListYn=N`
 
@@ -52,7 +52,7 @@ function extractCodeItems(json: any): CatItem[] {
 }
 
 const CategorySelectModal: React.FC<CategorySelectModalProps> = ({ open, onClose, onSelect, selectedCat1 = '', selectedCat2 = '', selectedCat3 = '', apiKey }) => {
-  const endpoint = 'https://apis.data.go.kr/B551011/KorService2/lclsSystmCode2'
+  const endpoint = `${TOUR_BASE}/lclsSystmCode2`
 
   const [cat1List, setCat1List] = useState<CatItem[]>([])
   const [cat2List, setCat2List] = useState<CatItem[]>([])

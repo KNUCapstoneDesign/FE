@@ -49,6 +49,7 @@ const Course: React.FC = () => {
   const [showCount, setShowCount] = useState(8)
   const navigate = useNavigate()
   const API_KEY = import.meta.env.VITE_API_KEY1
+  const TOUR_BASE = '/api/tour'; // 프록시 사용
 
   useEffect(() => {
     const fetchTourData = async () => {
@@ -57,17 +58,17 @@ const Course: React.FC = () => {
         const shuffledAreas = shuffle(AREA_LIST).slice(0, 3)
         let all: TourItem[] = []
         for (const area of shuffledAreas) {
-          const res = await fetch(
-            `https://apis.data.go.kr/B551011/KorService2/areaBasedList2?` +
-              `serviceKey=${API_KEY}` +
-              `&numOfRows=20` + // 각 지역당 20개로 줄임
-              `&pageNo=1` +
-              `&MobileOS=ETC` +
-              `&MobileApp=TestApp` +
-              `&_type=json` +
-              `&contentTypeId=25` +
-              `&areaCode=${area.code}`,
-          )
+          const url =
+            `${TOUR_BASE}/areaBasedList2?` +
+            `serviceKey=${API_KEY}` +
+            `&numOfRows=20` + // 각 지역당 20개로 줄임
+            `&pageNo=1` +
+            `&MobileOS=ETC` +
+            `&MobileApp=TestApp` +
+            `&_type=json` +
+            `&contentTypeId=25` +
+            `&areaCode=${area.code}`
+          const res = await fetch(url)
           if (!res.ok) throw new Error('API 호출 실패')
           const json = await res.json()
           const items = json.response.body.items.item as TourItem | TourItem[] | undefined

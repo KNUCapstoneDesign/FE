@@ -13,6 +13,7 @@ const MyTravelDetailPage: React.FC = () => {
   const userId = useAuthStore((state) => state.userId)
   console.log('[MyTravelDetailPage] userId:', userId)
   const course = courses.find((c) => c.id === id)
+  const TOUR_BASE = '/api/tour'; // 프록시 사용
 
   const days = React.useMemo(() => {
     if (!course) return {}
@@ -35,7 +36,7 @@ const MyTravelDetailPage: React.FC = () => {
 
   const fetchPlaceInfo = async (contentid: number) => {
     try {
-      const res = await fetch(`https://apis.data.go.kr/B551011/KorService2/detailCommon2?serviceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&_type=json`)
+      const res = await fetch(`${TOUR_BASE}/detailCommon2?serviceKey=${import.meta.env.VITE_API_KEY1}&MobileOS=ETC&MobileApp=MyApp&contentId=${contentid}&_type=json`)
       const data = await res.json()
       const raw = data.response?.body?.items?.item
       const item = Array.isArray(raw) ? raw[0] : raw
