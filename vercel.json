@@ -1,12 +1,12 @@
 {
   "rewrites": [
-    { 
-      "source": "/api/:match*", 
-      "destination": "https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/:match*" 
+    {
+      "source": "/api/:path*",
+      "destination": "https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/:path*"
     },
-    { 
-      "source": "/(.*)", 
-      "destination": "/" 
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
   ]
 }
