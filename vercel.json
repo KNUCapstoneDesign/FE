@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/tour/:path*",
+      "destination": "https://apis.data.go.kr/B551011/KorService2/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/:path*"
     },
