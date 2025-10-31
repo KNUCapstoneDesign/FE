@@ -8,7 +8,7 @@
 }
 
 .mainBox {
-  width: 1000px;
+  width: 1120px;
   background: #fff;
   border-radius: 28px;
   margin: 32px 0;
@@ -16,139 +16,211 @@
   padding: 40px 36px 32px 36px;
 }
 
-.titleSection {
-  text-align: center;
-  margin-bottom: 20px;
+.headerRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* 가운데 타이틀 고정, 양옆은 유연 */
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.mainTitle {
-  font-size: 2.3rem;
+.headerTitleArea {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;         /* 가운데 칼럼에 배치 */
+  justify-self: center;   /* 칼럼 내부에서도 가운데 정렬 */
+  text-align: center;
+}
+
+.headerTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.headerDate {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+  grid-column: 3;         /* 오른쪽 칼럼으로 이동 */
+  justify-self: end;
+}
+
+.secondaryBtn {
+  margin-top: -40px;
+  padding: 10px 14px;
+  background: #eef2ff;
+  color: #3b82f6;
+  border: none;
+  border-radius: 10px;
   font-weight: 700;
-  letter-spacing: -1px;
+  cursor: pointer;
+}
+
+.centerBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 8px 0 24px;
+}
+
+.centerTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.centerDate {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+}
+
+.sideNav {
+  position: sticky;
+  top: 128px;
+  align-self: start;
+  background: #f9fafb;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  padding: 16px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+}
+
+.sideNavTitle {
+  font-size: 14px;
+  color: #6b7280;
   margin-bottom: 8px;
 }
 
-.dateRange {
-  font-size: 1.1rem;
-  color: #888;
-}
-
-.timelineSection {
-  display: flex;
-  margin-top: 30px;
-  position: relative;
-}
-
-.timeline {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  width: 100%;
-}
-
-.verticalLine {
-  width: 3px;
-  background: #d1c6f7;
-  position: absolute;
-  left: 28px;
-  top: 24px;
-  bottom: 24px;
-  border-radius: 2px;
-  z-index: 1;
-}
-
-.dayCards {
+.sideNavList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+}
+
+.sideNavItem {
   width: 100%;
-  margin-left: 55px;
-}
-
-.dayGroup {
-  margin-bottom: 40px;
-  position: relative;
-}
-
-.dayBadge {
-  position: absolute;
-  left: -89px;
-  top: -5px;
-  padding: 6px 14px;
-  font-size: 0.75rem;
-  border-radius: 12px;
-  background-color: #7c3aed;
-  color: #fff;
+  text-align: left;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(180, 120, 220, 0.08);
+  color: #374151;
 }
 
-.cardsWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
+.sideNavItemActive {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
 }
 
-/* 카드 전체 구조 (세로 배치) */
-.placeCard {
+.contentArea {
+  min-height: 400px;
+}
+
+.daySection {
+  margin-bottom: 28px;
+}
+
+.dayHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dayTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.dayCount {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.cardsColumn {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  border-radius: 16px;
+  gap: 14px;
+}
+
+.placeRowCard {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  border: 1px solid #e5e7eb;
   background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s;
+  border-radius: 14px;
+  padding: 10px;
 }
 
-.placeCardImageWrap {
+.thumbWrap {
   position: relative;
-  width: 100%;
-  height: 500px;
+  width: 180px;
+  min-width: 180px;
+  height: 120px;
+  border-radius: 10px;
   overflow: hidden;
-  border-bottom: 1px solid #eee;
 }
 
-.placeCardImage {
+.placeThumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0;
 }
 
-.placeTime {
+.timeBadge {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 14px;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: 600;
+  top: 8px;
+  left: 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111827;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
-.placeCardContent {
-  background: rgba(255, 255, 255, 0.9);
+.placeMeta {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 16px;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
-.placeTitleRow {
+.placeTitleLine {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-between; /* ← 양끝 정렬! */
-  font-family: 'KakaoSmallSans-Bold';
-  margin-bottom: 2px; /* 공간 살짝 */
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.placeTitle {
-  font-size: 24px;
-}
-.placeCardButtons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: auto;
+.placeTitleText {
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
 .placeGroup {
@@ -160,36 +232,28 @@
   padding: 3px 8px;
 }
 
+.placeDescription {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  /* 여러 줄 말줄임 처리 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 표시할 줄 수 */
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  margin-top: auto;
+}
+
 .detailBtn {
   background: none;
   border: none;
-  color: #8d61cf;
-  font-weight: 600;
+  color: #3b82f6;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 1.03em;
+  font-size: 0.98rem;
   padding: 0;
-  transition: color 0.18s;
-}
-
-.detailBtn:hover {
-  color: #4d299c;
-  text-decoration: underline;
-}
-
-.fabBtn {
-  position: fixed;
-  bottom: 40px;
-  right: 40px;
-  background-color: #ff6b35;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 12px 20px;
-  border-radius: 30px;
-  border: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .footer {
@@ -199,39 +263,4 @@
   font-size: 0.95em;
   padding: 28px 0 12px 0;
   margin-top: 48px;
-}
-/* === Day Tab === */
-.dayTabWrapper {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 24px;
-  margin-top: 12px;
-}
-
-.dayTabBtn {
-  background: #f5f5f7;
-  color: #6a4faf;
-  border: none;
-  border-radius: 18px;
-  padding: 8px 28px;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.18s,
-    color 0.18s;
-  box-shadow: 0 1.5px 6px rgba(140, 120, 200, 0.08);
-  outline: none;
-}
-
-.dayTabBtn:hover {
-  background: #ede8fd;
-  color: #7c3aed;
-}
-
-.activeDayTab {
-  background: #7c3aed;
-  color: #fff;
-  box-shadow: 0 3px 16px rgba(124, 58, 237, 0.12);
 }
