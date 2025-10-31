@@ -60,6 +60,9 @@
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .centerBanner {
@@ -255,6 +258,7 @@
   font-size: 0.98rem;
   padding: 0;
 }
+
 
 .footer {
   width: 100%;

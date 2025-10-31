@@ -5,6 +5,7 @@ import styles from '../assets/MyTravelDetailPage.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import Progressify from '../components/Progressify.tsx'
+import { FaList } from "react-icons/fa";
 
 const MyTravelDetailPage: React.FC = () => {
   const navigate = useNavigate()
@@ -101,6 +102,10 @@ const MyTravelDetailPage: React.FC = () => {
     // eslint-disable-next-line
   }, [tabKeys.join(',')])
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (!course) return <div>일정 정보를 찾을 수 없습니다.</div>
 
   const period = course.startDate && course.endDate ? `${course.startDate} — ${course.endDate}` : '날짜 정보 없음'
@@ -179,7 +184,7 @@ const MyTravelDetailPage: React.FC = () => {
           </div>
           <div className={styles.headerActions}>
             <button className={styles.secondaryBtn} type="button" onClick={() => navigate(-1)}>
-              돌아가기
+              <FaList />목록
             </button>
           </div>
         </div>
