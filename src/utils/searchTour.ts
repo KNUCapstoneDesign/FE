@@ -16,7 +16,7 @@ export async function searchTour(keyword: string, contentTypeId?: string): Promi
   const API_KEY = import.meta.env.VITE_API_KEY1!
   const serviceKey = decodeURIComponent(API_KEY)
   const TOUR_BASE = '/api/tour'; // 프록시 사용
-  const url = new URL(`${TOUR_BASE}/searchKeyword2`)
+  const url = new URL(`${TOUR_BASE}/searchKeyword2`, window.location.origin)
   url.searchParams.set('serviceKey', serviceKey)
   url.searchParams.set('MobileOS', 'ETC')
   url.searchParams.set('MobileApp', 'AppTest')
@@ -41,7 +41,7 @@ export async function getTourDetail(contentId: number): Promise<TourItem> {
   const API_KEY = import.meta.env.VITE_API_KEY1!
   const serviceKey = decodeURIComponent(API_KEY)
   const TOUR_BASE = '/api/tour'; // 프록시 사용
-  const url = new URL(`${TOUR_BASE}/detailCommon2`)
+  const url = new URL(`${TOUR_BASE}/detailCommon2`, window.location.origin)
   url.searchParams.set('serviceKey', serviceKey)
   url.searchParams.set('MobileOS', 'ETC')
   url.searchParams.set('MobileApp', 'AppTest')
