@@ -54,7 +54,7 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h2>어느 일정에 추가할까요?</h2>
+        <h2 className={styles.h2title}>어느 일정에 추가할까요?</h2>
         {courses.length === 0 ? (
           <p>
             생성된 일정이 없습니다.
@@ -75,7 +75,7 @@ const AddPlaceModal: React.FC<AddPlaceModalProps> = ({ place, onClose }) => {
             <div className={styles.daylabel}>
               <label>
                 Day:
-                <select value={day} onChange={(e) => setDay(e.target.value)} style={{ width: 110, marginLeft: 4, fontSize: 15 }}>
+                <select value={day} onChange={(e) => setDay(e.target.value)} style={{ width: 110, marginLeft: 4, fontSize: 15, borderRadius: 3, border: '1px solid #3d3d3d' }}>
                   {Array.from({ length: courseDays }, (_, i) => (
                     <option value={String(i + 1)} key={i + 1}>
                       {i + 1}일차

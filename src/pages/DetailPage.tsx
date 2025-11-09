@@ -456,7 +456,8 @@ const DetailPage: React.FC = () => {
 
     const fetchMenus = async () => {
       try {
-        const res = await fetch(`https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api/menu?name=${encodeURIComponent(searchName)}`, { credentials: 'include' })
+        const API_BASE = import.meta.env.DEV ? '/api' : 'https://port-0-planit-mcmt59q6ef387a77.sel5.cloudtype.app/api';
+        const res = await fetch(`${API_BASE}/menu?name=${encodeURIComponent(searchName)}`, { credentials: 'include' })
         const json: MenuResponse = await res.json()
         setMenus(json.menus)
         setRating(json.rating || null)
@@ -1399,9 +1400,7 @@ const DetailPage: React.FC = () => {
               </h2>
               {rating && (
                 <div className={styles.menuRatingBox}>
-                  <FaStar color="#f5b50a" />
-                  <span className={styles.ratingValue}>{rating}</span>
-                  <span className={styles.ratingLabel}>평점</span>
+                  평점 : <FaStar color="#f5b50a"/> {rating}
                 </div>
               )}
               {menusLoading ? (
