@@ -5,6 +5,7 @@ import styles from '../assets/DetailPage.module.css'
 import { Carousel } from '../components/Carousel.tsx'
 import AddPlaceModal from '../components/AddPlaceModal'
 import { Place } from '../store/useMyTravelStore'
+import MenuLoading from '../components/MenuLoading.tsx'
 import {
   FaInfoCircle,
   FaMapMarkedAlt,
@@ -1404,7 +1405,7 @@ const DetailPage: React.FC = () => {
                 </div>
               )}
               {menusLoading ? (
-                <div>메뉴 탐색중...</div>
+                <MenuLoading/>
               ) : menus && menus.length > 0 ? (
                 <ul className={styles.menuList}>
                   {menus.map((menu, i) => (
