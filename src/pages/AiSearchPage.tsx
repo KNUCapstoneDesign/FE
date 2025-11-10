@@ -4,14 +4,35 @@ import styles from '../assets/AiSearchPage.module.css'
 import { readFileAsBase64 } from '../utils/imageToBase64'
 import { analyzeImageWithVisionAPI } from '../utils/visionApi'
 import { translateToKoreanWithGoogle } from '../utils/translate'
-import { searchTour } from '../utils/searchTour'
 import { useAiSearchStore } from '../store/AiSearchStore'
 import { Place } from '../store/useMyTravelStore'
 import AddPlaceModal from '../components/AddPlaceModal'
+import AreaSelectModal from '../components/AreaSelectModal'
 import { useAuthStore } from '../store/useAuthStore'
 import { useNavigate } from 'react-router-dom'
 
 const NAVER_SCRIPT_ID = 'naver-map-script'
+
+const AREA_LIST = [
+  { code: '', name: '전체 지역' },
+  { code: '1', name: '서울' },
+  { code: '2', name: '인천' },
+  { code: '3', name: '대전' },
+  { code: '4', name: '대구' },
+  { code: '5', name: '광주' },
+  { code: '6', name: '부산' },
+  { code: '7', name: '울산' },
+  { code: '8', name: '세종' },
+  { code: '31', name: '경기' },
+  { code: '32', name: '강원' },
+  { code: '33', name: '충북' },
+  { code: '34', name: '충남' },
+  { code: '35', name: '경북' },
+  { code: '36', name: '경남' },
+  { code: '37', name: '전북' },
+  { code: '38', name: '전남' },
+  { code: '39', name: '제주' },
+]
 
 const AiSearchPage: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -28,13 +49,26 @@ const AiSearchPage: React.FC = () => {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
 
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState(false)
+  const [selectedAreaCode, setSelectedAreaCode] = useState<string>('')
+  const [selectedSigunguCode, setSelectedSigunguCode] = useState<string | undefined>(undefined)
+  const [selectedSigunguName, setSelectedSigunguName] = useState<string | undefined>(undefined)
+
   const distanceLabelMarker = useRef<naver.maps.Marker | null>(null)
+  const fetchAbortRef = useRef<AbortController | null>(null)
 
   const itemsPerPage = 5
   const PAGE_BLOCK = 10
   const { tab, imageUrl, labels, selectedLabel, results, setTab, setImageUrl, setLabels, setSelectedLabel, setResults, reset } = useAiSearchStore()
   const navigate = useNavigate()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const selectedAreaName = React.useMemo(() => AREA_LIST.find((a) => a.code === selectedAreaCode)?.name || '', [selectedAreaCode])
+  
+  const regionButtonLabel = React.useMemo(() => {
+    if (selectedAreaName && selectedSigunguName) return `${selectedAreaName} > ${selectedSigunguName}`
+    if (selectedAreaName) return selectedAreaName
+    return '지역 필터'
+  }, [selectedAreaName, selectedSigunguName])
 
   useEffect(() => {
     reset()
@@ -190,14 +224,7 @@ const AiSearchPage: React.FC = () => {
 
   const handleLabelClick = async (label: string) => {
     setSelectedLabel(label)
-    try {
-      const contentTypeId = tab === 'restaurant' ? '39' : '12'
-      const searchResults = await searchTour(label, contentTypeId)
-      setResults(searchResults)
-      setCurrentPage(1)
-    } catch (error) {
-      console.error('❌ 라벨 검색 오류:', error)
-    }
+    setCurrentPage(1)
   }
 
   const handleTabChange = (newTab: 'restaurant' | 'tour') => {
@@ -230,7 +257,30 @@ const AiSearchPage: React.FC = () => {
     if (file) handleImageUpload(file)
   }
 
-  const totalPages = Math.ceil(results.length / itemsPerPage)
+  // 필터 적용 결과 계산
+  const displayResults = React.useMemo(() => {
+    if (!results || results.length === 0) return []
+    return results.filter((it) => {
+      const item: any = it as any
+      // 지역 필터
+      if (selectedAreaCode) {
+        const areaMatched = (item.areacode && String(item.areacode) === String(selectedAreaCode)) || (item.addr1 && String(item.addr1).includes(selectedSigunguName || ''))
+        if (!areaMatched) return false
+      }
+      if (selectedSigunguCode) {
+        const sigunguMatched = (item.sigungucode && String(item.sigungucode) === String(selectedSigunguCode)) || (item.addr1 && String(item.addr1).includes(selectedSigunguName || ''))
+        if (!sigunguMatched) return false
+      }
+      return true
+    })
+  }, [results, selectedAreaCode, selectedSigunguCode, selectedSigunguName])
+
+  // 필터 변경 시 페이지를 1로 리셋
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedAreaCode, selectedSigunguCode])
+
+  const totalPages = Math.ceil(displayResults.length / itemsPerPage)
   const currentBlock = Math.floor((currentPage - 1) / PAGE_BLOCK)
   const blockstart = currentBlock * PAGE_BLOCK + 1
   const blockEnd = Math.min(blockstart + PAGE_BLOCK - 1, totalPages)
@@ -240,7 +290,96 @@ const AiSearchPage: React.FC = () => {
   const handlePrevBlock = () => setCurrentPage(Math.max(1, blockstart - PAGE_BLOCK))
   const handleNextBlock = () => setCurrentPage(Math.min(totalPages, blockEnd + 1))
 
-  const paginatedResults = results.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const paginatedResults = displayResults.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  // 선택 라벨/필터 변경 시 서버에 맞춰 재조회
+  useEffect(() => {
+    const label = selectedLabel?.trim() || ''
+    const hasArea = !!(selectedAreaCode || selectedSigunguCode)
+
+    // 조건이 하나도 없으면 초기화만
+    if (!label && !hasArea) {
+      setResults([])
+      return
+    }
+
+    // 중복 요청 취소
+    if (fetchAbortRef.current) fetchAbortRef.current.abort()
+    const controller = new AbortController()
+    fetchAbortRef.current = controller
+
+    const API_KEY = import.meta.env.VITE_API_KEY1 as string
+    const TOUR_BASE = '/api/tour'
+    const params: string[] = [
+      `serviceKey=${API_KEY}`,
+      'MobileOS=ETC',
+      'MobileApp=PlanIt',
+      '_type=json',
+      'pageNo=1',
+      'numOfRows=1000',
+    ]
+    const contentTypeId = tab === 'restaurant' ? '39' : '12'
+    if (contentTypeId) params.push(`contentTypeId=${contentTypeId}`)
+    if (selectedAreaCode) params.push(`areaCode=${encodeURIComponent(selectedAreaCode)}`)
+    if (selectedSigunguCode) params.push(`sigunguCode=${encodeURIComponent(selectedSigunguCode)}`)
+
+    // 엔드포인트 결정
+    let endpoint = ''
+    let postFilterKeyword = ''
+    if (label && hasArea) {
+      endpoint = 'areaBasedList2'
+      postFilterKeyword = label
+    } else if (label) {
+      endpoint = 'searchKeyword2'
+      params.push(`keyword=${encodeURIComponent(label)}`)
+    } else {
+      endpoint = 'areaBasedList2'
+    }
+
+    const url = `${TOUR_BASE}/${endpoint}?${params.join('&')}`
+
+    ;(async () => {
+      try {
+        const res = await fetch(url, { signal: controller.signal })
+        const text = await res.text()
+        let json: any
+        try {
+          json = JSON.parse(text)
+        } catch {
+          throw new Error('JSON 파싱 실패')
+        }
+        const header = json?.response?.header
+        if (header?.resultCode !== '0000') throw new Error(header?.resultMsg || 'API 오류')
+        const raw = json?.response?.body?.items?.item
+        const arr: any[] = raw ? (Array.isArray(raw) ? raw : [raw]) : []
+        let parsed = arr.map((it) => ({
+          contentid: Number(it.contentid),
+          firstimage: it.firstimage,
+          title: it.title,
+          addr1: it.addr1,
+          contenttypeid: Number(it.contenttypeid),
+          mapx: it.mapx ? Number(it.mapx) : undefined,
+          mapy: it.mapy ? Number(it.mapy) : undefined,
+          // 원시 코드가 포함되면 보존 (클라이언트 필터 보조)
+          areacode: it.areacode,
+          sigungucode: it.sigungucode,
+        })) as any
+
+        if (postFilterKeyword) {
+          const kw = postFilterKeyword.toLowerCase()
+          parsed = parsed.filter((p: any) => (p.title || '').toLowerCase().includes(kw))
+        }
+
+        setResults(parsed)
+      } catch (e) {
+        if ((e as any).name === 'AbortError') return
+        console.error('[AI Search] 결과 로딩 실패:', e)
+        // 실패 시 기존 결과 유지 (UX)
+      }
+    })()
+
+    return () => controller.abort()
+  }, [selectedLabel, selectedAreaCode, selectedSigunguCode, tab, setResults])
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -294,10 +433,22 @@ const AiSearchPage: React.FC = () => {
         {selectedLabel && (
           <div className={styles.resultArea}>
             <div className={styles.resultList}>
-              <h2 className={styles.resulth2}>
-                {selectedLabel ? `"${selectedLabel}" 검색 결과` : '검색 결과'}
-                <span className={styles.resultCount}>{results.length}개의 검색결과</span>
-              </h2>
+              <div className={styles.resultHeaderRow}>
+                <h2 className={styles.resulth2}>
+                  {selectedLabel ? `"${selectedLabel}" 검색 결과` : '검색 결과'}
+                  <span className={styles.resultCount}>{displayResults.length}개의 검색결과</span>
+                </h2>
+                <div className={styles.filterBar}>
+                  <div className={styles.filterBtns}>
+                    <button 
+                      className={`${styles.filterBtn} ${(selectedAreaCode || selectedSigunguCode) ? styles.filterBtnActive : ''}`} 
+                      onClick={() => setIsAreaModalOpen(true)}
+                    >
+                      {regionButtonLabel}
+                    </button>
+                  </div>
+                </div>
+              </div>
               {paginatedResults.map((item) => (
                 <div
                   key={item.contentid}
@@ -343,7 +494,7 @@ const AiSearchPage: React.FC = () => {
                 </div>
               ))}
 
-              {results.length > itemsPerPage && (
+              {displayResults.length > itemsPerPage && (
                 <div className={styles.pagination}>
                   <button className={styles.pageBtn} onClick={handleFirstPage} disabled={currentPage === 1}>
                     &laquo;
@@ -379,6 +530,17 @@ const AiSearchPage: React.FC = () => {
         )}
       </main>
       {selectedPlace && <AddPlaceModal place={selectedPlace} onClose={() => setSelectedPlace(null)} />}
+      <AreaSelectModal
+        open={isAreaModalOpen}
+        onClose={() => setIsAreaModalOpen(false)}
+        onSelect={(area, sigungu, sigunguName) => {
+          setSelectedAreaCode(area || '')
+          setSelectedSigunguCode(sigungu)
+          setSelectedSigunguName(sigunguName)
+        }}
+        selectedAreaCode={selectedAreaCode}
+        selectedDistrict={selectedSigunguCode}
+      />
     </div>
   )
 }

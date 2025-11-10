@@ -498,3 +498,50 @@
   color: black;
   margin-top: 0.3rem;
 }
+
+/* 필터 영역 */
+.resultHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filterBar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filterBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.filterBtn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid #d1d5db;
+  background-color: #f3f4f6;
+  color: #374151;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+.filterBtn:hover {
+  background-color: #e5e7eb;
+}
+
+.filterBtnActive {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border-color: #4f46e5;
+  font-weight: 600;
+}
