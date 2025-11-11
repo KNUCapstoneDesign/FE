@@ -121,20 +121,20 @@ const MyTravelPage: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <div className={styles.breadcrumb}>
+      <div className={styles.breadcrumb} data-aos="fade-up" data-aos-duration="700" data-aos-easing="ease-out-cubic">
         <span className={styles.breadcrumbHome} onClick={() => navigate('/main')}>
           <IoHome size={18} style={{ verticalAlign: 'middle' }} />
         </span>
         <span className={styles.breadcrumbDivider}>{'>'}</span>
         <span className={styles.breadcrumbCurrent}>나의 여행</span>
       </div>
-      <div className={styles.titleFormRow}>
+      <div className={styles.titleFormRow} data-aos="fade-up" data-aos-delay="80">
         <h1 className={styles.title}>나의 여행 일정</h1>
         <div
           id="addFormContainer"
           className={styles.addFormContainer}
         >
-          <div className={`${styles.addForm} ${isFormOpen ? styles.addFormExpanded : ''}`}>
+          <div className={`${styles.addForm} ${isFormOpen ? styles.addFormExpanded : ''}`} >
             <div className={styles.formInputs} style={{ pointerEvents: isFormOpen ? 'auto' : 'none' }}>
               <input type="text" placeholder="일정 제목" value={title} onChange={(e) => setTitle(e.target.value)} />
               <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
@@ -159,7 +159,7 @@ const MyTravelPage: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.cardGrid}>
+      <div className={styles.cardGrid} data-aos="fade-up" data-aos-delay="120">
         {paginatedCourses.map((course) => (
           <div key={course.id} className={styles.card} onClick={() => navigate(`/mytravel/${course.id}`)}>
             <div className={styles.cardImage} style={{ backgroundImage: `url('/course2.jpg')` }}></div>
@@ -228,7 +228,7 @@ const MyTravelPage: React.FC = () => {
         ))}
       </div>
 
-      <div className={styles.pagination}>
+      <div className={styles.pagination} data-aos="fade-up" data-aos-delay="160">
         <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
           {'<<'}
         </button>

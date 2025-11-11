@@ -80,12 +80,12 @@ const Hero: React.FC<HeroProps> = ({ mainpic }) => {
         backgroundSize: 'cover',
       }}>
       <video className={styles.heroVideo} src={video1} autoPlay muted loop playsInline poster={mainpic} />
-      <div className={styles.heroContent}>
+      <div className={styles.heroContent} data-aos="fade-up" data-aos-duration="1000" data-aos-easing="ease-out-cubic">
         <h1 className={styles.heading}>나만의 맞춤 국내여행</h1>
         <p className={styles.subheading}>
-          취향에 맞춘 카테고리와 지역을 선택해, 나만의 국내 여행 계획을 세워보세요.
+          취향에 맞춘 지역과 카테고리를 선택해, 나만의 국내 여행 계획을 세워보세요.
           <br />
-          일정에 장소를 담아 계획을 세우고, 오늘 바로 떠날 준비를 시작해볼까요?
+          일정에 장소를 추가하여 계획을 세우고, 오늘 바로 떠날 준비를 시작해볼까요?
         </p>
 
         <form onSubmit={handleSubmit} className={styles.searchBar}>

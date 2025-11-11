@@ -391,11 +391,11 @@ const AiSearchPage: React.FC = () => {
   return (
     <div className={styles.pageWrapper}>
       <main className={styles.main}>
-        <h1 className={styles.title}>이미지로 검색하기</h1>
-        <p className={styles.subtitle}>음식이나 관광지 사진을 업로드하여 관련 정보를 찾아보세요!</p>
-        <p className={styles.subtitle2}>※ AI가 이미지를 판별하기 때문에 정확하지 않을 수 있습니다.</p>
+        <h1 className={styles.title} data-aos="fade-up" data-aos-duration="700" data-aos-easing="ease-out-cubic">이미지로 검색하기</h1>
+        <p className={styles.subtitle} data-aos="fade-up" data-aos-delay="80">음식이나 관광지 사진을 업로드하여 관련 정보를 찾아보세요!</p>
+        <p className={styles.subtitle2} data-aos="fade-up" data-aos-delay="120">※ AI가 이미지를 판별하기 때문에 정확하지 않을 수 있습니다.</p>
 
-        <div className={styles.tabButtons}>
+        <div className={styles.tabButtons} data-aos="fade-up" data-aos-delay="160">
           <button className={`${styles.tabButton} ${tab === 'restaurant' ? styles.active : ''}`} onClick={() => handleTabChange('restaurant')}>
             음식점
           </button>
@@ -405,19 +405,27 @@ const AiSearchPage: React.FC = () => {
         </div>
 
         {!imageUrl && (
-          <div className={`${styles.uploadBox} ${isDragging ? styles.dragging : ''}`} onClick={triggerFileInput} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+          <div
+            className={`${styles.uploadBox} ${isDragging ? styles.dragging : ''}`}
+            onClick={triggerFileInput}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            data-aos="fade-up"
+            data-aos-delay="220"
+          >
             <div className={styles.uploadText}>이미지 업로드 또는 여기에 드래그하세요</div>
             <input type="file" ref={inputRef} accept="image/*" onChange={handleFileChange} className={styles.uploadInput} />
           </div>
         )}
         {imageUrl && (
-          <div className={styles.previewImageWrapper}>
+          <div className={styles.previewImageWrapper} data-aos="fade-up" data-aos-delay="220">
             <img src={imageUrl} alt="미리보기" className={styles.previewImage} style={{ pointerEvents: 'none' }} />
           </div>
         )}
 
         {labels.length > 0 && (
-          <div className={styles.labels}>
+          <div className={styles.labels} data-aos="fade-up" data-aos-delay="240">
             <h3 className={styles.labelh3}>🔍 분석 결과</h3>
             <p className={styles.labelp}>※ 검색어로 사용할 장소명 키워드를 선택해주세요!</p>
             <div className={styles.labelList}>
@@ -432,7 +440,7 @@ const AiSearchPage: React.FC = () => {
 
         {selectedLabel && (
           <div className={styles.resultArea}>
-            <div className={styles.resultList}>
+            <div className={styles.resultList} data-aos="fade-up" data-aos-delay="80">
               <div className={styles.resultHeaderRow}>
                 <h2 className={styles.resulth2}>
                   {selectedLabel ? `"${selectedLabel}" 검색 결과` : '검색 결과'}
@@ -519,7 +527,7 @@ const AiSearchPage: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className={styles.mapArea}>
+            <div className={styles.mapArea} data-aos="fade-up" data-aos-delay="120">
               <h2 className={styles.maptitle}>위치 정보</h2>
               <div className={styles.mapBoxWrapper}>
                 <div ref={mapRef} className={styles.mapBox} />

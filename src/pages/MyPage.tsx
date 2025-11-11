@@ -44,7 +44,7 @@ const MyPage = () => {
 
   return (
     <div className={styles.page}>
-      <div className={styles.card}>
+      <div className={styles.card} data-aos="fade-up" data-aos-duration="700" data-aos-easing="ease-out-cubic">
         <header className={`${styles.header} ${styles.headerSingle}`}>
           <h2 className={styles.title}>마이페이지</h2>
         </header>
