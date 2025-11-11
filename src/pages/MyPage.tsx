@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/useAuthStore'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/MyPage.module.css'
+import MainLoading from '../components/MainLoading'
 
 const MyPage = () => {
   const { name, email, phone, token, hydrated } = useAuthStore() // logout 제거
@@ -12,7 +13,7 @@ const MyPage = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  if (!hydrated) return <div className={styles.loading}>로딩 중...</div>
+  if (!hydrated) return <MainLoading/>
   if (!token) {
     navigate('/login')
     return null

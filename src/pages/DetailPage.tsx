@@ -33,6 +33,7 @@ import { IoMdImages } from 'react-icons/io'
 import { IoCloseSharp } from 'react-icons/io5'
 import { FcNext, FcPrevious } from 'react-icons/fc'
 import Progressify from '../components/Progressify.tsx'
+import MainLoading from '../components/MainLoading.tsx'
 
 // #region --- 타입 정의 (Interfaces) ---
 
@@ -752,7 +753,7 @@ const DetailPage: React.FC = () => {
     fetchDetail()
   }, [id, typeid, API_KEY])
 
-  if (loading) return <div className={styles.loading}>로딩 중...</div>
+  if (loading) return <MainLoading />
   if (error) return <div className={styles.error}>{error}</div>
   if (!data) return null
 

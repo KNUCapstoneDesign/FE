@@ -1,5 +1,6 @@
 // src/pages/test.tsx
 import React, { useEffect, useState } from 'react'
+import MainLoading from '../components/MainLoading.tsx'
 
 interface TourItem {
   title: string
@@ -52,7 +53,7 @@ const TestPage: React.FC = () => {
     fetchAllData()
   }, [API_KEY])
 
-  if (loading) return <p>불러오는 중...</p>
+  if (loading) return <MainLoading/>
   if (error) return <p>{error}</p>
 
   return (

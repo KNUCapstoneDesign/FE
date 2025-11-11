@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from '../assets/Course.module.css'
 import course1 from '/course1.jpg'
-import SeeMoreButton from './SeeMoreButton.tsx' // 더미 이미지 (fallback용)
+import SeeMoreButton from './SeeMoreButton.tsx'
+import MainLoading from './MainLoading.tsx' // 더미 이미지 (fallback용)
 
 interface TourItem {
   contentid: string
@@ -97,7 +98,7 @@ const Course: React.FC = () => {
     return arr
   }, [data])
 
-  if (loading) return <p>불러오는 중...</p>
+  if (loading) return <MainLoading/>
   if (error) return <p>에러 발생: {error}</p>
 
   return (
