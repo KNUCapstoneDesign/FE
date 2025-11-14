@@ -3,7 +3,7 @@ import Lottie from 'lottie-react'
 
 const MainLoading: React.FC = () => {
   const [animationData, setAnimationData] = useState<object | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true) 
 
   useEffect(() => {
     let mounted = true
