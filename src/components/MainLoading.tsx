@@ -12,7 +12,7 @@ const MainLoading: React.FC = () => {
       .then((json) => {
         if (!mounted) return
         setAnimationData(json)
-      })
+      }) 
       .catch((err) => console.error('Lottie json 로드 실패:', err))
       .finally(() => {
         if (mounted) setLoading(false)
