@@ -10,7 +10,7 @@ const MainLoading: React.FC = () => {
     fetch('/Earth.json')
       .then((res) => res.json())
       .then((json) => {
-        if (!mounted) return 
+        if (!mounted) return
         setAnimationData(json)
       }) 
       .catch((err) => console.error('Lottie json 로드 실패:', err))
